@@ -22,7 +22,7 @@ bot.on('text', function(msg) {
     console.log(msg.text);
     console.log(msg.text.indexOf('#digest'))
 
-    if (msg.text.indexOf('#digest') >= 0) {
+    if (msg.text.indexOf('#digest') !== -1) {
         console.log('Get message with #digest tag, save to stack');
         countOfMessageWithDigest++;
     }

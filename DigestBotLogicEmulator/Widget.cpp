@@ -44,29 +44,37 @@ QString GadgetHackwrench::normalizeMessage(QString &msg) const
 {
     msg.remove("#digest");
 
-    int countOfTrailingSpace = 0;
-    for (int i = 0; i < msg.length(); ++i) {
-        if (msg.at(i).isSpace()) {
-            countOfTrailingSpace++;
-        } else {
-            break;
+    if (!msg.isEmpty()) {
+        int countOfTrailingSpace = 0;
+        for (int i = 0; i < msg.length(); ++i) {
+            if (msg.at(i).isSpace()) {
+                countOfTrailingSpace++;
+            } else {
+                break;
+            }
+        }
+
+        int countOfEndingSpace = 0;
+        for (int i = msg.length() - 1; i >= 0; --i) {
+            if (msg.at(i).isSpace()) {
+                countOfEndingSpace++;
+            } else {
+                break;
+            }
+        }
+
+        if (!msg.isEmpty()) {
+            msg.remove(0, countOfTrailingSpace);
+        }
+
+        if (!msg.isEmpty()) {
+            msg.chop(countOfEndingSpace);
+        }
+
+        if (!msg.isEmpty()) {
+            msg[0] = msg.at(0).toUpper(); // Returns the uppercase equivalent
         }
     }
-
-    int countOfEndingSpace = 0;
-    for (int i = msg.length() - 1; i >= 0; --i) {
-        if (msg.at(i).isSpace()) {
-            countOfEndingSpace++;
-        } else {
-            break;
-        }
-    }
-
-    msg.remove(0, countOfTrailingSpace);
-    msg.chop(countOfEndingSpace);
-
-    msg[0] = msg.at(0).toUpper(); // Returns the uppercase equivalent
-
     return msg;
 }
 
@@ -163,6 +171,8 @@ void GadgetHackwrench::getMessageFromChat(int i_chatID, const QString &msg)
             sendMessageByGH(i_chatID, "Sorry: no stack!");
         }
     }
+    // clearStack
+    // hello
     // END DEBUG SECTION
 }
 
@@ -255,7 +265,7 @@ void Widget::timerEvent(QTimerEvent */*event*/)
 
     if (discussion2) {
         QString message = getUnixTime() + QString::number(randomNumber);
-        if (!(randomNumber % 10)) {
+        if (!(randomNumber % 15)) {
             message += " #digest";
         }
         ui->listWidget_2->addItem(QString("-> System: %1").arg(message));
