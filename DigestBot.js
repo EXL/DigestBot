@@ -88,12 +88,12 @@ bot.on('text', function(msg)
             // Check countOfDigestMessagesByChat
             if (countOfDigestMessagesByChat > 0) {
                 // TODO: send botAnswer
-                console.log(botAnswer);
+                console.log('BOT ANSWER: ' + botAnswer);
             } else {
-                // TODO: no messages
+                console.log('NO MESSAGES');
             }
         } else {
-            // TODO: send no message to chat
+            console.log('NO MESSAGES');
         }
     }
 
