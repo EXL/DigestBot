@@ -9,35 +9,68 @@ var botOptions = {
 
 var bot = new TelegramBot(token, botOptions);
 
-var countOfMessageWithDigest = 0;
+var globalCountOfMessagesWithDigest = 0;
+var globalUserNameIs;
+
+var globalStackListDigestMessages = { };
 
 bot.getMe().then(function (me) {
     console.log('Hello! My name is %s!', me.first_name);
-    console.log('My id is %s.', me.id)
+    console.log('My id is %s.', me.id);
     console.log('And my username is @%s.', me.username);
 });
 
 bot.on('text', function(msg) {
-    var chatId = msg.chat.id
+    // Set main variables
+    var messageChatId = msg.chat.id;
+    var messageText = msg.text;
+    var messageDate = msg.date;
+    //globalUserNameIs = msg.user
 
     console.log(msg);
-    console.log(msg.text);
-    console.log(msg.text.indexOf('#digest'))
+//    console.log(msg.text);
+//    console.log(msg.text.indexOf('#digest'));
 
-    if (msg.text.indexOf('#digest') !== -1) {
-        console.log('Get message with #digest tag, save to stack');
-        countOfMessageWithDigest++;
+    if (messageText.indexOf('#digest') !== -1) {
+        globalCountOfMessagesWithDigest++;
+        var normalMessage = normalizeMessage();
+        if (!(isBlank(normalMessage))) {
+            var messageInfoStruct = {
+                's_chatID': messageChatId,
+                's_date': messageDate,
+                's_message': messageText
+                // TODO: UserName
+            };
+
+            globalStackListDigestMessages.push(messageInfoStruct);
+        }
     }
 
-    if (msg.text === '/digest' || msg.text === '/Digest') {
-        console.log('Digest command received, sending digest stack...');
-        bot.sendMessage(chatId,
-                        getCountOfMessageWithDigest(),
-                        { caption: "I'm a bot!" });
-    }
+    console.log("Stack view")
+    console.log(globalStackListDigestMessages)
 
-    console.log(countOfMessageWithDigest);
+//    if (msg.text.indexOf('#digest') !== -1) {
+//        console.log('Get message with #digest tag, save to stack');
+//        globalCountOfMessagesWithDigest++;
+//    }
+
+//    if (msg.text === '/digest' || msg.text === '/Digest') {
+//        console.log('Digest command received, sending digest stack...');
+//        bot.sendMessage(messageChatId,
+//                        getCountOfMessageWithDigest(),
+//                        { caption: "I'm a bot!" });
+//    }
+
+//    console.log(globalCountOfMessagesWithDigest);
 });
+
+function normalizeMessage(aMessage) {
+    return aMessage;
+}
+
+function isBlank(aString) {
+    return (!aString || /^\s*$/.test(aString));
+}
 
 function getTokenAccess() {
     var parsedJsonFromFile = getJSONFileFromFileSystem('BOT_TOKEN_ACCESS.json');
@@ -58,5 +91,5 @@ function getJSONFileFromFileSystem(aFileName) {
 }
 
 function getCountOfMessageWithDigest() {
-    return 'Count of digest messages is ' + countOfMessageWithDigest;
+    return 'Count of digest messages is ' + globalCountOfMessagesWithDigest;
 }
