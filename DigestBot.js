@@ -1,7 +1,7 @@
 var TelegramBot = require('node-telegram-bot-api');
-var FileSystem = require('fs')
+var FileSystem = require("fs");
 
-var token = getJSONFileFromFileSystem('./BOT_TOKEN_ACCESS.json');
+var token = getTokenAccess();
 
 var botOptions = {
     polling: true
@@ -40,18 +40,21 @@ bot.on('text', function(msg) {
 });
 
 function getTokenAccess() {
+    var parsedJsonFromFile = getJSONFileFromFileSystem('BOT_TOKEN_ACCESS.json');
+    var token = parsedJsonFromFile.botTokenAccess;
 
+    if (token === 'PLEASE_WRITE_YOU_TOKEN_HERE') {
+        console.error('Error: Token is empty!\nPlease write your token in \'BOT_TOKEN_ACCESS.json\' file.')
+        process.exit(1);
+        return false;
+    }
+
+    return token;
 }
 
 function getJSONFileFromFileSystem(aFileName) {
-    FileSystem.readFile(aFileName, 'utf8', function(aError, aData) {
-        if (aError) {
-            console.error('Error: ' + aError);
-            return;
-        }
-        aData = JSON.parse(data);
-        console.dir(aData.botTokenAccess);
-    });
+    var dotSlashName = './' + aFileName
+    return JSON.parse(FileSystem.readFileSync(dotSlashName, 'utf-8'));
 }
 
 function getCountOfMessageWithDigest() {

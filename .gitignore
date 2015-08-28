@@ -1,3 +1,5 @@
 # All user files
 *.user*
 
+# Node modules
+node_modules/
