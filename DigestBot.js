@@ -381,7 +381,7 @@ function getCountOfMessageWithDigest()
 // CURRENCY SECTION
 function createReportCurrencyHeader(aCatchPhrase)
 {
-    return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
+    return aCatchPhrase.roubleCommand[0] + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
 function getCurrencyTableString()
