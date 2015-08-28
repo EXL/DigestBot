@@ -166,7 +166,7 @@ bot.on('text', function(msg)
         } else if (lastUsdValue > globalUsdCurrencyValue) {
             currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, 4)]);
         } else {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, 2)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, 1)]);
         }
         currencyAnswer += getCurrencyTableString();
 
