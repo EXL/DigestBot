@@ -56,21 +56,21 @@ bot.on('text', function(msg)
         // TODO: Delay table here
         // 30 sec for DEBUG
         var hourDelay = 30;
-
+console.log(1)
         if (globalStackListDigestMessages.length > 0) {
             // Delete all obsolete digest messages from globalStackListDigestMessages
             bSendDigest = deleteObsoleteDigestMessages(messageDate - hourDelay);
         }
-
+console.log(2)
         // Generate Bot Answer
         if (bSendDigest) {
             var botAnswer = '';
             var endLineString = ';\n';
             var stackSize = globalStackListDigestMessages.length;
-
+console.log(3)
             // Count of digest messages from one chat.
             var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
-
+console.log(4)
             // Append answer string.
             botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
             for (var i = 0; i < stackSize; ++i) {
@@ -78,13 +78,13 @@ bot.on('text', function(msg)
                     botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
                 }
             }
-
+console.log(5)
             // Delete last new line and semicolon characters (;\n).
             botAnswer = botAnswer.substring(0, str.length - 1);
-
+console.log(6)
             // Add dot to end of line.
             botAnswer += '.';
-
+console.log(7)
             // Check countOfDigestMessagesByChat
             if (countOfDigestMessagesByChat > 0) {
                 // TODO: send botAnswer
