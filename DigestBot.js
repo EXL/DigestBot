@@ -31,7 +31,7 @@ bot.on('text', function(msg)
     globalUserNameIs = msg.from.username;
 
     // DEBUG SECTION
-    console.log(msg);
+    // console.log(msg);
     // END DEBUG SECTION
 
     // DIGEST TAG
