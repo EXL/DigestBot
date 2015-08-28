@@ -54,7 +54,8 @@ bot.on('text', function(msg)
         var bSendDigest = false;
 
         // TODO: Delay table here
-        var hourDelay = 50000;
+        // 30 sec for DEBUG
+        var hourDelay = 30;
 
         if (globalStackListDigestMessages.length > 0) {
             // Delete all obsolete digest messages from globalStackListDigestMessages
