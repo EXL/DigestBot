@@ -108,9 +108,65 @@ bot.on('text', function(msg)
     console.log('Stack view')
     console.log(globalStackListDigestMessages)
 
-    // TODO: /stackCount command
-    //    console.log(globalCountOfMessagesWithDigest);
+    // DEBUG SECTION
+    // CLEARSTACK COMMAND
+    if (messageText === '/stackClear') {
+        if (getAdminRights()) {
+            globalStackListDigestMessages = [ ];
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[1]);
+        } else {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[0]);
+        }
+    }
+
+    // HELLO COMMAND
+    if (messageText === '/hello') {
+        if (getAdminRights()) {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.helloCommand[getRandomInt(0, 5)]);
+        }
+    }
+
+    // DIGESTCOUNT COMMAND
+    if (messageText === '/digestCount') {
+        if (getAdminRights()) {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
+        }
+    }
+
+    // STACK COMMAND
+    if (messageText === '/stack') {
+        if (getAdminRights()) {
+            var stack = '/n';
+            var sizeOfStack = globalStackListDigestMessages.length;
+            if (sizeOfStack > 0) {
+                for (var j = 0; j < sizeOfStack; ++j) {
+                    stack += globalStackListDigestMessages[j].s_chatID + ' ';
+                    stack += globalStackListDigestMessages[j].s_username + ' ';
+                    stack += globalStackListDigestMessages[j].s_date + ' ';
+                    stack += globalStackListDigestMessages[j].s_message + '\n';
+                }
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.debugCommandMessages[3] + stack);
+            } else {
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.debugCommandMessages[2]);
+            }
+        } else {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[0]);
+        }
+    }
+    // END DEBUG SECTION
 });
+
+function getAdminRights()
+{
+    return globalUserNameIs === 'exlmoto';
+}
 
 function getDigestReportHeader()
 {
@@ -128,7 +184,7 @@ function sendNoDigestMessages(aChatId)
 function sendMessageByBot(aChatId, aMessage)
 {
     // Replace '%username%' by userName.
-    var readyMessage = aMessage.replace('%username%', globalUserNameIs);
+    var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
     bot.sendMessage(aChatId, readyMessage, { caption: 'I\'m a cute bot!' });
 }
 
