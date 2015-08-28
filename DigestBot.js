@@ -64,7 +64,7 @@ bot.on('text', function(msg) {
 });
 
 function normalizeMessage(aMessage) {
-    var normalMessage = "";
+    var normalMessage = '';
 
     if (!isEmpty(aMessage)) {
         // Delete #digest tag from message
@@ -73,6 +73,11 @@ function normalizeMessage(aMessage) {
         // Ttrim all trailing spaces
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.trim();
+        }
+
+        // Replace multiple spaces with a single space
+        if (!(isBlank(normalMessage))) {
+            normalMessage = normalMessage.replace(/\s\s+/g, ' ');
         }
 
         // Capitalize the first letter of message
@@ -88,7 +93,7 @@ function capitalizeFirstLetterOfString(aString) {
 }
 
 function isEmpty(aString) {
-    return (!str || 0 === str.length);
+    return (!aString || 0 === aString.length);
 }
 
 function isBlank(aString) {
