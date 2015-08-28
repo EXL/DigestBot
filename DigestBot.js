@@ -1,5 +1,5 @@
 var TelegramBot = require('node-telegram-bot-api');
-var FileSystem = require("fs");
+var FileSystem = require('fs');
 
 var token = getTokenAccess();
 
@@ -14,13 +14,15 @@ var globalUserNameIs;
 
 var globalStackListDigestMessages = [ ];
 
-bot.getMe().then(function (me) {
+bot.getMe().then(function (me)
+{
     console.log('Hello! My name is %s!', me.first_name);
     console.log('My id is %s.', me.id);
     console.log('And my username is @%s.', me.username);
 });
 
-bot.on('text', function(msg) {
+bot.on('text', function(msg)
+{
     // Set main variables
     var messageChatId = msg.chat.id;
     var messageText = msg.text;
@@ -33,14 +35,12 @@ bot.on('text', function(msg) {
 
     if (messageText.indexOf('#digest') >= 0) {
         globalCountOfMessagesWithDigest++;
-        console.log('Message before normalization:' + messageText)
         var normalMessage = normalizeMessage(messageText);
-        console.log('Message after normalization:' + normalMessage)
         if (!(isBlank(normalMessage))) {
             var messageInfoStruct = {
                 's_chatID': messageChatId,
                 's_date': messageDate,
-                's_message': messageText,
+                's_message': normalMessage,
                 's_username': globalUserNameIs
             };
 
@@ -50,7 +50,53 @@ bot.on('text', function(msg) {
         }
     }
 
-    console.log("Stack view")
+    if (messageText === '/digest' || messageText === '/Digest') {
+        var bSendDigest = false;
+
+        // TODO: Delay table here
+        var hourDelay = 50000;
+
+        if (globalStackListDigestMessages.length > 0) {
+            // Delete all obsolete digest messages from globalStackListDigestMessages
+            bSendDigest = deleteObsoleteDigestMessages(messageDate - hourDelay);
+        }
+
+        // Generate Bot Answer
+        if (bSendDigest) {
+            var botAnswer = '';
+            var endLineString = ';\n';
+            var stackSize = globalStackListDigestMessages.length;
+
+            // Count of digest messages from one chat.
+            var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
+
+            // Append answer string.
+            botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
+            for (var i = 0; i < stackSize; ++i) {
+                if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
+                    botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
+                }
+            }
+
+            // Delete last new line and semicolon characters (;\n).
+            botAnswer = botAnswer.substring(0, str.length - 1);
+
+            // Add dot to end of line.
+            botAnswer += '.';
+
+            // Check countOfDigestMessagesByChat
+            if (countOfDigestMessagesByChat > 0) {
+                // TODO: send botAnswer
+                console.log(botAnswer);
+            } else {
+                // TODO: no messages
+            }
+        } else {
+            // TODO: send no message to chat
+        }
+    }
+
+    console.log('Stack view')
     console.log(globalStackListDigestMessages)
 
     //    if (msg.text === '/digest' || msg.text === '/Digest') {
@@ -60,10 +106,54 @@ bot.on('text', function(msg) {
     //                        { caption: "I'm a bot!" });
     //    }
 
+    // TODO: /stackCount command
     //    console.log(globalCountOfMessagesWithDigest);
 });
 
-function normalizeMessage(aMessage) {
+function getCountDigestMessagesOfChat(aChatId) {
+    var stackSize = globalStackListDigestMessages.length;
+    var countOfMessages = 0;
+    for (var i = 0; i < stackSize; ++i) {
+        if (globalStackListDigestMessages[i].s_chatID === aChatId) {
+            countOfMessages++;
+        }
+    }
+    return countOfMessages;
+}
+
+function deleteObsoleteDigestMessages(aObsoleteDate)
+{
+    var stackSize = globalStackListDigestMessages.length;
+
+    var position = 0;
+    for (var i = 0; i < stackSize; ++i) {
+        if (globalStackListDigestMessages[i].s_date < aObsoleteDate) {
+            position++;
+        }
+    }
+
+    // All stack digest messages are obsolete.
+    // Drop stack.
+    if (position == stackSize) {
+        globalStackListDigestMessages = [ ];
+        return false;
+    }
+
+    // All stack digest messages are relevant.
+    // Print them.
+    if (position == 0) {
+        return true;
+    }
+
+    // Replace current digest stack by sliced.
+    globalStackListDigestMessages = globalStackListDigestMessages.slice(position);
+
+    // Return true if stack not empty
+    return stackSize > 0;
+}
+
+function normalizeMessage(aMessage)
+{
     var normalMessage = '';
 
     if (!isEmpty(aMessage)) {
@@ -88,19 +178,23 @@ function normalizeMessage(aMessage) {
     return normalMessage;
 }
 
-function capitalizeFirstLetterOfString(aString) {
+function capitalizeFirstLetterOfString(aString)
+{
     return aString.charAt(0).toUpperCase() + aString.slice(1);
 }
 
-function isEmpty(aString) {
+function isEmpty(aString)
+{
     return (!aString || 0 === aString.length);
 }
 
-function isBlank(aString) {
+function isBlank(aString)
+{
     return (!aString || /^\s*$/.test(aString));
 }
 
-function getTokenAccess() {
+function getTokenAccess()
+{
     var parsedJsonFromFile = getJSONFileFromFileSystem('BOT_TOKEN_ACCESS.json');
     var token = parsedJsonFromFile.botTokenAccess;
 
@@ -113,11 +207,13 @@ function getTokenAccess() {
     return token;
 }
 
-function getJSONFileFromFileSystem(aFileName) {
+function getJSONFileFromFileSystem(aFileName)
+{
     var dotSlashName = './' + aFileName
     return JSON.parse(FileSystem.readFileSync(dotSlashName, 'utf-8'));
 }
 
-function getCountOfMessageWithDigest() {
+function getCountOfMessageWithDigest()
+{
     return 'Count of digest messages is ' + globalCountOfMessagesWithDigest;
 }
