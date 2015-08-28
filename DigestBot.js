@@ -36,7 +36,7 @@ bot.on('text', function(msg) {
         console.log('Message before normalization:' + messageText)
         var normalMessage = normalizeMessage(messageText);
         console.log('Message after normalization:' + normalMessage)
-        if (!(isBlank(normalMessage)) || normalMessage !== '#digest') {
+        if (!(isBlank(normalMessage))) {
             var messageInfoStruct = {
                 's_chatID': messageChatId,
                 's_date': messageDate,
@@ -72,15 +72,19 @@ function normalizeMessage(aMessage) {
 
         // Ttrim all trailing spaces
         if (!(isBlank(normalMessage))) {
-            normalMessage = normalMessage.trim()
+            normalMessage = normalMessage.trim();
         }
 
         // Capitalize the first letter of message
         if (!(isBlank(normalMessage))) {
-            normalMessage[0] = normalMessage[0].toUpperCase();
+            normalMessage = capitalizeFirstLetterOfString(normalMessage);
         }
     }
     return normalMessage;
+}
+
+function capitalizeFirstLetterOfString(aString) {
+    return aString.charAt(0).toUpperCase() + aString.slice(1);
 }
 
 function isEmpty(aString) {
