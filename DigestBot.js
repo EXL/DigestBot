@@ -31,10 +31,10 @@ bot.on('text', function(msg) {
     console.log(msg);
     // END DEBUG SECTION
 
-    if (messageText.indexOf('#digest') !== -1) {
+    if (messageText.indexOf('#digest') >= 0) {
         globalCountOfMessagesWithDigest++;
         var normalMessage = normalizeMessage(messageText);
-        if (!(isBlank(normalMessage))) {
+        if (!(isBlank(normalMessage)) && normalMessage !== '#digest') {
             var messageInfoStruct = {
                 's_chatID': messageChatId,
                 's_date': messageDate,
