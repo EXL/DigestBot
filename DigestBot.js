@@ -107,9 +107,6 @@ bot.on('text', function(msg)
         }
     }
 
-    console.log('Stack view')
-    console.log(globalStackListDigestMessages)
-
     // DEBUG SECTION
     // CLEARSTACK COMMAND
     if (messageText === '/stackClear') {
