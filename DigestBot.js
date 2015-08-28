@@ -1,11 +1,13 @@
 var TelegramBot = require('node-telegram-bot-api');
-var token = '';
+var FileSystem = require('fs')
 
-var options = {
+var token = getJSONFileFromFileSystem('./BOT_TOKEN_ACCESS.json');
+
+var botOptions = {
     polling: true
 };
 
-var bot = new TelegramBot(token, options);
+var bot = new TelegramBot(token, botOptions);
 
 var countOfMessageWithDigest = 0;
 
@@ -36,6 +38,21 @@ bot.on('text', function(msg) {
 
     console.log(countOfMessageWithDigest);
 });
+
+function getTokenAccess() {
+
+}
+
+function getJSONFileFromFileSystem(aFileName) {
+    FileSystem.readFile(aFileName, 'utf8', function(aError, aData) {
+        if (aError) {
+            console.error('Error: ' + aError);
+            return;
+        }
+        aData = JSON.parse(data);
+        console.dir(aData.botTokenAccess);
+    });
+}
 
 function getCountOfMessageWithDigest() {
     return 'Count of digest messages is ' + countOfMessageWithDigest;
