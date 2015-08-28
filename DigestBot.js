@@ -2,6 +2,7 @@ var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 
 var token = getTokenAccess();
+var catchPhrases = getCatchPhrases();
 
 var botOptions = {
     polling: true
@@ -33,6 +34,7 @@ bot.on('text', function(msg)
     console.log(msg);
     // END DEBUG SECTION
 
+    // DIGEST TAG
     if (messageText.indexOf('#digest') >= 0) {
         globalCountOfMessagesWithDigest++;
         var normalMessage = normalizeMessage(messageText);
@@ -46,31 +48,37 @@ bot.on('text', function(msg)
 
             globalStackListDigestMessages.push(messageInfoStruct);
 
-            // TODO: sending message by bot
+            // Send message by bot.
+            sendMessageByBot(messageChatId,
+                             catchPhrases.digestTag[getRandomInt(0, 5)]);
         }
     }
 
+    // DIGEST COMMAND
     if (messageText === '/digest' || messageText === '/Digest') {
+        // Digest delay.
+        // 45 sec for debug.
+        // 43 200 for 12-hours.
+        // 86 400 for 24-hours.
+        // 172 800 for 48-hours.
+        var hourDelay = 45;
+
         var bSendDigest = false;
 
-        // TODO: Delay table here
-        // 30 sec for DEBUG
-        var hourDelay = 30;
-console.log(1)
         if (globalStackListDigestMessages.length > 0) {
             // Delete all obsolete digest messages from globalStackListDigestMessages
             bSendDigest = deleteObsoleteDigestMessages(messageDate - hourDelay);
         }
-console.log(2)
+
         // Generate Bot Answer
         if (bSendDigest) {
             var botAnswer = '';
             var endLineString = ';\n';
             var stackSize = globalStackListDigestMessages.length;
-console.log(3)
+
             // Count of digest messages from one chat.
             var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
-console.log(4)
+
             // Append answer string.
             botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
             for (var i = 0; i < stackSize; ++i) {
@@ -78,40 +86,57 @@ console.log(4)
                     botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
                 }
             }
-console.log(5)
+
             // Delete last new line and semicolon characters (;\n).
             botAnswer = botAnswer.substring(0, botAnswer.length - 2);
-console.log(6)
+
             // Add dot to end of line.
             botAnswer += '.';
-console.log(7)
-            // Check countOfDigestMessagesByChat
+
+            // Check countOfDigestMessagesByChat.
             if (countOfDigestMessagesByChat > 0) {
-                // TODO: send botAnswer
-                console.log('BOT ANSWER: ' + botAnswer);
+                // Send botAnswer to chat with catchPhrases chunks.
+                sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
             } else {
-                console.log('NO MESSAGES');
+                sendNoDigestMessages(messageChatId);
             }
         } else {
-            console.log('NO MESSAGES');
+            sendNoDigestMessages(messageChatId);
         }
     }
 
     console.log('Stack view')
     console.log(globalStackListDigestMessages)
 
-    //    if (msg.text === '/digest' || msg.text === '/Digest') {
-    //        console.log('Digest command received, sending digest stack...');
-    //        bot.sendMessage(messageChatId,
-    //                        getCountOfMessageWithDigest(),
-    //                        { caption: "I'm a bot!" });
-    //    }
-
     // TODO: /stackCount command
     //    console.log(globalCountOfMessagesWithDigest);
 });
 
-function getCountDigestMessagesOfChat(aChatId) {
+function getDigestReportHeader()
+{
+    return catchPhrases.digestCommandHello[getRandomInt(0, 5)]
+            + '\n'
+            + catchPhrases.digestCommandHeader[getRandomInt(0, 5)]
+            + '\n';
+}
+
+function sendNoDigestMessages(aChatId)
+{
+    sendMessageByBot(aChatId, catchPhrases.digestCommandNoMessages[getRandomInt(0, 5)]);
+}
+
+function sendMessageByBot(aChatId, aMessage)
+{
+    bot.sendMessage(aChatId, aMessage, { caption: 'I\'m a cute bot!' });
+}
+
+function getRandomInt(aMin, aMax)
+{
+    return Math.floor(Math.random() * (aMax - aMin + 1)) + aMin;
+}
+
+function getCountDigestMessagesOfChat(aChatId)
+{
     var stackSize = globalStackListDigestMessages.length;
     var countOfMessages = 0;
     for (var i = 0; i < stackSize; ++i) {
@@ -206,6 +231,11 @@ function getTokenAccess()
     }
 
     return token;
+}
+
+function getCatchPhrases()
+{
+    return getJSONFileFromFileSystem('CatchPhrases.json');
 }
 
 function getJSONFileFromFileSystem(aFileName)
