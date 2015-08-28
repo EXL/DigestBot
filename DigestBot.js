@@ -83,7 +83,7 @@ bot.on('text', function(msg)
             // botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
             for (var i = 0; i < stackSize; ++i) {
                 if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                    botAnswer += '--' + globalStackListDigestMessages[i].s_message + endLineString;
+                    botAnswer += catchPhrases.digestMarker + globalStackListDigestMessages[i].s_message + endLineString;
                 }
             }
 
