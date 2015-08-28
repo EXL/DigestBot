@@ -12,7 +12,7 @@ var bot = new TelegramBot(token, botOptions);
 var globalCountOfMessagesWithDigest = 0;
 var globalUserNameIs;
 
-var globalStackListDigestMessages = { };
+var globalStackListDigestMessages = [ ];
 
 bot.getMe().then(function (me) {
     console.log('Hello! My name is %s!', me.first_name);
@@ -25,7 +25,7 @@ bot.on('text', function(msg) {
     var messageChatId = msg.chat.id;
     var messageText = msg.text;
     var messageDate = msg.date;
-    //globalUserNameIs = msg.user
+    globalUserNameIs = msg.from.username;
 
     console.log(msg);
 //    console.log(msg.text);
@@ -33,7 +33,7 @@ bot.on('text', function(msg) {
 
     if (messageText.indexOf('#digest') !== -1) {
         globalCountOfMessagesWithDigest++;
-        var normalMessage = normalizeMessage();
+        var normalMessage = normalizeMessage(messageText);
         if (!(isBlank(normalMessage))) {
             var messageInfoStruct = {
                 's_chatID': messageChatId,
@@ -41,7 +41,7 @@ bot.on('text', function(msg) {
                 's_message': messageText
                 // TODO: UserName
             };
-
+            console.log(messageInfoStruct)
             globalStackListDigestMessages.push(messageInfoStruct);
         }
     }
