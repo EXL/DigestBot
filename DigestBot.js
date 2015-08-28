@@ -127,7 +127,9 @@ function sendNoDigestMessages(aChatId)
 
 function sendMessageByBot(aChatId, aMessage)
 {
-    bot.sendMessage(aChatId, aMessage, { caption: 'I\'m a cute bot!' });
+    // Replace '%username%' by userName.
+    var readyMessage = aMessage.replace('%username%', globalUserNameIs);
+    bot.sendMessage(aChatId, readyMessage, { caption: 'I\'m a cute bot!' });
 }
 
 function getRandomInt(aMin, aMax)
@@ -185,6 +187,11 @@ function normalizeMessage(aMessage)
     if (!isEmpty(aMessage)) {
         // Delete #digest tag from message
         normalMessage = aMessage.replace('#digest', '');
+
+        // Delete %username% variable
+        if (!(isBlank(normalMessage))) {
+            normalMessage = normalMessage.replace('%username%', '');
+        }
 
         // Ttrim all trailing spaces
         if (!(isBlank(normalMessage))) {
