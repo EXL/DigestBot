@@ -91,7 +91,9 @@ bot.on('text', function(msg)
             botAnswer = botAnswer.substring(0, botAnswer.length - 2);
 
             // Add dot to end of line.
-            botAnswer += '.';
+            if (botAnswer.substr(botAnswer.length - 1) !== '.') {
+                botAnswer += '.';
+            }
 
             // Check countOfDigestMessagesByChat.
             if (countOfDigestMessagesByChat > 0) {
@@ -140,7 +142,7 @@ bot.on('text', function(msg)
     // STACK COMMAND
     if (messageText === '/stack') {
         if (getAdminRights()) {
-            var stack = '/n';
+            var stack = '\n';
             var sizeOfStack = globalStackListDigestMessages.length;
             if (sizeOfStack > 0) {
                 for (var j = 0; j < sizeOfStack; ++j) {
