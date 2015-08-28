@@ -80,7 +80,7 @@ console.log(4)
             }
 console.log(5)
             // Delete last new line and semicolon characters (;\n).
-            botAnswer = botAnswer.substring(0, str.length - 1);
+            botAnswer = botAnswer.substring(0, botAnswer.length - 2);
 console.log(6)
             // Add dot to end of line.
             botAnswer += '.';
