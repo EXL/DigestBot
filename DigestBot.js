@@ -162,11 +162,11 @@ bot.on('text', function(msg)
         // Generate answer.
         var currencyAnswer = '';
         if (lastUsdValue < globalUsdCurrencyValue) {
-            currencyAnswer = createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, 4)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, 4)]);
         } else if (lastUsdValue > globalUsdCurrencyValue) {
-            currencyAnswer = createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, 4)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, 4)]);
         } else {
-            currencyAnswer = createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, 2)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, 2)]);
         }
         currencyAnswer += getCurrencyTableString();
 
@@ -381,7 +381,7 @@ function getCountOfMessageWithDigest()
 // CURRENCY SECTION
 function createReportCurrencyHeader(aCatchPhrase)
 {
-    return aCatchPhrase.roubleCommand[0] + '\n' + catchPhrases.roubleCommand[0] + '\n';
+    return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
 function getCurrencyTableString()
