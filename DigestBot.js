@@ -24,9 +24,16 @@
 
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
+var Http = require("http");
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
+
+var httpOptions = {
+    host: "www.cbr.ru",
+    port: 80,
+    path: "/scripts/XML_daily.asp?"
+};
 
 var botOptions = {
     polling: true
@@ -38,6 +45,113 @@ var globalCountOfMessagesWithDigest = 0;
 var globalUserNameIs;
 
 var globalStackListDigestMessages = [ ];
+
+// CURRENCY SECTION
+var xmlContent = "";
+var globalUsdCurrencyValue = 0.0;
+var globalCurrencyList = {
+    'USD': 0.0,
+    'EUR': 0.0,
+    'UAH': 0.0,
+    'KZT': 0.0,
+    'BYR': 0.0
+};
+initilizeCurrencyListAndGetUsdValue();
+// END CURRENCY SECTION
+
+// CURRENCY SECTION
+function removeTags(aString)
+{
+    return aString.replace(/(<([^>]+)>)/ig, '');
+}
+
+function getLineFromXml(aStart, aString)
+{
+    var textSize = aString.length;
+    var targetString = '';
+    for (var i = aStart; i < textSize; ++i) {
+        if (aString[i] === '\n') {
+            break;
+        }
+        targetString += aString[i];
+    }
+
+    return removeTags(targetString.trim());
+}
+
+function getStringBelow(aStart, aBelow, aString)
+{
+    var textSize = aString.length;
+    var countOfLineEndings = 0;
+    var getLineWith = 0;
+
+    for (var i = aStart; i < textSize; ++i) {
+        if (countOfLineEndings === aBelow) {
+            getLineWith = i;
+            break;
+        }
+        if (aString[i] === '\n') {
+            countOfLineEndings++;
+        }
+    }
+
+    return getLineFromXml(getLineWith, aString);
+}
+
+function replaceCommasByDots(aString)
+{
+    return aString.replace(',', '.');
+}
+
+function getCurrentValue(aCurrency, aString)
+{
+    var nominal = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 1, aString)));
+    var value = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 3, aString)));
+
+    return (value / nominal).toFixed(4);
+}
+
+function shittyParseXML(aAllXml)
+{
+    if (isEmpty(aAllXml)) {
+        globalCurrencyList.USD = 'Error';
+        globalCurrencyList.EUR = 'Error';
+        globalCurrencyList.UAH = 'Error';
+        globalCurrencyList.KZT = 'Error';
+        globalCurrencyList.BYR = 'Error';
+    }
+
+    globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
+    globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
+    globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml);
+    globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
+    globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
+
+    globalUsdCurrencyValue = globalCurrencyList.USD;
+}
+
+function updateGlobalCurrencyList()
+{
+    var request = Http.request(httpOptions, function(aRes) {
+        aRes.setEncoding("utf8");
+        aRes.on("data", function(aChunk) {
+            xmlContent += aChunk;
+        });
+
+        console.log('Req');
+
+        aRes.on("end", function() {
+            shittyParseXML(xmlContent);
+        });
+    });
+    request.end();
+}
+
+function initilizeCurrencyListAndGetUsdValue()
+{
+    updateGlobalCurrencyList();
+}
+// END CURRENCY SECTION
 
 bot.getMe().then(function (me)
 {
@@ -129,6 +243,14 @@ bot.on('text', function(msg)
         } else {
             sendNoDigestMessages(messageChatId);
         }
+    }
+
+    // RUBLE COMMAND
+    if (messageText === '/rouble') {
+        var lastUSDValue = globalUsdCurrencyValue;
+        updateGlobalCurrencyList();
+
+        console.log(globalCurrencyList);
     }
 
     // DEBUG SECTION
