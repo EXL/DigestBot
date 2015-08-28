@@ -24,15 +24,15 @@
 
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
-var Http = require("http");
+var Http = require('http');
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
 
 var httpOptions = {
-    host: "www.cbr.ru",
+    host: 'www.cbr.ru',
     port: 80,
-    path: "/scripts/XML_daily.asp?"
+    path: '/scripts/XML_daily.asp?'
 };
 
 var botOptions = {
@@ -47,7 +47,7 @@ var globalUserNameIs;
 var globalStackListDigestMessages = [ ];
 
 // CURRENCY SECTION
-var xmlContent = "";
+var xmlContent = '';
 var globalUsdCurrencyValue = 0.0;
 var globalCurrencyList = {
     'USD': 0.0,
@@ -467,15 +467,18 @@ function shittyParseXML(aAllXml)
 
 function updateGlobalCurrencyList()
 {
+    // Clear xmlContent
+    xmlContent = '';
+
     var request = Http.request(httpOptions, function(aRes) {
-        aRes.setEncoding("utf8");
-        aRes.on("data", function(aChunk) {
+        aRes.setEncoding('utf8');
+        aRes.on('data', function(aChunk) {
             xmlContent += aChunk;
         });
 
         // console.log('Http-request');
 
-        aRes.on("end", function() {
+        aRes.on('end', function() {
             shittyParseXML(xmlContent);
         });
     });
