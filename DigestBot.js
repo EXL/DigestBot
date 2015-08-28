@@ -473,7 +473,7 @@ function updateGlobalCurrencyList()
             xmlContent += aChunk;
         });
 
-        console.log('Req');
+        // console.log('Http-request');
 
         aRes.on("end", function() {
             shittyParseXML(xmlContent);
