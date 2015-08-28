@@ -27,9 +27,9 @@ bot.on('text', function(msg) {
     var messageDate = msg.date;
     globalUserNameIs = msg.from.username;
 
+    // DEBUG SECTION
     console.log(msg);
-//    console.log(msg.text);
-//    console.log(msg.text.indexOf('#digest'));
+    // END DEBUG SECTION
 
     if (messageText.indexOf('#digest') !== -1) {
         globalCountOfMessagesWithDigest++;
@@ -38,34 +38,51 @@ bot.on('text', function(msg) {
             var messageInfoStruct = {
                 's_chatID': messageChatId,
                 's_date': messageDate,
-                's_message': messageText
-                // TODO: UserName
+                's_message': messageText,
+                's_username': globalUserNameIs
             };
-            console.log(messageInfoStruct)
+
             globalStackListDigestMessages.push(messageInfoStruct);
+
+            // TODO: sending message by bot
         }
     }
 
     console.log("Stack view")
     console.log(globalStackListDigestMessages)
 
-//    if (msg.text.indexOf('#digest') !== -1) {
-//        console.log('Get message with #digest tag, save to stack');
-//        globalCountOfMessagesWithDigest++;
-//    }
+    //    if (msg.text === '/digest' || msg.text === '/Digest') {
+    //        console.log('Digest command received, sending digest stack...');
+    //        bot.sendMessage(messageChatId,
+    //                        getCountOfMessageWithDigest(),
+    //                        { caption: "I'm a bot!" });
+    //    }
 
-//    if (msg.text === '/digest' || msg.text === '/Digest') {
-//        console.log('Digest command received, sending digest stack...');
-//        bot.sendMessage(messageChatId,
-//                        getCountOfMessageWithDigest(),
-//                        { caption: "I'm a bot!" });
-//    }
-
-//    console.log(globalCountOfMessagesWithDigest);
+    //    console.log(globalCountOfMessagesWithDigest);
 });
 
 function normalizeMessage(aMessage) {
-    return aMessage;
+    var normalMessage = "";
+
+    if (!isEmpty(aMessage)) {
+        // Delete #digest tag from message
+        normalMessage = aMessage.replace('#digest', '');
+
+        // Ttrim all trailing spaces
+        if (!(isBlank(normalMessage))) {
+            normalMessage = normalMessage.trim()
+        }
+
+        // Capitalize the first letter of message
+        if (!(isBlank(normalMessage))) {
+            normalMessage[0] = normalMessage[0].toUpperCase();
+        }
+    }
+    return normalMessage;
+}
+
+function isEmpty(aString) {
+    return (!str || 0 === str.length);
 }
 
 function isBlank(aString) {
