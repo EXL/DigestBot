@@ -61,7 +61,7 @@ bot.on('text', function(msg)
         // 43 200 for 12-hours.
         // 86 400 for 24-hours.
         // 172 800 for 48-hours.
-        var hourDelay = 45;
+        var hourDelay = 86400;
 
         var bSendDigest = false;
 
