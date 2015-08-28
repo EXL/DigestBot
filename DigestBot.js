@@ -33,8 +33,10 @@ bot.on('text', function(msg) {
 
     if (messageText.indexOf('#digest') >= 0) {
         globalCountOfMessagesWithDigest++;
+        console.log('Message before normalization:' + messageText)
         var normalMessage = normalizeMessage(messageText);
-        if (!(isBlank(normalMessage)) && normalMessage !== '#digest') {
+        console.log('Message after normalization:' + normalMessage)
+        if (!(isBlank(normalMessage)) || normalMessage !== '#digest') {
             var messageInfoStruct = {
                 's_chatID': messageChatId,
                 's_date': messageDate,
