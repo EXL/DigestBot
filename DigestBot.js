@@ -80,10 +80,10 @@ bot.on('text', function(msg)
             var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
 
             // Append answer string.
-            botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
+            // botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
             for (var i = 0; i < stackSize; ++i) {
                 if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                    botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
+                    botAnswer += '--' + globalStackListDigestMessages[i].s_message + endLineString;
                 }
             }
 
