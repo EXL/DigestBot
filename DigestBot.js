@@ -59,100 +59,6 @@ var globalCurrencyList = {
 initilizeCurrencyListAndGetUsdValue();
 // END CURRENCY SECTION
 
-// CURRENCY SECTION
-function removeTags(aString)
-{
-    return aString.replace(/(<([^>]+)>)/ig, '');
-}
-
-function getLineFromXml(aStart, aString)
-{
-    var textSize = aString.length;
-    var targetString = '';
-    for (var i = aStart; i < textSize; ++i) {
-        if (aString[i] === '\n') {
-            break;
-        }
-        targetString += aString[i];
-    }
-
-    return removeTags(targetString.trim());
-}
-
-function getStringBelow(aStart, aBelow, aString)
-{
-    var textSize = aString.length;
-    var countOfLineEndings = 0;
-    var getLineWith = 0;
-
-    for (var i = aStart; i < textSize; ++i) {
-        if (countOfLineEndings === aBelow) {
-            getLineWith = i;
-            break;
-        }
-        if (aString[i] === '\n') {
-            countOfLineEndings++;
-        }
-    }
-
-    return getLineFromXml(getLineWith, aString);
-}
-
-function replaceCommasByDots(aString)
-{
-    return aString.replace(',', '.');
-}
-
-function getCurrentValue(aCurrency, aString)
-{
-    var nominal = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 1, aString)));
-    var value = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 3, aString)));
-
-    return (value / nominal).toFixed(4);
-}
-
-function shittyParseXML(aAllXml)
-{
-    if (isEmpty(aAllXml)) {
-        globalCurrencyList.USD = 'Error';
-        globalCurrencyList.EUR = 'Error';
-        globalCurrencyList.UAH = 'Error';
-        globalCurrencyList.KZT = 'Error';
-        globalCurrencyList.BYR = 'Error';
-    }
-
-    globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
-    globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
-    globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml);
-    globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
-    globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
-
-    globalUsdCurrencyValue = globalCurrencyList.USD;
-}
-
-function updateGlobalCurrencyList()
-{
-    var request = Http.request(httpOptions, function(aRes) {
-        aRes.setEncoding("utf8");
-        aRes.on("data", function(aChunk) {
-            xmlContent += aChunk;
-        });
-
-        console.log('Req');
-
-        aRes.on("end", function() {
-            shittyParseXML(xmlContent);
-        });
-    });
-    request.end();
-}
-
-function initilizeCurrencyListAndGetUsdValue()
-{
-    updateGlobalCurrencyList();
-}
-// END CURRENCY SECTION
-
 bot.getMe().then(function (me)
 {
     console.log('Hello! My name is %s!', me.first_name);
@@ -245,12 +151,27 @@ bot.on('text', function(msg)
         }
     }
 
-    // RUBLE COMMAND
+    // ROUBLE COMMAND
     if (messageText === '/rouble') {
-        var lastUSDValue = globalUsdCurrencyValue;
+        // Store last USD value.
+        var lastUsdValue = globalUsdCurrencyValue;
+
+        // Update currency list.
         updateGlobalCurrencyList();
 
-        console.log(globalCurrencyList);
+        // Generate answer.
+        var currencyAnswer = '';
+        if (lastUsdValue < globalUsdCurrencyValue) {
+            currencyAnswer = createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, 4)]);
+        } else if (lastUsdValue > globalUsdCurrencyValue) {
+            currencyAnswer = createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, 4)]);
+        } else {
+            currencyAnswer = createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, 2)]);
+        }
+        currencyAnswer += getCurrencyTableString();
+
+        // Send currency to chat
+        sendMessageByBot(messageChatId, currencyAnswer);
     }
 
     // DEBUG SECTION
@@ -456,3 +377,113 @@ function getCountOfMessageWithDigest()
 {
     return 'Count of digest messages is ' + globalCountOfMessagesWithDigest;
 }
+
+// CURRENCY SECTION
+function createReportCurrencyHeader(aCatchPhrase)
+{
+    return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
+}
+
+function getCurrencyTableString()
+{
+    var currencyTable = '';
+    currencyTable += '1 USD = ' + globalCurrencyList.USD + ' RUB;\n';
+    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' RUB;\n';
+    currencyTable += '1 UAH = ' + globalCurrencyList.UAH + ' RUB;\n';
+    currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' RUB;\n';
+    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' RUB.';
+    return currencyTable;
+}
+
+function removeTags(aString)
+{
+    return aString.replace(/(<([^>]+)>)/ig, '');
+}
+
+function getLineFromXml(aStart, aString)
+{
+    var textSize = aString.length;
+    var targetString = '';
+    for (var i = aStart; i < textSize; ++i) {
+        if (aString[i] === '\n') {
+            break;
+        }
+        targetString += aString[i];
+    }
+
+    return removeTags(targetString.trim());
+}
+
+function getStringBelow(aStart, aBelow, aString)
+{
+    var textSize = aString.length;
+    var countOfLineEndings = 0;
+    var getLineWith = 0;
+
+    for (var i = aStart; i < textSize; ++i) {
+        if (countOfLineEndings === aBelow) {
+            getLineWith = i;
+            break;
+        }
+        if (aString[i] === '\n') {
+            countOfLineEndings++;
+        }
+    }
+
+    return getLineFromXml(getLineWith, aString);
+}
+
+function replaceCommasByDots(aString)
+{
+    return aString.replace(',', '.');
+}
+
+function getCurrentValue(aCurrency, aString)
+{
+    var nominal = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 1, aString)));
+    var value = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 3, aString)));
+
+    return (value / nominal).toFixed(4);
+}
+
+function shittyParseXML(aAllXml)
+{
+    if (isEmpty(aAllXml)) {
+        globalCurrencyList.USD = 'Error';
+        globalCurrencyList.EUR = 'Error';
+        globalCurrencyList.UAH = 'Error';
+        globalCurrencyList.KZT = 'Error';
+        globalCurrencyList.BYR = 'Error';
+    }
+
+    globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
+    globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
+    globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml);
+    globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
+    globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
+
+    globalUsdCurrencyValue = globalCurrencyList.USD;
+}
+
+function updateGlobalCurrencyList()
+{
+    var request = Http.request(httpOptions, function(aRes) {
+        aRes.setEncoding("utf8");
+        aRes.on("data", function(aChunk) {
+            xmlContent += aChunk;
+        });
+
+        console.log('Req');
+
+        aRes.on("end", function() {
+            shittyParseXML(xmlContent);
+        });
+    });
+    request.end();
+}
+
+function initilizeCurrencyListAndGetUsdValue()
+{
+    updateGlobalCurrencyList();
+}
+// END CURRENCY SECTION

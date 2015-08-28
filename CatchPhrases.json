@@ -73,5 +73,9 @@
     "roubleCommandMiddle" : [
         "Ничего не изменилось, извини, %username%.",
         "Стабильность!"
+    ],
+
+    "roubleCommand" : [
+        "Курс валют:",
     ]
 }
