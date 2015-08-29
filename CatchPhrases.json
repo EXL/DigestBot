@@ -46,6 +46,13 @@
         "Nya!"
     ],
 
+    "helloZorgCommand" : [
+        "Привет, красавчик!",
+        "Have a nice day, %username%!",
+        "Как твои дела, чувак?",
+        "Zoooooorg!"
+    ],
+    
     "debugCommandMessages" : [
         "К сожалению, %username%, ты не имеешь права использовать эту команду.\nЕё может использовать лишь мой создатель.",
         "Стек очищен, my engineer.",
