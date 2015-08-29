@@ -582,7 +582,7 @@ function updateGlobalCurrencyListUAH()
         // console.log('Http-request');
 
         aRes.on('end', function() {
-            shittyParseXML(xmlContent);
+            shittyParseXMLUAH(xmlContent);
         });
     });
 
@@ -592,5 +592,6 @@ function updateGlobalCurrencyListUAH()
 function initilizeCurrencyListAndGetUsdValue()
 {
     updateGlobalCurrencyList();
+	updateGlobalCurrencyListUAH();
 }
 // END CURRENCY SECTION
