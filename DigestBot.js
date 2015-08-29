@@ -28,19 +28,6 @@ var Http = require('http');
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
-var capPhrases = {
-    'digestMarker': catchPhrases.digestMarker.length,
-    'digestTag': catchPhrases.digestTag.length,
-    'digestCommandHello': catchPhrases.digestCommandHello.length,
-    'digestCommandHeader': catchPhrases.digestCommandHeader.length,
-    'digestCommandNoMessages': catchPhrases.digestCommandNoMessages.length,
-    'helloCommand': catchPhrases.helloCommand.length,
-    'debugCommandMessages': catchPhrases.debugCommandMessages.length,
-    'roubleCommandUp': catchPhrases.roubleCommandUp.length,
-    'roubleCommandDown': catchPhrases.roubleCommandDown.length,
-    'roubleCommandMiddle': catchPhrases.roubleCommandMiddle.length,
-    'roubleCommand': catchPhrases.roubleCommand.length
-};
 
 var httpOptions = {
     host: 'www.cbr.ru',
@@ -71,6 +58,21 @@ var globalCurrencyList = {
 };
 initilizeCurrencyListAndGetUsdValue();
 // END CURRENCY SECTION
+
+// Capacity of catchPhrases JSON lists
+var capPhrases = {
+    'digestMarker': catchPhrases.digestMarker.length--,
+    'digestTag': catchPhrases.digestTag.length--,
+    'digestCommandHello': catchPhrases.digestCommandHello.length--,
+    'digestCommandHeader': catchPhrases.digestCommandHeader.length--,
+    'digestCommandNoMessages': catchPhrases.digestCommandNoMessages.length--,
+    'helloCommand': catchPhrases.helloCommand.length--,
+    'debugCommandMessages': catchPhrases.debugCommandMessages.length--,
+    'roubleCommandUp': catchPhrases.roubleCommandUp.length--,
+    'roubleCommandDown': catchPhrases.roubleCommandDown.length--,
+    'roubleCommandMiddle': catchPhrases.roubleCommandMiddle.length--,
+    'roubleCommand': catchPhrases.roubleCommand.length--
+};
 
 bot.getMe().then(function (me)
 {
@@ -336,11 +338,6 @@ function normalizeMessage(aMessage)
             normalMessage = normalMessage.trim();
         }
 
-        // Replace multiple line breaks (\n) with a single dot
-        if (!(isBlank(normalMessage))) {
-            normalMessage = normalMessage.replace(/(\r\n|\r|\n)+/g, '.');
-        }
-
         // Replace multiple spaces with a single space
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.replace(/\s\s+/g, ' ');
@@ -504,10 +501,10 @@ function updateGlobalCurrencyList()
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent);
+            console.log(xmlContent)
         });
     });
     request.end();
-    console.log(xmlContent)
     console.log('#####################################################################################################\n\n')
 }
 
