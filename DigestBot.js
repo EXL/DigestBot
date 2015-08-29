@@ -59,21 +59,6 @@ var globalCurrencyList = {
 initilizeCurrencyListAndGetUsdValue();
 // END CURRENCY SECTION
 
-// Capacity of catchPhrases JSON lists
-var capPhrases = {
-    'digestMarker': catchPhrases.digestMarker.length--,
-    'digestTag': catchPhrases.digestTag.length--,
-    'digestCommandHello': catchPhrases.digestCommandHello.length--,
-    'digestCommandHeader': catchPhrases.digestCommandHeader.length--,
-    'digestCommandNoMessages': catchPhrases.digestCommandNoMessages.length--,
-    'helloCommand': catchPhrases.helloCommand.length--,
-    'debugCommandMessages': catchPhrases.debugCommandMessages.length--,
-    'roubleCommandUp': catchPhrases.roubleCommandUp.length--,
-    'roubleCommandDown': catchPhrases.roubleCommandDown.length--,
-    'roubleCommandMiddle': catchPhrases.roubleCommandMiddle.length--,
-    'roubleCommand': catchPhrases.roubleCommand.length--
-};
-
 bot.getMe().then(function (me)
 {
     console.log('Hello! My name is %s!', me.first_name);
@@ -109,7 +94,7 @@ bot.on('text', function(msg)
 
             // Send message by bot.
             sendMessageByBot(messageChatId,
-                             catchPhrases.digestTag[getRandomInt(0, 5)]);
+                             catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
         }
     }
 
@@ -177,11 +162,11 @@ bot.on('text', function(msg)
         // Generate answer.
         var currencyAnswer = '';
         if (lastUsdValue < globalUsdCurrencyValue) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, 4)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]);
         } else if (lastUsdValue > globalUsdCurrencyValue) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, 4)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]);
         } else {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, 1)]);
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
         }
         currencyAnswer += getCurrencyTableString();
 
@@ -206,10 +191,7 @@ bot.on('text', function(msg)
     if (messageText === '/hello') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
-                             catchPhrases.helloCommand[getRandomInt(0, 5)]);
-
-            console.log(capPhrases);
-
+                             catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
         }
     }
 
@@ -254,15 +236,15 @@ function getAdminRights()
 
 function getDigestReportHeader()
 {
-    return catchPhrases.digestCommandHello[getRandomInt(0, 5)]
+    return catchPhrases.digestCommandHello[getRandomInt(0, catchPhrases.digestCommandHello.length - 1)]
             + '\n'
-            + catchPhrases.digestCommandHeader[getRandomInt(0, 5)]
+            + catchPhrases.digestCommandHeader[getRandomInt(0, catchPhrases.digestCommandHeader.length - 1)]
             + '\n';
 }
 
 function sendNoDigestMessages(aChatId)
 {
-    sendMessageByBot(aChatId, catchPhrases.digestCommandNoMessages[getRandomInt(0, 5)]);
+    sendMessageByBot(aChatId, catchPhrases.digestCommandNoMessages[getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)]);
 }
 
 function sendMessageByBot(aChatId, aMessage)
@@ -336,6 +318,11 @@ function normalizeMessage(aMessage)
         // Ttrim all trailing spaces
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.trim();
+        }
+
+        // Replace multiple line breaks (\n) with a single dot
+        if (!(isBlank(normalMessage))) {
+            normalMessage = normalMessage.replace(/(\r\n|\r|\n)+/g, '.');
         }
 
         // Replace multiple spaces with a single space
