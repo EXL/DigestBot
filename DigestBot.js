@@ -192,6 +192,9 @@ bot.on('text', function(msg)
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
+        } else if (globalUserNameIs === 'ZorgeR'){
+            sendMessageByBot(messageChatId,
+                             catchPhrases.helloZorgCommand[getRandomInt(0, catchPhrases.helloZorgCommand.length - 1)]);
         }
     }
 
