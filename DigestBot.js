@@ -28,6 +28,19 @@ var Http = require('http');
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
+var capPhrases = {
+    'digestMarker': catchPhrases.digestMarker.length,
+    'digestTag': catchPhrases.digestTag.length,
+    'digestCommandHello': catchPhrases.digestCommandHello.length,
+    'digestCommandHeader': catchPhrases.digestCommandHeader.length,
+    'digestCommandNoMessages': catchPhrases.digestCommandNoMessages.length,
+    'helloCommand': catchPhrases.helloCommand.length,
+    'debugCommandMessages': catchPhrases.debugCommandMessages.length,
+    'roubleCommandUp': catchPhrases.roubleCommandUp.length,
+    'roubleCommandDown': catchPhrases.roubleCommandDown.length,
+    'roubleCommandMiddle': catchPhrases.roubleCommandMiddle.length,
+    'roubleCommand': catchPhrases.roubleCommand.length
+};
 
 var httpOptions = {
     host: 'www.cbr.ru',
@@ -192,6 +205,9 @@ bot.on('text', function(msg)
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, 5)]);
+
+            console.log(capPhrases);
+
         }
     }
 
@@ -318,6 +334,11 @@ function normalizeMessage(aMessage)
         // Ttrim all trailing spaces
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.trim();
+        }
+
+        // Replace multiple line breaks (\n) with a single dot
+        if (!(isBlank(normalMessage))) {
+            normalMessage = normalMessage.replace(/(\r\n|\r|\n)+/g, '.');
         }
 
         // Replace multiple spaces with a single space
@@ -468,10 +489,13 @@ function shittyParseXML(aAllXml)
 function updateGlobalCurrencyList()
 {
     // Clear xmlContent
-    xmlContent = '';
+    if (!isEmpty(xmlContent)) {
+        xmlContent = '';
+    }
 
+    console.log('#####################################################################################################')
     var request = Http.request(httpOptions, function(aRes) {
-        aRes.setEncoding('utf8');
+        aRes.setEncoding('utf-8');
         aRes.on('data', function(aChunk) {
             xmlContent += aChunk;
         });
@@ -483,6 +507,8 @@ function updateGlobalCurrencyList()
         });
     });
     request.end();
+    console.log(xmlContent)
+    console.log('#####################################################################################################\n\n')
 }
 
 function initilizeCurrencyListAndGetUsdValue()
