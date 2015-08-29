@@ -28,17 +28,18 @@ var Http = require('http');
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
-
-var httpOptions = {
-    host: 'www.cbr.ru',
-    port: 80,
-    path: '/scripts/XML_daily.asp?'
-};
-var httpOptionsUAH = {
-    host: 'www.bank-ua.com',
-    port: 80,
-    path: '/export/currrate.xml'
-};
+var httpOptions = [
+    {
+        host: 'www.cbr.ru',
+        port: 80,
+        path: '/scripts/XML_daily.asp?'
+    },
+    {
+        host: 'www.bank-ua.com',
+        port: 80,
+        path: '/export/currrate.xml'
+    }
+];
 
 var botOptions = {
     polling: true
@@ -53,24 +54,22 @@ var globalStackListDigestMessages = [ ];
 
 // CURRENCY SECTION
 var xmlContent = '';
-var globalUsdCurrencyValue = 0.0;
-var globalUsdCurrencyValueUAH = 0.0;
 
-var globalCurrencyList = {
-    'USD': 0.0,
-    'EUR': 0.0,
-    'UAH': 0.0,
-    'KZT': 0.0,
-    'BYR': 0.0
-};
+var bankForeignCurrency = ['UAH', 'RUB'];
+var bankLocalCurrency = ['RUB', 'UAH'];
 
-var globalCurrencyListUAH = {
-    'USD': 0.0,
-    'EUR': 0.0,
-    'RUB': 0.0,
-    'KZT': 0.0,
-    'BYR': 0.0
-};
+var bankCBR = 0;
+var bankNBU = 1;
+
+var globalCurrencyList = 
+    {
+        'USD': 0.0,
+        'EUR': 0.0,
+        'RUB': 0.0,
+        'UAH': 0.0,
+        'KZT': 0.0,
+        'BYR': 0.0
+    };
 
 initilizeCurrencyListAndGetUsdValue();
 // END CURRENCY SECTION
@@ -168,51 +167,20 @@ bot.on('text', function(msg)
     }
 
     // ROUBLE COMMAND
-    if (messageText === '/rouble') {
+    if (messageText === '/rouble' || messageText === '/grivna') {
+        var bankID = bankCBR;
+        
+        if(messageText === '/grivna') {
+            bankID = bankNBU;
+        }
+        
         // Store last USD value.
-        var lastUsdValue = globalUsdCurrencyValue;
+        var lastForeignValue = globalCurrencyList[bankForeignCurrency[bankID]];
 
         // Update currency list.
-        updateGlobalCurrencyList();
-
-        // Generate answer.
-        var currencyAnswer = '';
-        if (lastUsdValue < globalUsdCurrencyValue) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]);
-        } else if (lastUsdValue > globalUsdCurrencyValue) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]);
-        } else {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
-        }
-        currencyAnswer += getCurrencyTableString();
-
-        // Send currency to chat
-        sendMessageByBot(messageChatId, currencyAnswer);
+        updateGlobalCurrencyList(bankID,true,lastForeignValue,messageChatId);
     }
-	
-    // GRIVNA COMMAND
-    if (messageText === '/grivna') {
-        // Store last USD value.
-        var lastUsdValue = globalUsdCurrencyValueUAH;
-
-        // Update currency list.
-        updateGlobalCurrencyListUAH();
-
-        // Generate answer.
-        var currencyAnswer = '';
-        if (lastUsdValue < globalUsdCurrencyValueUAH) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]);
-        } else if (lastUsdValue > globalUsdCurrencyValueUAH) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]);
-        } else {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
-        }
-        currencyAnswer += getCurrencyTableStringUAH();
-
-        // Send currency to chat
-        sendMessageByBot(messageChatId, currencyAnswer);
-    }
-
+    
     // DEBUG SECTION
     // CLEARSTACK COMMAND
     if (messageText === '/stackClear') {
@@ -396,7 +364,7 @@ function getTokenAccess()
     var token = parsedJsonFromFile.botTokenAccess;
 
     if (token === 'PLEASE_WRITE_YOU_TOKEN_HERE') {
-        console.error('Error: Token is empty!\nPlease write your token in \'BOT_TOKEN_ACCESS.json\' file.')
+        console.error('Error: Token is empty!\nPlease write your token in \'BOT_TOKEN_ACCESS.json\' file.');
         process.exit(1);
         return false;
     }
@@ -411,7 +379,7 @@ function getCatchPhrases()
 
 function getJSONFileFromFileSystem(aFileName)
 {
-    var dotSlashName = './' + aFileName
+    var dotSlashName = './' + aFileName;
     return JSON.parse(FileSystem.readFileSync(dotSlashName, 'utf-8'));
 }
 
@@ -426,26 +394,17 @@ function createReportCurrencyHeader(aCatchPhrase)
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
-function getCurrencyTableString()
+function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
-    currencyTable += '1 USD = ' + globalCurrencyList.USD + ' RUB;\n';
-    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' RUB;\n';
-    currencyTable += '1 UAH = ' + globalCurrencyList.UAH + ' RUB;\n';
-    currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' RUB;\n';
-    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' RUB.';
+    currencyTable += '1 USD = ' + globalCurrencyList.USD + ' '+ bankLocalCurrency[bankID] +';\n';
+    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' '+ bankLocalCurrency[bankID] +';\n';
+    currencyTable += '1 '+ bankForeignCurrency[bankID] + ' = ' + globalCurrencyList[bankForeignCurrency[bankID]] + ' '+bankLocalCurrency[bankID]+';\n';
+    currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' '+ bankLocalCurrency[bankID] +';\n';
+    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' '+ bankLocalCurrency[bankID] +'.';
     return currencyTable;
 }
-function getCurrencyTableStringUAH()
-{
-    var currencyTable = '';
-    currencyTable += '1 USD = ' + globalCurrencyListUAH.USD + ' UAH;\n';
-    currencyTable += '1 EUR = ' + globalCurrencyListUAH.EUR + ' UAH;\n';
-    currencyTable += '1 RUB = ' + globalCurrencyListUAH.RUB + ' UAH;\n';
-    currencyTable += '1 KZT = ' + globalCurrencyListUAH.KZT + ' UAH;\n';
-    currencyTable += '1 BYR = ' + globalCurrencyListUAH.BYR + ' UAH.';
-    return currencyTable;
-}
+
 function removeTags(aString)
 {
     return aString.replace(/(<([^>]+)>)/ig, '');
@@ -497,101 +456,66 @@ function getCurrentValue(aCurrency, aString)
     return (value / nominal).toFixed(4);
 }
 
-function getCurrentValueUAH(aCurrency, aString)
-{
-    var size = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 1, aString)));
-    var rate = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 3, aString)));
-
-    return (rate / size).toFixed(4);
-}
-
-function shittyParseXML(aAllXml)
+function shittyParseXML(aAllXml, bankID)
 {
     if (isEmpty(aAllXml)) {
         globalCurrencyList.USD = 'Error';
         globalCurrencyList.EUR = 'Error';
-        globalCurrencyList.UAH = 'Error';
+        globalCurrencyList[bankForeignCurrency[bankID]] = 'Error';
         globalCurrencyList.KZT = 'Error';
         globalCurrencyList.BYR = 'Error';
     }
 
     globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
     globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
-    globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml);
+    globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
-
-    globalUsdCurrencyValue = globalCurrencyList.USD;
 }
 
-function shittyParseXMLUAH(aAllXml)
-{
-    if (isEmpty(aAllXml)) {
-        globalCurrencyListUAH.USD = 'Error';
-        globalCurrencyListUAH.EUR = 'Error';
-        globalCurrencyListUAH.RUB = 'Error';
-        globalCurrencyListUAH.KZT = 'Error';
-        globalCurrencyListUAH.BYR = 'Error';
-    }
-
-    globalCurrencyListUAH.USD = getCurrentValueUAH('USD', aAllXml);
-    globalCurrencyListUAH.EUR = getCurrentValueUAH('EUR', aAllXml);
-    globalCurrencyListUAH.RUB = getCurrentValueUAH('RUB', aAllXml);
-    globalCurrencyListUAH.KZT = getCurrentValueUAH('KZT', aAllXml);
-    globalCurrencyListUAH.BYR = getCurrentValueUAH('BYR', aAllXml);
-
-    globalUsdCurrencyValueUAH = globalCurrencyListUAH.USD;
-}
-
-function updateGlobalCurrencyList()
+function updateGlobalCurrencyList(bankID, fromUser, lastForeignValue, messageChatId)
 {
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
     }
 
-    var request = Http.request(httpOptions, function(aRes) {
+    var request = Http.request(httpOptions[bankID], function(aRes) {
         aRes.setEncoding('utf-8');
         aRes.on('data', function(aChunk) {
             xmlContent += aChunk;
         });
-
+        
         // console.log('Http-request');
 
         aRes.on('end', function() {
-            shittyParseXML(xmlContent);
+            shittyParseXML(xmlContent, bankID);
+            if(fromUser){
+                sendCurrency(bankID, lastForeignValue, messageChatId)
+            }
         });
     });
-
     request.end();
 }
 
-function updateGlobalCurrencyListUAH()
-{
-    // Clear xmlContent
-    if (!isEmpty(xmlContent)) {
-        xmlContent = '';
-    }
-
-    var request = Http.request(httpOptionsUAH, function(aRes) {
-        aRes.setEncoding('utf-8');
-        aRes.on('data', function(aChunk) {
-            xmlContent += aChunk;
-        });
-
-        // console.log('Http-request');
-
-        aRes.on('end', function() {
-            shittyParseXMLUAH(xmlContent);
-        });
-    });
-
-    request.end();
+function sendCurrency(bankID, lastForeignValue, messageChatId){
+        // Generate answer.
+        var currencyAnswer = '';
+        if (lastForeignValue < globalCurrencyList[bankForeignCurrency[bankID]]) {
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]);
+        } else if (lastForeignValue > globalCurrencyList[bankForeignCurrency[bankID]]) {
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]);
+        } else {
+            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
+        }
+        currencyAnswer += getCurrencyTableString(bankID);
+        // Send currency to chat
+        sendMessageByBot(messageChatId, currencyAnswer);
 }
 
 function initilizeCurrencyListAndGetUsdValue()
 {
-    updateGlobalCurrencyList();
-	updateGlobalCurrencyListUAH();
+    updateGlobalCurrencyList(bankCBR,false,null, null);
+    updateGlobalCurrencyList(bankNBU,false,null, null);
 }
 // END CURRENCY SECTION
