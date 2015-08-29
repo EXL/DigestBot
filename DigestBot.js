@@ -190,7 +190,7 @@ bot.on('text', function(msg)
         sendMessageByBot(messageChatId, currencyAnswer);
     }
 	
-    // ROUBLE COMMAND
+    // GRIVNA COMMAND
     if (messageText === '/grivna') {
         // Store last USD value.
         var lastUsdValue = globalUsdCurrencyValueUAH;
