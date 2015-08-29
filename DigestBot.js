@@ -320,11 +320,6 @@ function normalizeMessage(aMessage)
             normalMessage = normalMessage.trim();
         }
 
-        // Replace multiple line breaks (\n) with a single dot
-        if (!(isBlank(normalMessage))) {
-            normalMessage = normalMessage.replace(/(\r\n|\r|\n)+/g, '.');
-        }
-
         // Replace multiple spaces with a single space
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.replace(/\s\s+/g, ' ');
@@ -477,7 +472,6 @@ function updateGlobalCurrencyList()
         xmlContent = '';
     }
 
-    console.log('#####################################################################################################')
     var request = Http.request(httpOptions, function(aRes) {
         aRes.setEncoding('utf-8');
         aRes.on('data', function(aChunk) {
@@ -488,11 +482,10 @@ function updateGlobalCurrencyList()
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent);
-            console.log(xmlContent)
         });
     });
+
     request.end();
-    console.log('#####################################################################################################\n\n')
 }
 
 function initilizeCurrencyListAndGetUsdValue()
