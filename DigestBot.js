@@ -132,7 +132,7 @@ bot.on('text', function(msg)
         // Generate Bot Answer
         if (bSendDigest) {
             var botAnswer = '';
-            var endLineString = ';\n';
+            var endLineString = '\n';
             var stackSize = globalStackListDigestMessages.length;
 
             // Count of digest messages from one chat.
@@ -142,12 +142,23 @@ bot.on('text', function(msg)
             // botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
             for (var i = 0; i < stackSize; ++i) {
                 if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                    botAnswer += catchPhrases.digestMarker + globalStackListDigestMessages[i].s_message + endLineString;
+                    botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
                 }
             }
 
-            // Delete last new line and semicolon characters (;\n).
-            botAnswer = botAnswer.substring(0, botAnswer.length - 2);
+            // Trim strings
+            botAnswer = botAnswer.trim();
+            botAnswer = trimEachString(botAnswer);
+
+            // Capitalize first letter of each string
+            botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
+
+            // Replace all line breaks by semicolon, line break and digestMarker.
+            botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
+
+            // Delete last characters (;\n<marker><space>).
+            // Don't need
+            // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
 
             // Add dot to end of line.
             if (botAnswer.substr(botAnswer.length - 1) !== '.') {
@@ -238,6 +249,29 @@ bot.on('text', function(msg)
     }
     // END DEBUG SECTION
 });
+
+function trimEachString(aString)
+{
+    return aString.split('\n').map(function(aLine)
+    {
+        aLine = aLine.trim();
+        return aLine;
+    }).join('\n');
+}
+
+function capitalizeFirstLetterOfEachString(aString)
+{
+    return aString.split('\n').map(function(aLine)
+    {
+        aLine = aLine[0].toUpperCase() + aLine.substr(1);
+        return aLine;
+    }).join('\n');
+}
+
+function replaceLineBreaksByYourString(aString, aYourString)
+{
+    return aString.replace(/(?:\r\n|\r|\n)/g, aYourString);
+}
 
 function getAdminRights()
 {
@@ -332,20 +366,16 @@ function normalizeMessage(aMessage)
 
         // Replace multiple spaces with a single space
         if (!(isBlank(normalMessage))) {
-            normalMessage = normalMessage.replace(/\s\s+/g, ' ');
+            normalMessage = normalMessage.replace(/  +/g, ' ');
         }
 
-        // Capitalize the first letter of message
+        // Replace multiple line breaks with a single line break
         if (!(isBlank(normalMessage))) {
-            normalMessage = capitalizeFirstLetterOfString(normalMessage);
+            normalMessage = normalMessage.replace(/\n{2,}/g, '\n');
         }
     }
-    return normalMessage;
-}
 
-function capitalizeFirstLetterOfString(aString)
-{
-    return aString.charAt(0).toUpperCase() + aString.slice(1);
+    return normalMessage;
 }
 
 function isEmpty(aString)
