@@ -185,7 +185,7 @@ bot.on('text', function(msg)
                 // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
 
                 //Remove username URI
-                botAnswer = botAnswer.replace('@','');
+                botAnswer = botAnswer.replace(/@/g,'');
 
                 // Add dot to end of line.
                 if (botAnswer.substr(botAnswer.length - 1) !== '.') {
