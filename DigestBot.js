@@ -114,66 +114,92 @@ bot.on('text', function(msg)
     }
 
     // DIGEST COMMAND
-    if (messageText === '/digest' || messageText === '/Digest') {
-        // Digest delay.
-        // 45 sec for debug.
-        // 43 200 for 12-hours.
-        // 86 400 for 24-hours.
-        // 172 800 for 48-hours.
-        var hourDelay = 86400;
+    if (messageText.indexOf('/digest') === 0) {
+        var bGoodCommand = false;
+        var messageDelay = 0;
 
-        var bSendDigest = false;
+        messageText = messageText.trim();
 
-        if (globalStackListDigestMessages.length > 0) {
-            // Delete all obsolete digest messages from globalStackListDigestMessages
-            bSendDigest = deleteObsoleteDigestMessages(messageDate - hourDelay);
+        if (messageText === '/digest') {
+            bGoodCommand = true;
+            messageDelay = getMessageDelay(1);
         }
 
-        // Generate Bot Answer
-        if (bSendDigest) {
-            var botAnswer = '';
-            var endLineString = '\n';
-            var stackSize = globalStackListDigestMessages.length;
-
-            // Count of digest messages from one chat.
-            var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
-
-            // Append answer string.
-            // botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
-            for (var i = 0; i < stackSize; ++i) {
-                if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                    botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
+        if (messageText.length === 9) {
+            var arg = parseInt(messageText[8]);
+            if (parseInt(messageText[8])) {
+                if (arg >= 1 && arg <= 7) {
+                    bGoodCommand = true;
+                    messageDelay = getMessageDelay(arg);
                 }
             }
+        }
 
-            // Trim strings
-            botAnswer = botAnswer.trim();
-            botAnswer = trimEachString(botAnswer);
+        if (bGoodCommand) {
+            // Digest delay.
+            // 45 sec for debug.
+            // 43 200 for 12-hours.
+            // 86 400 for 24-hours.
+            // 172 800 for 48-hours.
+            // 604 800 for a week.
+            var mainDelay = 604800;
+            var dayDelay = messageDate - messageDelay;
 
-            // Capitalize first letter of each string
-            botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
+            var bSendDigest = false;
 
-            // Replace all line breaks by semicolon, line break and digestMarker.
-            botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
-
-            // Delete last characters (;\n<marker><space>).
-            // Don't need
-            // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
-
-            // Add dot to end of line.
-            if (botAnswer.substr(botAnswer.length - 1) !== '.') {
-                botAnswer += '.';
+            if (globalStackListDigestMessages.length > 0) {
+                // Delete all obsolete digest messages from globalStackListDigestMessages
+                bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
             }
 
-            // Check countOfDigestMessagesByChat.
-            if (countOfDigestMessagesByChat > 0) {
-                // Send botAnswer to chat with catchPhrases chunks.
-                sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
+            // Generate Bot Answer
+            if (bSendDigest) {
+                var botAnswer = '';
+                var endLineString = '\n';
+                var stackSize = globalStackListDigestMessages.length;
+
+                // Count of digest messages from one chat.
+                var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
+
+                // Append answer string.
+                // botAnswer += 'Hola amigos!\nThere is digest of this chat:\n';
+                for (var i = 0; i < stackSize; ++i) {
+                    if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
+                        if (globalStackListDigestMessages[i].s_date > dayDelay) {
+                            botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
+                        }
+                    }
+                }
+
+                // Trim strings
+                botAnswer = botAnswer.trim();
+                botAnswer = trimEachString(botAnswer);
+
+                // Capitalize first letter of each string
+                botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
+
+                // Replace all line breaks by semicolon, line break and digestMarker.
+                botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
+
+                // Delete last characters (;\n<marker><space>).
+                // Don't need
+                // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
+
+                // Add dot to end of line.
+                if (botAnswer.substr(botAnswer.length - 1) !== '.') {
+                    botAnswer += '.';
+                }
+
+                // Check countOfDigestMessagesByChat.
+                if (countOfDigestMessagesByChat > 0) {
+                    // Send botAnswer to chat with catchPhrases chunks.
+                    sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
+                } else {
+                    sendNoDigestMessages(messageChatId);
+                }
             } else {
                 sendNoDigestMessages(messageChatId);
             }
-        } else {
-            sendNoDigestMessages(messageChatId);
         }
     }
 
@@ -249,6 +275,11 @@ bot.on('text', function(msg)
     }
     // END DEBUG SECTION
 });
+
+function getMessageDelay(aCountOfDay)
+{
+    return aCountOfDay * 86400;
+}
 
 function trimEachString(aString)
 {
