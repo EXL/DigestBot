@@ -1,0 +1,3 @@
+digest - Get digest from current chat.
+rouble - Get current exchange rate of RUB.
+grivna - Get current exchange rate of UAH.
