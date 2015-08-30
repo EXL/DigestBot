@@ -261,8 +261,8 @@ bot.on('text', function(msg)
             }
         }
     } else {
-        sendMessageByBot(messageChatId,
-                         catchPhrases.debugCommandMessages[0]);
+        //sendMessageByBot(messageChatId,
+          //               catchPhrases.debugCommandMessages[0]);
     }
     // END DEBUG SECTION
 });
