@@ -61,6 +61,7 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 var bankCBR = 0;
 var bankNBU = 1;
 
+var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
     'USD': 0.0,
     'EUR': 0.0,
@@ -213,7 +214,7 @@ bot.on('text', function(msg)
         }
         
         // Store last USD value.
-        var lastForeignValue = globalCurrencyList[bankForeignCurrency[bankID]];
+        var lastForeignValue = globalUSD[bankID];
 
         // Update currency list.
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
@@ -624,6 +625,8 @@ function shittyParseXML(aAllXml, bankID)
     globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
+	
+	globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
 
 function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
@@ -644,24 +647,24 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
         aRes.on('end', function() {
             shittyParseXML(xmlContent, bankID);
             if (messageChatId) {
-                sendCurrency(bankID, lastForeignValue, messageChatId);
+                sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId);
             }
         });
     });
     request.end();
 }
 
-function sendCurrency(bankID, lastForeignValue, messageChatId)
+function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId)
 {
     // Generate currency answer.
     var currencyAnswer = '';
-    if (lastForeignValue < globalCurrencyList[bankForeignCurrency[bankID]]) {
+    if (lastForeignValue < newForeignValue) {
         currencyAnswer += (bankID === bankCBR) ?
                     createReportCurrencyHeader(
                         catchPhrases.roubleCommandDown[
                             getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]) :
                     catchPhrases.roubleCommand[0] + '\n';
-    } else if (lastForeignValue > globalCurrencyList[bankForeignCurrency[bankID]]) {
+    } else if (lastForeignValue > newForeignValue) {
         currencyAnswer += (bankID === bankCBR) ?
                     createReportCurrencyHeader(
                         catchPhrases.roubleCommandUp[
