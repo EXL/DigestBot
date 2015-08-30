@@ -104,6 +104,6 @@
         "/digestCount -- Количество полученных сообщений с тегом digest с момента запуска.",
         "/stackView или /viewStack -- Распечатать стек.",
         "/stackSave или /saveStack -- Сохранить стек в JSON-файл.",
-        "/stackRestore или /stackRestore -- Восстановить стек из JSON-файла."
+        "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла."
     ]
 }
