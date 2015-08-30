@@ -142,7 +142,7 @@ bot.on('text', function(msg)
             // 86 400 for 24-hours.
             // 172 800 for 48-hours.
             // 604 800 for a week.
-            var mainDelay = 604800;
+            var mainDelay = 604800 + 43200;
             var dayDelay = messageDate - messageDelay;
 
             var bSendDigest = false;
