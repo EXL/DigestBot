@@ -205,7 +205,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // ROUBLE COMMAND
+    // ROUBLE AND GRIVNA COMMAND
     if (messageText === '/rouble' || messageText === '/grivna') {
         var bankID = bankCBR;
         
@@ -218,6 +218,11 @@ bot.on('text', function(msg)
 
         // Update currency list.
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
+    }
+
+    // HELP COMMAND
+    if (messageText === '/help') {
+        sendMessageByBot(messageChatId, generateHelpString());
     }
     
     // DEBUG SECTION
@@ -293,6 +298,25 @@ bot.on('text', function(msg)
     }
     // END DEBUG SECTION
 });
+
+function generateHelpString()
+{
+    var botAnswer = '';
+    for (var i = 0; i < catchPhrases.helpCommand.length; ++i) {
+        botAnswer += catchPhrases.helpCommand[i] + '\n';
+    }
+
+    if (getAdminRights()) {
+        for (var j = 0; j < catchPhrases.helpCommandAdmin.length; ++j) {
+            botAnswer += catchPhrases.helpCommandAdmin[j] + '\n';
+        }
+    }
+
+    // Delete last line break
+    botAnswer.trim();
+
+    return botAnswer;
+}
 
 function sendNoAccessMessage(aChatId)
 {
