@@ -61,6 +61,7 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 var bankCBR = 0;
 var bankNBU = 1;
 
+var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
     'USD': 0.0,
     'EUR': 0.0,
@@ -184,6 +185,9 @@ bot.on('text', function(msg)
                 // Don't need
                 // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
 
+                //Remove username URI
+                botAnswer = botAnswer.replace(/@/g,'');
+
                 // Add dot to end of line.
                 if (botAnswer.substr(botAnswer.length - 1) !== '.') {
                     botAnswer += '.';
@@ -211,7 +215,7 @@ bot.on('text', function(msg)
         }
         
         // Store last USD value.
-        var lastForeignValue = globalCurrencyList[bankForeignCurrency[bankID]];
+        var lastForeignValue = globalUSD[bankID];
 
         // Update currency list.
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
@@ -261,8 +265,8 @@ bot.on('text', function(msg)
             }
         }
     } else {
-        sendMessageByBot(messageChatId,
-                         catchPhrases.debugCommandMessages[0]);
+        //sendMessageByBot(messageChatId,
+          //               catchPhrases.debugCommandMessages[0]);
     }
     // END DEBUG SECTION
 });
@@ -526,12 +530,12 @@ function shittyParseXML(aAllXml, bankID)
     globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
+    
+    globalUSD[bankID] = globalCurrencyList.USD;
 }
 
 function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 {
-    var countOfArguments = arguments.length;
-
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
@@ -547,25 +551,25 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent, bankID);
-            if (countOfArguments > 1) {
-                sendCurrency(bankID, lastForeignValue, messageChatId);
+            if (messageChatId != null) {
+                sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId);
             }
         });
     });
     request.end();
 }
 
-function sendCurrency(bankID, lastForeignValue, messageChatId)
+function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId)
 {
     // Generate currency answer.
     var currencyAnswer = '';
-    if (lastForeignValue < globalCurrencyList[bankForeignCurrency[bankID]]) {
+    if (lastForeignValue < newForeignValue) {
         currencyAnswer += (bankID === bankCBR) ?
                     createReportCurrencyHeader(
                         catchPhrases.roubleCommandDown[
                             getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]) :
                     catchPhrases.roubleCommand[0] + '\n';
-    } else if (lastForeignValue > globalCurrencyList[bankForeignCurrency[bankID]]) {
+    } else if (lastForeignValue > newForeignValue) {
         currencyAnswer += (bankID === bankCBR) ?
                     createReportCurrencyHeader(
                         catchPhrases.roubleCommandUp[
