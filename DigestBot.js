@@ -530,8 +530,6 @@ function shittyParseXML(aAllXml, bankID)
 
 function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 {
-    var countOfArguments = arguments.length;
-
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
@@ -547,7 +545,7 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent, bankID);
-            if (countOfArguments > 1) {
+            if (messageChatId != null) {
                 sendCurrency(bankID, lastForeignValue, messageChatId);
             }
         });
