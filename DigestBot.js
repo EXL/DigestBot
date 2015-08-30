@@ -184,6 +184,9 @@ bot.on('text', function(msg)
                 // Don't need
                 // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
 
+                // Remove username URI
+                botAnswer = botAnswer.replace(/@/g,'');
+
                 // Add dot to end of line.
                 if (botAnswer.substr(botAnswer.length - 1) !== '.') {
                     botAnswer += '.';
@@ -227,23 +230,30 @@ bot.on('text', function(msg)
     }
 
     // ADMINISTRATION COMMANDS
-    if (getAdminRights()) {
-
-        // CLEARSTACK COMMAND
-        if (messageText === '/stackClear' || messageText === '/clearStack') {
+    // CLEARSTACK COMMAND
+    if (messageText === '/stackClear' || messageText === '/clearStack') {
+        if (getAdminRights()) {
             globalStackListDigestMessages = [ ];
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[1]);
+        } else {
+            sendNoAccessMessage(messageChatId);
         }
+    }
 
-        // DIGESTCOUNT COMMAND
-        if (messageText === '/digestCount') {
+    // DIGESTCOUNT COMMAND
+    if (messageText === '/digestCount') {
+        if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
+        } else {
+            sendNoAccessMessage(messageChatId);
         }
+    }
 
-        // STACKVIEW COMMAND
-        if (messageText === '/stackView' || messageText === '/viewStack') {
+    // VIEWSTACK COMMAND
+    if (messageText === '/stackView' || messageText === '/viewStack') {
+        if (getAdminRights()) {
             var stack = '\n';
             var sizeOfStack = globalStackListDigestMessages.length;
             if (sizeOfStack > 0) {
@@ -259,13 +269,35 @@ bot.on('text', function(msg)
                 sendMessageByBot(messageChatId,
                                  catchPhrases.debugCommandMessages[2]);
             }
+        } else {
+            sendNoAccessMessage(messageChatId);
         }
-    } else {
-        sendMessageByBot(messageChatId,
-                         catchPhrases.debugCommandMessages[0]);
+    }
+
+    // SAVESTACK COMMAND
+    if (messageText === '/stackSave' || messageText === '/saveStack') {
+        if (getAdminRights()) {
+            writeJSONFileToFileSystem('DigestBotStackLog.json', messageChatId);
+        } else {
+            sendNoAccessMessage(messageChatId);
+        }
+    }
+
+    // RESTORESTACK COMMAND
+    if (messageText === '/stackRestore' || messageText === '/restoreStack') {
+        if (getAdminRights()) {
+            readSavedStackFromFileSystem('DigestBotStackLog.json', messageChatId);
+        } else {
+            sendNoAccessMessage(messageChatId);
+        }
     }
     // END DEBUG SECTION
 });
+
+function sendNoAccessMessage(aChatId)
+{
+    sendMessageByBot(aChatId, catchPhrases.debugCommandMessages[0]);
+}
 
 function getMessageDelay(aCountOfDay)
 {
@@ -431,10 +463,49 @@ function getCatchPhrases()
     return getJSONFileFromFileSystem('CatchPhrases.json');
 }
 
+function readSavedStackFromFileSystem(aFileName, aMessageId)
+{
+    var dotSlashName = addYourStringToString('./', aFileName);
+    FileSystem.readFile(dotSlashName, 'utf-8', function(aError, aData) {
+        if (aError) {
+            sendMessageByBot(aMessageId,
+                             catchPhrases.fileCommand[3]);
+            return aError;
+        }
+        sendMessageByBot(aMessageId,
+                         catchPhrases.fileCommand[1]);
+        globalStackListDigestMessages = JSON.parse(aData);
+    });
+}
+
 function getJSONFileFromFileSystem(aFileName)
 {
-    var dotSlashName = './' + aFileName;
+    var dotSlashName = addYourStringToString('./', aFileName);
     return JSON.parse(FileSystem.readFileSync(dotSlashName, 'utf-8'));
+}
+
+function writeJSONFileToFileSystem(aFileName, aMessageChatId)
+{
+    if (globalStackListDigestMessages.length > 0) {
+        var dotSlashName = addYourStringToString('./', aFileName);
+        FileSystem.writeFile(dotSlashName, JSON.stringify(globalStackListDigestMessages, null, 4), function(aError) {
+            if (aError) {
+                sendMessageByBot(aMessageChatId,
+                                 catchPhrases.fileCommand[2] + '\n' + aError);
+            } else {
+                sendMessageByBot(aMessageChatId,
+                                 catchPhrases.fileCommand[0]);
+            }
+        });
+    } else {
+        sendMessageByBot(aMessageChatId,
+                         catchPhrases.debugCommandMessages[2]);
+    }
+}
+
+function addYourStringToString(aYourString, aString)
+{
+    return aYourString + aString;
 }
 
 function getCountOfMessageWithDigest()
@@ -530,8 +601,6 @@ function shittyParseXML(aAllXml, bankID)
 
 function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 {
-    var countOfArguments = arguments.length;
-
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
@@ -547,7 +616,7 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent, bankID);
-            if (countOfArguments > 1) {
+            if (messageChatId) {
                 sendCurrency(bankID, lastForeignValue, messageChatId);
             }
         });
