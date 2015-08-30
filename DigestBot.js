@@ -160,41 +160,40 @@ bot.on('text', function(msg)
                 // Count of digest messages from one chat.
                 var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
 
-                // Append answer string.
-                // botAnswer += 'Hola amigos!\nThere is digest of this chat:\n';
-                for (var i = 0; i < stackSize; ++i) {
-                    if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                        if (globalStackListDigestMessages[i].s_date > dayDelay) {
-                            botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
-                        }
-                    }
-                }
-
-                // Trim strings
-                botAnswer = botAnswer.trim();
-                botAnswer = trimEachString(botAnswer);
-
-                // Capitalize first letter of each string
-                botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
-
-                // Replace all line breaks by semicolon, line break and digestMarker.
-                botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
-
-                // Delete last characters (;\n<marker><space>).
-                // Don't need
-                // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
-
-                // Remove username URI
-                botAnswer = botAnswer.replace(/@/g,'');
-
-                // Add dot to end of line.
-                if (botAnswer.substr(botAnswer.length - 1) !== '.') {
-                    botAnswer += '.';
-                }
-
                 // Check countOfDigestMessagesByChat.
                 if (countOfDigestMessagesByChat > 0) {
-                    // Send botAnswer to chat with catchPhrases chunks.
+                    // Append answer string.
+                    // botAnswer += 'Hola amigos!\nThere is digest of this chat:\n';
+                    for (var i = 0; i < stackSize; ++i) {
+                        if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
+                            if (globalStackListDigestMessages[i].s_date > dayDelay) {
+                                botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
+                            }
+                        }
+                    }
+
+                    // Trim strings
+                    botAnswer = botAnswer.trim();
+                    botAnswer = trimEachString(botAnswer);
+
+                    // Capitalize first letter of each string
+                    botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
+
+                    // Replace all line breaks by semicolon, line break and digestMarker.
+                    botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
+
+                    // Delete last characters (;\n<marker><space>).
+                    // Don't need
+                    // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
+
+                    // Remove username URI
+                    botAnswer = botAnswer.replace(/@/g,'');
+
+                    // Add dot to end of line.
+                    if (botAnswer.substr(botAnswer.length - 1) !== '.') {
+                        botAnswer += '.';
+                    }
+
                     sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
                 } else {
                     sendNoDigestMessages(messageChatId);
