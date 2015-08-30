@@ -224,6 +224,10 @@ bot.on('text', function(msg)
     if (messageText === '/help') {
         sendMessageByBot(messageChatId, generateHelpString());
     }
+
+    if (messageText === '/start') {
+        sendMessageByBot(messageChatId, catchPhrases.startCommand[0]);
+    }
     
     // DEBUG SECTION
     // HELLO COMMAND
