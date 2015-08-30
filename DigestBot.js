@@ -61,15 +61,14 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 var bankCBR = 0;
 var bankNBU = 1;
 
-var globalCurrencyList = 
-    {
-        'USD': 0.0,
-        'EUR': 0.0,
-        'RUB': 0.0,
-        'UAH': 0.0,
-        'KZT': 0.0,
-        'BYR': 0.0
-    };
+var globalCurrencyList =  {
+    'USD': 0.0,
+    'EUR': 0.0,
+    'RUB': 0.0,
+    'UAH': 0.0,
+    'KZT': 0.0,
+    'BYR': 0.0
+};
 
 initilizeCurrencyListAndGetUsdValue();
 // END CURRENCY SECTION
@@ -114,55 +113,92 @@ bot.on('text', function(msg)
     }
 
     // DIGEST COMMAND
-    if (messageText === '/digest' || messageText === '/Digest') {
-        // Digest delay.
-        // 45 sec for debug.
-        // 43 200 for 12-hours.
-        // 86 400 for 24-hours.
-        // 172 800 for 48-hours.
-        var hourDelay = 86400;
+    if (messageText.indexOf('/digest') === 0) {
+        var bGoodCommand = false;
+        var messageDelay = 0;
 
-        var bSendDigest = false;
+        messageText = messageText.trim();
 
-        if (globalStackListDigestMessages.length > 0) {
-            // Delete all obsolete digest messages from globalStackListDigestMessages
-            bSendDigest = deleteObsoleteDigestMessages(messageDate - hourDelay);
+        if (messageText === '/digest') {
+            bGoodCommand = true;
+            messageDelay = getMessageDelay(1);
         }
 
-        // Generate Bot Answer
-        if (bSendDigest) {
-            var botAnswer = '';
-            var endLineString = ';\n';
-            var stackSize = globalStackListDigestMessages.length;
-
-            // Count of digest messages from one chat.
-            var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
-
-            // Append answer string.
-            // botAnswer += 'Hola amigos!\nThere is 24-hour digest of this chat:\n';
-            for (var i = 0; i < stackSize; ++i) {
-                if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                    botAnswer += catchPhrases.digestMarker + globalStackListDigestMessages[i].s_message + endLineString;
+        if (messageText.length === 9) {
+            var arg = parseInt(messageText[8]);
+            if (parseInt(messageText[8])) {
+                if (arg >= 1 && arg <= 7) {
+                    bGoodCommand = true;
+                    messageDelay = getMessageDelay(arg);
                 }
             }
+        }
 
-            // Delete last new line and semicolon characters (;\n).
-            botAnswer = botAnswer.substring(0, botAnswer.length - 2);
+        if (bGoodCommand) {
+            // Digest delay.
+            // 45 sec for debug.
+            // 43 200 for 12-hours.
+            // 86 400 for 24-hours.
+            // 172 800 for 48-hours.
+            // 604 800 for a week.
+            var mainDelay = 604800 + 43200;
+            var dayDelay = messageDate - messageDelay;
 
-            // Add dot to end of line.
-            if (botAnswer.substr(botAnswer.length - 1) !== '.') {
-                botAnswer += '.';
+            var bSendDigest = false;
+
+            if (globalStackListDigestMessages.length > 0) {
+                // Delete all obsolete digest messages from globalStackListDigestMessages
+                bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
             }
 
-            // Check countOfDigestMessagesByChat.
-            if (countOfDigestMessagesByChat > 0) {
-                // Send botAnswer to chat with catchPhrases chunks.
-                sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
+            // Generate Bot Answer
+            if (bSendDigest) {
+                var botAnswer = '';
+                var endLineString = '\n';
+                var stackSize = globalStackListDigestMessages.length;
+
+                // Count of digest messages from one chat.
+                var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
+
+                // Append answer string.
+                // botAnswer += 'Hola amigos!\nThere is digest of this chat:\n';
+                for (var i = 0; i < stackSize; ++i) {
+                    if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
+                        if (globalStackListDigestMessages[i].s_date > dayDelay) {
+                            botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
+                        }
+                    }
+                }
+
+                // Trim strings
+                botAnswer = botAnswer.trim();
+                botAnswer = trimEachString(botAnswer);
+
+                // Capitalize first letter of each string
+                botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
+
+                // Replace all line breaks by semicolon, line break and digestMarker.
+                botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
+
+                // Delete last characters (;\n<marker><space>).
+                // Don't need
+                // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
+
+                // Add dot to end of line.
+                if (botAnswer.substr(botAnswer.length - 1) !== '.') {
+                    botAnswer += '.';
+                }
+
+                // Check countOfDigestMessagesByChat.
+                if (countOfDigestMessagesByChat > 0) {
+                    // Send botAnswer to chat with catchPhrases chunks.
+                    sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
+                } else {
+                    sendNoDigestMessages(messageChatId);
+                }
             } else {
                 sendNoDigestMessages(messageChatId);
             }
-        } else {
-            sendNoDigestMessages(messageChatId);
         }
     }
 
@@ -170,7 +206,7 @@ bot.on('text', function(msg)
     if (messageText === '/rouble' || messageText === '/grivna') {
         var bankID = bankCBR;
         
-        if(messageText === '/grivna') {
+        if (messageText === '/grivna') {
             bankID = bankNBU;
         }
         
@@ -178,44 +214,36 @@ bot.on('text', function(msg)
         var lastForeignValue = globalCurrencyList[bankForeignCurrency[bankID]];
 
         // Update currency list.
-        updateGlobalCurrencyList(bankID,true,lastForeignValue,messageChatId);
+        updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
     }
     
     // DEBUG SECTION
-    // CLEARSTACK COMMAND
-    if (messageText === '/stackClear') {
-        if (getAdminRights()) {
-            globalStackListDigestMessages = [ ];
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[1]);
-        } else {
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[0]);
-        }
-    }
-
     // HELLO COMMAND
-    if (messageText === '/hello') {
+    if (messageText === '/hello' || messageText === '/hi') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
-        } else if (globalUserNameIs === 'ZorgeR'){
-            sendMessageByBot(messageChatId,
-                             catchPhrases.helloZorgCommand[getRandomInt(0, catchPhrases.helloZorgCommand.length - 1)]);
         }
     }
 
-    // DIGESTCOUNT COMMAND
-    if (messageText === '/digestCount') {
-        if (getAdminRights()) {
+    // ADMINISTRATION COMMANDS
+    if (getAdminRights()) {
+
+        // CLEARSTACK COMMAND
+        if (messageText === '/stackClear' || messageText === '/clearStack') {
+            globalStackListDigestMessages = [ ];
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[1]);
+        }
+
+        // DIGESTCOUNT COMMAND
+        if (messageText === '/digestCount') {
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
         }
-    }
 
-    // STACK COMMAND
-    if (messageText === '/stack') {
-        if (getAdminRights()) {
+        // STACKVIEW COMMAND
+        if (messageText === '/stackView' || messageText === '/viewStack') {
             var stack = '\n';
             var sizeOfStack = globalStackListDigestMessages.length;
             if (sizeOfStack > 0) {
@@ -231,17 +259,45 @@ bot.on('text', function(msg)
                 sendMessageByBot(messageChatId,
                                  catchPhrases.debugCommandMessages[2]);
             }
-        } else {
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[0]);
         }
+    } else {
+        sendMessageByBot(messageChatId,
+                         catchPhrases.debugCommandMessages[0]);
     }
     // END DEBUG SECTION
 });
 
+function getMessageDelay(aCountOfDay)
+{
+    return aCountOfDay * 86400;
+}
+
+function trimEachString(aString)
+{
+    return aString.split('\n').map(function(aLine)
+    {
+        aLine = aLine.trim();
+        return aLine;
+    }).join('\n');
+}
+
+function capitalizeFirstLetterOfEachString(aString)
+{
+    return aString.split('\n').map(function(aLine)
+    {
+        aLine = aLine[0].toUpperCase() + aLine.substr(1);
+        return aLine;
+    }).join('\n');
+}
+
+function replaceLineBreaksByYourString(aString, aYourString)
+{
+    return aString.replace(/(?:\r\n|\r|\n)/g, aYourString);
+}
+
 function getAdminRights()
 {
-    return globalUserNameIs === 'exlmoto';
+    return globalUserNameIs === 'exlmoto' || globalUserNameIs === 'ZorgeR';
 }
 
 function getDigestReportHeader()
@@ -254,7 +310,9 @@ function getDigestReportHeader()
 
 function sendNoDigestMessages(aChatId)
 {
-    sendMessageByBot(aChatId, catchPhrases.digestCommandNoMessages[getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)]);
+    sendMessageByBot(aChatId,
+                     catchPhrases.digestCommandNoMessages[
+                         getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)]);
 }
 
 function sendMessageByBot(aChatId, aMessage)
@@ -332,20 +390,16 @@ function normalizeMessage(aMessage)
 
         // Replace multiple spaces with a single space
         if (!(isBlank(normalMessage))) {
-            normalMessage = normalMessage.replace(/\s\s+/g, ' ');
+            normalMessage = normalMessage.replace(/  +/g, ' ');
         }
 
-        // Capitalize the first letter of message
+        // Replace multiple line breaks with a single line break
         if (!(isBlank(normalMessage))) {
-            normalMessage = capitalizeFirstLetterOfString(normalMessage);
+            normalMessage = normalMessage.replace(/\n{2,}/g, '\n');
         }
     }
-    return normalMessage;
-}
 
-function capitalizeFirstLetterOfString(aString)
-{
-    return aString.charAt(0).toUpperCase() + aString.slice(1);
+    return normalMessage;
 }
 
 function isEmpty(aString)
@@ -397,11 +451,12 @@ function createReportCurrencyHeader(aCatchPhrase)
 function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
-    currencyTable += '1 USD = ' + globalCurrencyList.USD + ' '+ bankLocalCurrency[bankID] +';\n';
-    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' '+ bankLocalCurrency[bankID] +';\n';
-    currencyTable += '1 '+ bankForeignCurrency[bankID] + ' = ' + globalCurrencyList[bankForeignCurrency[bankID]] + ' '+bankLocalCurrency[bankID]+';\n';
-    currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' '+ bankLocalCurrency[bankID] +';\n';
-    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' '+ bankLocalCurrency[bankID] +'.';
+    currencyTable += '1 USD = ' + globalCurrencyList.USD + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 ' + bankForeignCurrency[bankID] + ' = '
+            + globalCurrencyList[bankForeignCurrency[bankID]] + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
 
@@ -473,8 +528,10 @@ function shittyParseXML(aAllXml, bankID)
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
 }
 
-function updateGlobalCurrencyList(bankID, fromUser, lastForeignValue, messageChatId)
+function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 {
+    var countOfArguments = arguments.length;
+
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
@@ -490,32 +547,44 @@ function updateGlobalCurrencyList(bankID, fromUser, lastForeignValue, messageCha
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent, bankID);
-            if(fromUser){
-                sendCurrency(bankID, lastForeignValue, messageChatId)
+            if (countOfArguments > 1) {
+                sendCurrency(bankID, lastForeignValue, messageChatId);
             }
         });
     });
     request.end();
 }
 
-function sendCurrency(bankID, lastForeignValue, messageChatId){
-        // Generate answer.
-        var currencyAnswer = '';
-        if (lastForeignValue < globalCurrencyList[bankForeignCurrency[bankID]]) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandDown[getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]);
-        } else if (lastForeignValue > globalCurrencyList[bankForeignCurrency[bankID]]) {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandUp[getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]);
-        } else {
-            currencyAnswer += createReportCurrencyHeader(catchPhrases.roubleCommandMiddle[getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
-        }
-        currencyAnswer += getCurrencyTableString(bankID);
-        // Send currency to chat
-        sendMessageByBot(messageChatId, currencyAnswer);
+function sendCurrency(bankID, lastForeignValue, messageChatId)
+{
+    // Generate currency answer.
+    var currencyAnswer = '';
+    if (lastForeignValue < globalCurrencyList[bankForeignCurrency[bankID]]) {
+        currencyAnswer += (bankID === bankCBR) ?
+                    createReportCurrencyHeader(
+                        catchPhrases.roubleCommandDown[
+                            getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]) :
+                    catchPhrases.roubleCommand[0] + '\n';
+    } else if (lastForeignValue > globalCurrencyList[bankForeignCurrency[bankID]]) {
+        currencyAnswer += (bankID === bankCBR) ?
+                    createReportCurrencyHeader(
+                        catchPhrases.roubleCommandUp[
+                            getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]) :
+                    catchPhrases.roubleCommand[0] + '\n';
+    } else {
+        currencyAnswer += createReportCurrencyHeader(
+                    catchPhrases.roubleCommandMiddle[
+                        getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
+    }
+    currencyAnswer += getCurrencyTableString(bankID);
+
+    // Send currency answer to chat.
+    sendMessageByBot(messageChatId, currencyAnswer);
 }
 
 function initilizeCurrencyListAndGetUsdValue()
 {
-    updateGlobalCurrencyList(bankCBR,false,null, null);
-    updateGlobalCurrencyList(bankNBU,false,null, null);
+    updateGlobalCurrencyList(bankCBR);
+    updateGlobalCurrencyList(bankNBU);
 }
 // END CURRENCY SECTION
