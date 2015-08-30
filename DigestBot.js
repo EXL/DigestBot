@@ -219,40 +219,32 @@ bot.on('text', function(msg)
     }
     
     // DEBUG SECTION
-    // CLEARSTACK COMMAND
-    if (messageText === '/stackClear') {
-        if (getAdminRights()) {
-            globalStackListDigestMessages = [ ];
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[1]);
-        } else {
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[0]);
-        }
-    }
-
     // HELLO COMMAND
-    if (messageText === '/hello') {
+    if (messageText === '/hello' || messageText === '/hi') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
-        } else if (globalUserNameIs === 'ZorgeR'){
-            sendMessageByBot(messageChatId,
-                             catchPhrases.helloZorgCommand[getRandomInt(0, catchPhrases.helloZorgCommand.length - 1)]);
         }
     }
 
-    // DIGESTCOUNT COMMAND
-    if (messageText === '/digestCount') {
-        if (getAdminRights()) {
+    // ADMINISTRATION COMMANDS
+    if (getAdminRights()) {
+
+        // CLEARSTACK COMMAND
+        if (messageText === '/stackClear' || messageText === '/clearStack') {
+            globalStackListDigestMessages = [ ];
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[1]);
+        }
+
+        // DIGESTCOUNT COMMAND
+        if (messageText === '/digestCount') {
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
         }
-    }
 
-    // STACK COMMAND
-    if (messageText === '/stack') {
-        if (getAdminRights()) {
+        // STACKVIEW COMMAND
+        if (messageText === '/stackView' || messageText === '/viewStack') {
             var stack = '\n';
             var sizeOfStack = globalStackListDigestMessages.length;
             if (sizeOfStack > 0) {
@@ -268,10 +260,10 @@ bot.on('text', function(msg)
                 sendMessageByBot(messageChatId,
                                  catchPhrases.debugCommandMessages[2]);
             }
-        } else {
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[0]);
         }
+    } else {
+        sendMessageByBot(messageChatId,
+                         catchPhrases.debugCommandMessages[0]);
     }
     // END DEBUG SECTION
 });
@@ -306,7 +298,7 @@ function replaceLineBreaksByYourString(aString, aYourString)
 
 function getAdminRights()
 {
-    return globalUserNameIs === 'exlmoto';
+    return globalUserNameIs === 'exlmoto' || globalUserNameIs === 'ZorgeR';
 }
 
 function getDigestReportHeader()
