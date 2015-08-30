@@ -214,7 +214,7 @@ bot.on('text', function(msg)
         var lastForeignValue = globalCurrencyList[bankForeignCurrency[bankID]];
 
         // Update currency list.
-        updateGlobalCurrencyList(bankID, true, lastForeignValue, messageChatId);
+        updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
     }
     
     // DEBUG SECTION
@@ -528,8 +528,10 @@ function shittyParseXML(aAllXml, bankID)
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
 }
 
-function updateGlobalCurrencyList(bankID, fromUser, lastForeignValue, messageChatId)
+function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 {
+    var countOfArguments = arguments.length;
+
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
@@ -545,7 +547,7 @@ function updateGlobalCurrencyList(bankID, fromUser, lastForeignValue, messageCha
 
         aRes.on('end', function() {
             shittyParseXML(xmlContent, bankID);
-            if (fromUser) {
+            if (countOfArguments > 1) {
                 sendCurrency(bankID, lastForeignValue, messageChatId);
             }
         });
@@ -558,30 +560,31 @@ function sendCurrency(bankID, lastForeignValue, messageChatId)
     // Generate currency answer.
     var currencyAnswer = '';
     if (lastForeignValue < globalCurrencyList[bankForeignCurrency[bankID]]) {
-        currencyAnswer +=
-                createReportCurrencyHeader(
-                    catchPhrases.roubleCommandDown[
-                        getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]);
+        currencyAnswer += (bankID === bankCBR) ?
+                    createReportCurrencyHeader(
+                        catchPhrases.roubleCommandDown[
+                            getRandomInt(0, catchPhrases.roubleCommandDown.length - 1)]) :
+                    catchPhrases.roubleCommand[0] + '\n';
     } else if (lastForeignValue > globalCurrencyList[bankForeignCurrency[bankID]]) {
-        currencyAnswer +=
-                createReportCurrencyHeader(
-                    catchPhrases.roubleCommandUp[
-                        getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]);
+        currencyAnswer += (bankID === bankCBR) ?
+                    createReportCurrencyHeader(
+                        catchPhrases.roubleCommandUp[
+                            getRandomInt(0, catchPhrases.roubleCommandUp.length - 1)]) :
+                    catchPhrases.roubleCommand[0] + '\n';
     } else {
-        currencyAnswer +=
-                createReportCurrencyHeader(
+        currencyAnswer += createReportCurrencyHeader(
                     catchPhrases.roubleCommandMiddle[
                         getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
     }
     currencyAnswer += getCurrencyTableString(bankID);
 
-    // Send currency to chat.
+    // Send currency answer to chat.
     sendMessageByBot(messageChatId, currencyAnswer);
 }
 
 function initilizeCurrencyListAndGetUsdValue()
 {
-    updateGlobalCurrencyList(bankCBR, false, null, null);
-    updateGlobalCurrencyList(bankNBU, false, null, null);
+    updateGlobalCurrencyList(bankCBR);
+    updateGlobalCurrencyList(bankNBU);
 }
 // END CURRENCY SECTION
