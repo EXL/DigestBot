@@ -95,21 +95,26 @@ bot.on('text', function(msg)
 
     // DIGEST TAG
     if (messageText.indexOf('#digest') >= 0) {
-        globalCountOfMessagesWithDigest++;
-        var normalMessage = normalizeMessage(messageText);
-        if (!(isBlank(normalMessage))) {
-            var messageInfoStruct = {
-                's_chatID': messageChatId,
-                's_date': messageDate,
-                's_message': normalMessage,
-                's_username': globalUserNameIs
-            };
+        if (messageText.length < 3000) {
+            globalCountOfMessagesWithDigest++;
+            var normalMessage = normalizeMessage(messageText);
+            if (!(isBlank(normalMessage))) {
+                var messageInfoStruct = {
+                    's_chatID': messageChatId,
+                    's_date': messageDate,
+                    's_message': normalMessage,
+                    's_username': globalUserNameIs
+                };
 
-            globalStackListDigestMessages.push(messageInfoStruct);
+                globalStackListDigestMessages.push(messageInfoStruct);
 
-            // Send message by bot.
+                // Send message by bot.
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
+            }
+        } else {
             sendMessageByBot(messageChatId,
-                             catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
+                           catchPhrases.debugCommandMessages[5]);
         }
     }
 
@@ -195,7 +200,13 @@ bot.on('text', function(msg)
                         botAnswer += '.';
                     }
 
-                    sendMessageByBot(messageChatId, getDigestReportHeader() + botAnswer);
+                    // Add digest header
+                    botAnswer = getDigestReportHeader() + botAnswer;
+
+                    var chunkSize = 3500;
+                    for (var j = 0, botAnswerLength = botAnswer.length; j < botAnswerLength; j+=chunkSize) {
+                        sendMessageByBot(messageChatId,  botAnswer.substring(j, j + chunkSize));
+                    }
                 } else {
                     sendNoDigestMessages(messageChatId);
                 }
@@ -625,8 +636,8 @@ function shittyParseXML(aAllXml, bankID)
     globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
-	
-	globalUSD[bankID] = getCurrentValue('USD', aAllXml);
+
+    globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
 
 function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
