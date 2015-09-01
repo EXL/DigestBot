@@ -203,10 +203,8 @@ bot.on('text', function(msg)
                     // Add digest header
                     botAnswer = getDigestReportHeader() + botAnswer;
 
-                    var chunkSize = 3500;
-                    for (var j = 0, botAnswerLength = botAnswer.length; j < botAnswerLength; j+=chunkSize) {
-                        sendMessageByBot(messageChatId,  botAnswer.substring(j, j + chunkSize));
-                    }
+                    // Send botAnswer as chunks
+                    sendChunksMessagesByBot(messageChatId, botAnswer, 3500);
                 } else {
                     sendNoDigestMessages(messageChatId);
                 }
@@ -236,6 +234,7 @@ bot.on('text', function(msg)
         sendMessageByBot(messageChatId, generateHelpString());
     }
 
+    // START COMMAND
     if (messageText === '/start') {
         sendMessageByBot(messageChatId, catchPhrases.startCommand[0]);
     }
@@ -271,6 +270,24 @@ bot.on('text', function(msg)
         }
     }
 
+    // DELETE COMMAND
+    if (messageText.indexOf('/delete') === 0) {
+        if (getAdminRights()) {
+            if (globalStackListDigestMessages.length > 0) {
+                var chunksMsg = messageText.split(' ');
+                if (chunksMsg.length === 2) {
+                    var delArg = parsInt(chunksMsg[1]);
+                    if (delArg) {
+                        globalStackListDigestMessages.splice(delArg - 1, 1);
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + delArg + '.');
+                    }
+                }
+            }
+        } else {
+            sendNoAccessMessage(messageChatId);
+        }
+    }
+
     // VIEWSTACK COMMAND
     if (messageText === '/stackView' || messageText === '/viewStack') {
         if (getAdminRights()) {
@@ -278,13 +295,14 @@ bot.on('text', function(msg)
             var sizeOfStack = globalStackListDigestMessages.length;
             if (sizeOfStack > 0) {
                 for (var j = 0; j < sizeOfStack; ++j) {
+                    stack += j + 1 + ' ';
                     stack += globalStackListDigestMessages[j].s_chatID + ' ';
                     stack += globalStackListDigestMessages[j].s_username + ' ';
                     stack += globalStackListDigestMessages[j].s_date + ' ';
                     stack += globalStackListDigestMessages[j].s_message + '\n';
                 }
-                sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[3] + stack);
+                sendChunksMessagesByBot(messageChatId,
+                                        catchPhrases.debugCommandMessages[3] + stack, 3500);
             } else {
                 sendMessageByBot(messageChatId,
                                  catchPhrases.debugCommandMessages[2]);
@@ -313,6 +331,13 @@ bot.on('text', function(msg)
     }
     // END DEBUG SECTION
 });
+
+function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize)
+{
+    for (var j = 0, botAnswerLength = aMesssage.length; j < botAnswerLength; j+=aChunkSize) {
+        sendMessageByBot(aChatId,  aMesssage.substring(j, j + aChunkSize));
+    }
+}
 
 function generateHelpString()
 {
