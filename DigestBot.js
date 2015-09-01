@@ -273,15 +273,21 @@ bot.on('text', function(msg)
     // DELETE COMMAND
     if (messageText.indexOf('/delete') === 0) {
         if (getAdminRights()) {
-            if (globalStackListDigestMessages.length > 0) {
+            var stackLength = globalStackListDigestMessages.length;
+            if (stackLength > 0) {
                 var chunksMsg = messageText.split(' ');
                 if (chunksMsg.length === 2) {
-                    var delArg = parsInt(chunksMsg[1]);
-                    if (delArg) {
+                    var delArg = parseInt(chunksMsg[1]);
+                    if (delArg <= stackLength) {
                         globalStackListDigestMessages.splice(delArg - 1, 1);
-                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + delArg + '.');
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.');
+                    } else {
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.');
                     }
                 }
+            } else {
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.debugCommandMessages[2]);
             }
         } else {
             sendNoAccessMessage(messageChatId);
