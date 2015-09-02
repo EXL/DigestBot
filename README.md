@@ -25,11 +25,12 @@ cd ~/Deploy/
 git clone https://github.com/EXL/DigestBot DigestBotDeploy
 ```
 
-* Install "node-telegram-bot-api" module into deploy directory;
+* Install "node-telegram-bot-api" and "request" modules into deploy directory;
 
 ```sh
 cd ~/Deploy/DigestBotDeploy/
 npm install node-telegram-bot-api
+npm install request
 ```
 
 * Write your token in "BOT_TOKEN_ACCESS.json" file.

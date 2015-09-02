@@ -74,65 +74,46 @@ var globalCurrencyList =  {
 
 initilizeCurrencyListAndGetUsdValue();
 
-var globalExchangeList = [
-    {
-        name: 'mmvb',
+var globalExchangeList = {
+    'mmvb': {
         desc: 'MMVB (MOEX) Index.',
         url: 'http://api.z-lab.me/charts/mmvb.php'
     },
-    {
-        name: 'usd_rub',
+    'usd_rub': {
         desc: 'USD/RUB from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/usd_rub.php'
     },
-    {
-        name: 'eur_rub',
+    'eur_rub': {
         desc: 'EUR/RUB from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/eur_rub.php'
     },
-    {
-        name: 'rts',
+    'rts': {
         desc: 'RTS Index from MMVB (MOEX).',
         url: 'http://api.z-lab.me/charts/rts.php'
     },
-    {
-        name: 'btc_usd',
+    'btc_usd': {
         desc: 'BTC/USD from BTC-E.',
         url: 'http://api.z-lab.me/btce/btc_usd.php'
     },
-    {
-        name: 'btc_rub',
+    'btc_rub': {
         desc: 'BTC/RUB from BTC-E.',
         url: 'http://api.z-lab.me/btce/btc_rur.php'
     },
-    {
-        name: 'forex',
+    'forex': {
         desc: 'USD/RUB from Forex.',
         url: 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5'
     },
-    {
-        name: 'brent',
+    'brent': {
         desc: 'Brent from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/brent.php'
     },
-    {
-        name: 'wti',
+    'wti': {
         desc: 'WTI from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/wti.php'
     }
-];
+};
 
-var exMMVB = 0;
-var exUSD_RUB = 1;
-var exEUR_RUB = 2;
-var exRTS = 3;
-var exBTC_USD = 4;
-var exBTC_RUB = 5;
-var exFOREX = 6;
-var exBRENT = 7;
-var exWTI = 8;
-
-var globalExchange = exMMVB;
+var globalExchange;
 // END CURRENCY SECTION
 
 bot.getMe().then(function (me)
@@ -423,57 +404,17 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId)
 function sendChartFileToChat(aChatId, aImageName)
 {
     if (aImageName) {
-        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.chartCommand[1] + ' ' + globalExchangeList[globalExchange].desc });
+        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.chartCommand[1] + ' ' + globalExchange.desc });
     }
 }
 
 function sendChartToChat(aChatId, aExchangeId)
 {
-    if (aExchangeId === globalExchangeList[exMMVB].name) {
-        globalExchange = exMMVB;
-        var mmvbImage = addYourStringToString('./', globalExchangeList[exMMVB].name + '_image.png');
-        var mmvbUri = globalExchangeList[exMMVB].url;
-        downloadImageAndSendToChat(mmvbUri, mmvbImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exUSD_RUB].name) {
-        globalExchange = exUSD_RUB;
-        var usdrubImage = addYourStringToString('./', globalExchangeList[exUSD_RUB].name + '_image.png');
-        var usdrubUri = globalExchangeList[exUSD_RUB].url;
-        downloadImageAndSendToChat(usdrubUri, usdrubImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exEUR_RUB].name) {
-        globalExchange = exEUR_RUB;
-        var eurrubImage = addYourStringToString('./', globalExchangeList[exEUR_RUB].name + '_image.png');
-        var eurrubUri = globalExchangeList[exEUR_RUB].url;
-        downloadImageAndSendToChat(eurrubUri, eurrubImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exRTS].name) {
-        globalExchange = exRTS;
-        var rtsImage = addYourStringToString('./', globalExchangeList[exRTS].name + '_image.png');
-        var rtsUri = globalExchangeList[exRTS].url;
-        downloadImageAndSendToChat(rtsUri, rtsImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exBTC_USD].name) {
-        globalExchange = exBTC_USD;
-        var btcusdImage = addYourStringToString('./', globalExchangeList[exBTC_USD].name + '_image.png');
-        var btcusdUri = globalExchangeList[exBTC_USD].url;
-        downloadImageAndSendToChat(btcusdUri, btcusdImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exBTC_RUB].name) {
-        globalExchange = exBTC_RUB;
-        var btcrubImage = addYourStringToString('./', globalExchangeList[exBTC_RUB].name + '_image.png');
-        var btcrubUri = globalExchangeList[exBTC_RUB].url;
-        downloadImageAndSendToChat(btcrubUri, btcrubImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exFOREX].name) {
-        globalExchange = exFOREX;
-        var forexImage = addYourStringToString('./', globalExchangeList[exFOREX].name + '_image.png');
-        var forexUri = globalExchangeList[exFOREX].url;
-        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exBRENT].name) {
-        globalExchange = exBRENT;
-        var brentImage = addYourStringToString('./', globalExchangeList[exBRENT].name + '_image.png');
-        var brentUri = globalExchangeList[exBRENT].url;
-        downloadImageAndSendToChat(brentUri, brentImage, aChatId);
-    } else if (aExchangeId === globalExchangeList[exWTI].name) {
-        globalExchange = exWTI;
-        var wtiImage = addYourStringToString('./', globalExchangeList[exWTI].name + '_image.png');
-        var wtiUri = globalExchangeList[exWTI].url;
-        downloadImageAndSendToChat(wtiUri, wtiImage, aChatId);
+    if (globalExchangeList[aExchangeId]) {
+        globalExchange = globalExchangeList[aExchangeId];
+        downloadImageAndSendToChat(globalExchangeList[aExchangeId].url,
+                                   addYourStringToString('./', globalExchangeList[aExchangeId].name + '_image.png'),
+                                   aChatId);
     } else {
         sendMessageByBot(aChatId,
                          catchPhrases.chartCommand[0]);
