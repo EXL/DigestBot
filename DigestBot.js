@@ -74,7 +74,6 @@ var globalCurrencyList =  {
 
 initilizeCurrencyListAndGetUsdValue();
 
-var exchangeChar
 // END CURRENCY SECTION
 
 bot.getMe().then(function (me)
@@ -371,10 +370,30 @@ function sendChartFileToChat(aChatId, aImageName)
 
 function sendChartToChat(aChatId, aExchangeId)
 {
-    if (aExchangeId === 'mmvb') {
+    if (aExchangeId === 'mmvb' || aExchangeId === 'ммвб') {
         var mmvbImage = addYourStringToString('./', 'mmvb_image.png');
-        var mmvbUri = 'http://api.z-lab.me/charts/usd_rub.php';
+        var mmvbUri = 'http://api.z-lab.me/charts/mmvb.php';
         downloadImageAndSendToChat(mmvbUri, mmvbImage, aChatId);
+    } else if (aExchangeId === 'usd_rub') {
+        var forexImage = addYourStringToString('./', 'usdrub_image.png');
+        var forexUri = 'http://api.z-lab.me/charts/usd_rub.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else if (aExchangeId === 'eur_rub') {
+        var forexImage = addYourStringToString('./', 'eurrub_image.png');
+        var forexUri = 'http://api.z-lab.me/charts/eur_rub.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else if (aExchangeId === 'rts') {
+        var forexImage = addYourStringToString('./', 'rts_image.png');
+        var forexUri = 'http://api.z-lab.me/charts/rts.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else if (aExchangeId === 'btc_usd') {
+        var forexImage = addYourStringToString('./', 'btcusd_image.png');
+        var forexUri = 'http://api.z-lab.me/btce/btc_usd.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else if (aExchangeId === 'btc_rur' || aExchangeId === 'btc_rub') {
+        var forexImage = addYourStringToString('./', 'btcrub_image.png');
+        var forexUri = 'http://api.z-lab.me/btce/btc_rur.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
     } else if (aExchangeId === 'forex') {
         var forexImage = addYourStringToString('./', 'forex_image.png');
         var forexUri = 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5';
