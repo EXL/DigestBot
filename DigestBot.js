@@ -386,6 +386,14 @@ function sendChartToChat(aChatId, aExchangeId)
         var forexImage = addYourStringToString('./', 'rts_image.png');
         var forexUri = 'http://api.z-lab.me/charts/rts.php';
         downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else if (aExchangeId === 'btc_usd') {
+        var forexImage = addYourStringToString('./', 'btcusd_image.png');
+        var forexUri = 'http://api.z-lab.me/btce/btc_usd.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else if (aExchangeId === 'btc_rur' || aExchangeId === 'btc_rub') {
+        var forexImage = addYourStringToString('./', 'btcrub_image.png');
+        var forexUri = 'http://api.z-lab.me/btce/btc_rur.php';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
     } else if (aExchangeId === 'forex') {
         var forexImage = addYourStringToString('./', 'forex_image.png');
         var forexUri = 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5';
