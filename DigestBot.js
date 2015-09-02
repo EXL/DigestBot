@@ -74,7 +74,6 @@ var globalCurrencyList =  {
 
 initilizeCurrencyListAndGetUsdValue();
 
-var exchangeChar
 // END CURRENCY SECTION
 
 bot.getMe().then(function (me)
