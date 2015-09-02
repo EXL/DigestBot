@@ -25,7 +25,7 @@
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
-var request = require('request');
+var Request = require('request');
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
@@ -73,8 +73,6 @@ var globalCurrencyList =  {
 };
 
 initilizeCurrencyListAndGetUsdValue();
-
-var exchangeChar
 // END CURRENCY SECTION
 
 bot.getMe().then(function (me)
@@ -355,8 +353,8 @@ bot.on('text', function(msg)
 
 function downloadImageAndSendToChat(aUri, aFileName, aChatId)
 {
-    request.head(aUri, function(aErr, aRes, aBody) {
-        request(aUri).pipe(FileSystem.createWriteStream(aFileName)).on('close', function() {
+    Request.head(aUri, function(aErr, aRes, aBody) {
+        Request(aUri).pipe(FileSystem.createWriteStream(aFileName)).on('close', function() {
             sendChartFileToChat(aChatId, aFileName);
         });
     });
