@@ -107,7 +107,7 @@ var globalExchangeList = [
     },
     {
         name: 'forex',
-        desc: 'BTC/RUB from BTC-E.',
+        desc: 'USD/RUB from Forex.',
         url: 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5'
     },
     {
