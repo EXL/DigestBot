@@ -423,7 +423,7 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId)
 function sendChartFileToChat(aChatId, aImageName)
 {
     if (aImageName) {
-        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.chartCommand[1] + ' ' + globalExchangeList[globalExchange] });
+        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.chartCommand[1] + ' ' + globalExchangeList[globalExchange].desc });
     }
 }
 
