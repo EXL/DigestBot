@@ -103,6 +103,8 @@
         "/digest <x> -- Показать сообщения с тегом digest за <x> дней (1-7).",
         "/rouble -- Текущий курс рубля ЦБ РФ.",
         "/grivna -- Текущий курс гривны по НБУ.",
+        "/chart mmvb -- График биржи ММВБ, USDRUB_TOD.",
+        "/chart forex -- График биржи Forex, FX_IDC:USDRUB.",
         "/start -- Приветствие.",
         "/help -- Эта справка."
     ],
@@ -115,5 +117,10 @@
         "/stackView или /viewStack -- Распечатать стек.",
         "/stackSave или /saveStack -- Сохранить стек в JSON-файл.",
         "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла."
+    ],
+
+    "chartCommand" : [
+        "Неправильное использование команды chart.",
+        "График биржи."
     ]
 }

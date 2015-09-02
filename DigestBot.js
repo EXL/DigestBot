@@ -25,6 +25,7 @@
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
+var request = require('request');
 
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
@@ -72,6 +73,8 @@ var globalCurrencyList =  {
 };
 
 initilizeCurrencyListAndGetUsdValue();
+
+var exchangeChar
 // END CURRENCY SECTION
 
 bot.getMe().then(function (me)
@@ -229,6 +232,18 @@ bot.on('text', function(msg)
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
     }
 
+    // CHART COMMAND
+    if (messageText.indexOf('/chart') === 0) {
+        messageText = messageText.trim();
+        var splitCommandList = messageText.split(' ');
+        if (splitCommandList.length === 2) {
+            sendChartToChat(messageChatId, splitCommandList[1]);
+        } else {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.chartCommand[0]);
+        }
+    }
+
     // HELP COMMAND
     if (messageText === '/help') {
         sendMessageByBot(messageChatId, generateHelpString());
@@ -337,6 +352,38 @@ bot.on('text', function(msg)
     }
     // END DEBUG SECTION
 });
+
+function downloadImageAndSendToChat(aUri, aFileName, aChatId)
+{
+    request.head(aUri, function(aErr, aRes, aBody) {
+        request(aUri).pipe(FileSystem.createWriteStream(aFileName)).on('close', function() {
+            sendChartFileToChat(aChatId, aFileName);
+        });
+    });
+}
+
+function sendChartFileToChat(aChatId, aImageName)
+{
+    if (aImageName) {
+        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.chartCommand[1] });
+    }
+}
+
+function sendChartToChat(aChatId, aExchangeId)
+{
+    if (aExchangeId === 'mmvb') {
+        var mmvbImage = addYourStringToString('./', 'mmvb_image.png');
+        var mmvbUri = 'http://api.z-lab.me/charts/usd_rub.php';
+        downloadImageAndSendToChat(mmvbUri, mmvbImage, aChatId);
+    } else if (aExchangeId === 'forex') {
+        var forexImage = addYourStringToString('./', 'forex_image.png');
+        var forexUri = 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5';
+        downloadImageAndSendToChat(forexUri, forexImage, aChatId);
+    } else {
+        sendMessageByBot(aChatId,
+                         catchPhrases.chartCommand[0]);
+    }
+}
 
 function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize)
 {
