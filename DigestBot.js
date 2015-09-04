@@ -473,7 +473,7 @@ function getMessageDelay(aCountOfDay)
 }
 
 function getSendMessage(aString, aTrim){
-	return aString.replace(aTrim, "").trim;
+	return aString.replace(aTrim, "").trim();
 }
 	
 function getQuote(aString){
