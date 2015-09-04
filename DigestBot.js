@@ -62,6 +62,8 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 var bankCBR = 0;
 var bankNBU = 1;
 
+var globalMetall = "http://api.z-lab.me/charts/metall.php";
+
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
     'USD': 0.0,
@@ -83,9 +85,37 @@ var globalExchangeList = {
         desc: 'USD/RUB from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/usd_rub.php'
     },
+    'usd_uah': {
+        desc: 'USD/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/usd_uah.php'
+    },
     'eur_rub': {
         desc: 'EUR/RUB from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/eur_rub.php'
+    },
+    'eur_uah': {
+        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/eur_uah.php'
+    },
+    'gold': {
+        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/gold.php'
+    },
+    'palladium': {
+        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/palladium.php'
+    },
+    'platinum': {
+        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/platinum.php'
+    },
+    'rhodium': {
+        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/rhodium.php'
+    },
+    'silver': {
+        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        url: 'http://api.z-lab.me/charts/silver.php'
     },
     'rts': {
         desc: 'RTS Index from MMVB (MOEX).',
@@ -296,6 +326,18 @@ bot.on('text', function(msg)
             sendMessageByBot(messageChatId,
                              catchPhrases.chartCommand[0]);
         }
+    }
+	
+	// METALL COMMAND
+    if (messageText === '/metall') {
+		var request = require("request");
+		
+        request(globalMetall,
+        function(err, response, body) {
+            if(!err){
+                sendMetall(messageChatId, body);
+            }
+        });
     }
 
     // HELP COMMAND
@@ -804,6 +846,26 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
         });
     });
     request.end();
+}
+
+function sendMetall(messageChatId, body){
+    var json = JSON.parse(body);
+	var currencyAnswer = 'Цены за 1гр.:' + '\n';
+		
+    // Получаем данные и убираем пробелы из чисел.
+	var gold = json.results.metall[0]["gold"].replace(/\s+/g, '');
+	var silver = json.results.metall[0]["silver"].replace(/\s+/g, '');
+	var platinum = json.results.metall[0]["platinum"].replace(/\s+/g, '');
+	var palladium = json.results.metall[0]["palladium"].replace(/\s+/g, '');
+
+    // Парсим данные в float с точностью до 2 символов после запятой.
+	currencyAnswer += "Золото: " + parseFloat(gold).toFixed(2) + ' руб.\n';
+	currencyAnswer += "Серебро: " + parseFloat(silver).toFixed(2) + ' руб.\n';
+	currencyAnswer += "Платина: " + parseFloat(platinum).toFixed(2) + ' руб.\n';
+	currencyAnswer += "Палладий: " + parseFloat(palladium).toFixed(2) + ' руб.\n';
+
+	// Send currency answer to chat.
+    sendMessageByBot(messageChatId, currencyAnswer);
 }
 
 function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId)
