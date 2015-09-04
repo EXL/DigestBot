@@ -276,10 +276,9 @@ bot.on('text', function(msg)
 		if (getAdminRights()) {
 			messageText = messageText.trim();
 			var splitCommandList = messageText.split(' ');
-			if (splitCommandList.length === 3) {
-				sendMessageByBot(splitCommandList[1], splitCommandList[2]);
-			} else if (splitCommandList.length > 3) {
-				sendMessageByBot(splitCommandList[1], getQuote(messageText));
+			if (splitCommandList.length > 2) {
+				var targetChatID = splitCommandList[1];
+				sendMessageByBot(targetChatID, getSendMessage(messageText, "/send " + targetChatID));
 			} else {
 				sendMessageByBot(messageChatId,
 								 catchPhrases.chartCommand[0]);
@@ -473,6 +472,10 @@ function getMessageDelay(aCountOfDay)
     return aCountOfDay * 86400;
 }
 
+function getSendMessage(aString, aTrim){
+	return aString.replace(aTrim, "").trim();
+}
+	
 function getQuote(aString){
 	var quote = "";
 	if ( /"/.test( aString ) ){
