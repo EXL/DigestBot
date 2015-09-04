@@ -271,6 +271,18 @@ bot.on('text', function(msg)
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
     }
 
+	// MESSAGE COMMAND
+	if (messageText.indexOf('/send') === 0) {
+        messageText = messageText.trim();
+        var splitCommandList = messageText.split(' ');
+        if (splitCommandList.length === 3) {
+            sendMessageByBot(splitCommandList[1], splitCommandList[2]);
+        } else {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.chartCommand[0]);
+        }
+    }
+	
     // CHART COMMAND
     if (messageText.indexOf('/chart') === 0) {
         messageText = messageText.trim();
