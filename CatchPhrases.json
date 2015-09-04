@@ -108,7 +108,7 @@
         "/chart usd_rub -- Текущий курс USD/RUB по Nasdaq, Nyse.",
         "/chart eur_rub -- Текущий курс EUR/RUB по Nasdaq, Nyse.",
         "/chart usd_uah -- Текущий курс USD/UAH по Nasdaq, Nyse.",
-        "/chart eur_uah -- Текущий курс USD/UAH по Nasdaq, Nyse.",
+        "/chart eur_uah -- Текущий курс EUR/UAH по Nasdaq, Nyse.",
         "/chart btc_usd -- Текущий курс BTC/USD по BTC-E.",
         "/chart btc_rub -- Текущий курс BTC/RUB по BTC-E.",
         "/chart forex -- Текущий курс USD/RUB по Forex.",
