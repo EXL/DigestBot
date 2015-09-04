@@ -86,7 +86,7 @@ var globalExchangeList = {
         url: 'http://api.z-lab.me/charts/usd_rub.php'
     },
     'usd_uah': {
-        desc: 'USD/RUB from Nasdaq, Nyse.',
+        desc: 'USD/UAH from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/usd_uah.php'
     },
     'eur_rub': {
@@ -94,27 +94,27 @@ var globalExchangeList = {
         url: 'http://api.z-lab.me/charts/eur_rub.php'
     },
     'eur_uah': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        desc: 'EUR/UAH from Nasdaq, Nyse.',
         url: 'http://api.z-lab.me/charts/eur_uah.php'
     },
     'gold': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        desc: 'Золото по Nasdaq.',
         url: 'http://api.z-lab.me/charts/gold.php'
     },
     'palladium': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        desc: 'Палладий по Nasdaq.',
         url: 'http://api.z-lab.me/charts/palladium.php'
     },
     'platinum': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        desc: 'Платина по Nasdaq.',
         url: 'http://api.z-lab.me/charts/platinum.php'
     },
     'rhodium': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        desc: 'Родий по Nasdaq.',
         url: 'http://api.z-lab.me/charts/rhodium.php'
     },
     'silver': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
+        desc: 'Серебро по Nasdaq.',
         url: 'http://api.z-lab.me/charts/silver.php'
     },
     'rts': {
