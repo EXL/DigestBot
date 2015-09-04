@@ -271,6 +271,22 @@ bot.on('text', function(msg)
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
     }
 
+	// SEND MESSAGE COMMAND
+	if (messageText.indexOf('/send') === 0) {
+		if (getAdminRights()) {
+			messageText = messageText.trim();
+			var splitCommandList = messageText.split(' ');
+			if (splitCommandList.length === 3) {
+				sendMessageByBot(splitCommandList[1], splitCommandList[2]);
+			} else if (splitCommandList.length > 3) {
+				sendMessageByBot(splitCommandList[1], getQuote(messageText));
+			} else {
+				sendMessageByBot(messageChatId,
+								 catchPhrases.chartCommand[0]);
+			}
+		}
+    }
+	
     // CHART COMMAND
     if (messageText.indexOf('/chart') === 0) {
         messageText = messageText.trim();
@@ -455,6 +471,14 @@ function sendNoAccessMessage(aChatId)
 function getMessageDelay(aCountOfDay)
 {
     return aCountOfDay * 86400;
+}
+
+function getQuote(aString){
+	var quote = "";
+	if ( /"/.test( aString ) ){
+		quote = aString.match( /"([^"]*)"/ )[1];
+	}
+	return quote;
 }
 
 function trimEachString(aString)
