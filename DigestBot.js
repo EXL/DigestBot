@@ -275,8 +275,13 @@ bot.on('text', function(msg)
 	if (messageText.indexOf('/send') === 0) {
         messageText = messageText.trim();
         var splitCommandList = messageText.split(' ');
-        if (splitCommandList.length > 3) {
-			var quote = messageText.match(/'[^']*'/g);
+        if (splitCommandList.length > 2) {
+			var quote = "";
+			  if ( /"/.test( messageText ) ){
+				quote = messageText.match( /"(.*?)"/ )[1];
+			  } else {
+				quote = splitCommandList[2];
+			  }
             sendMessageByBot(splitCommandList[1], quote);
         } else {
             sendMessageByBot(messageChatId,
