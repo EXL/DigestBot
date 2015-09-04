@@ -476,7 +476,7 @@ function getMessageDelay(aCountOfDay)
 function getQuote(aString){
 	var quote = "";
 	if ( /"/.test( aString ) ){
-		quote = aString.match( /"(.*?)"/ )[1];
+		quote = aString.match( /"([^"]*)/ )[1];
 	}
 	return quote;
 }
