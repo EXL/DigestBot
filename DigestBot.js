@@ -275,8 +275,9 @@ bot.on('text', function(msg)
 	if (messageText.indexOf('/send') === 0) {
         messageText = messageText.trim();
         var splitCommandList = messageText.split(' ');
-        if (splitCommandList.length === 3) {
-            sendMessageByBot(splitCommandList[1], splitCommandList[2]);
+        if (splitCommandList.length > 3) {
+			var quote = messageText.match(/'[^']*'/g);
+            sendMessageByBot(splitCommandList[1], quote);
         } else {
             sendMessageByBot(messageChatId,
                              catchPhrases.chartCommand[0]);
