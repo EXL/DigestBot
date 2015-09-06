@@ -236,7 +236,7 @@ bot.on('text', function(msg)
                 var stackSize = globalStackListDigestMessages.length;
 
                 // Count of digest messages from one chat.
-                var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId);
+                var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId, dayDelay);
 
                 // Check countOfDigestMessagesByChat.
                 if (countOfDigestMessagesByChat > 0) {
@@ -597,13 +597,15 @@ function getRandomInt(aMin, aMax)
     return Math.floor(Math.random() * (aMax - aMin + 1)) + aMin;
 }
 
-function getCountDigestMessagesOfChat(aChatId)
+function getCountDigestMessagesOfChat(aChatId, aObsoleteDate)
 {
     var stackSize = globalStackListDigestMessages.length;
     var countOfMessages = 0;
     for (var i = 0; i < stackSize; ++i) {
         if (globalStackListDigestMessages[i].s_chatID === aChatId) {
-            countOfMessages++;
+            if (globalStackListDigestMessages[i].s_date > aObsoleteDate) {
+                countOfMessages++;
+            }
         }
     }
     return countOfMessages;
