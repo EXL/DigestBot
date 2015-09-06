@@ -62,7 +62,7 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 var bankCBR = 0;
 var bankNBU = 1;
 
-var globalMetall = "http://api.z-lab.me/charts/metall.php";
+var globalMetallJson = 'http://api.z-lab.me/charts/metall.php';
 
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
@@ -98,23 +98,23 @@ var globalExchangeList = {
         url: 'http://api.z-lab.me/charts/eur_uah.php'
     },
     'gold': {
-        desc: 'Золото по Nasdaq.',
+        desc: 'Gold from Nasdaq.',
         url: 'http://api.z-lab.me/charts/gold.php'
     },
     'palladium': {
-        desc: 'Палладий по Nasdaq.',
+        desc: 'Palladium from Nasdaq.',
         url: 'http://api.z-lab.me/charts/palladium.php'
     },
     'platinum': {
-        desc: 'Платина по Nasdaq.',
+        desc: 'Platinum from Nasdaq.',
         url: 'http://api.z-lab.me/charts/platinum.php'
     },
     'rhodium': {
-        desc: 'Родий по Nasdaq.',
+        desc: 'Rhodium from Nasdaq.',
         url: 'http://api.z-lab.me/charts/rhodium.php'
     },
     'silver': {
-        desc: 'Серебро по Nasdaq.',
+        desc: 'Silver from Nasdaq.',
         url: 'http://api.z-lab.me/charts/silver.php'
     },
     'rts': {
@@ -301,21 +301,6 @@ bot.on('text', function(msg)
         updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
     }
 
-	// SEND MESSAGE COMMAND
-	if (messageText.indexOf('/send') === 0) {
-		if (getAdminRights()) {
-			messageText = messageText.trim();
-			var splitCommandList = messageText.split(' ');
-			if (splitCommandList.length > 2) {
-				var targetChatID = splitCommandList[1];
-				sendMessageByBot(targetChatID, getSendMessage(messageText, "/send " + targetChatID));
-			} else {
-				sendMessageByBot(messageChatId,
-								 catchPhrases.chartCommand[0]);
-			}
-		}
-    }
-	
     // CHART COMMAND
     if (messageText.indexOf('/chart') === 0) {
         messageText = messageText.trim();
@@ -327,15 +312,14 @@ bot.on('text', function(msg)
                              catchPhrases.chartCommand[0]);
         }
     }
-	
-	// METALL COMMAND
+
+    // METALL COMMAND
     if (messageText === '/metall') {
-		var request = require("request");
-		
-        request(globalMetall,
-        function(err, response, body) {
-            if(!err){
-                sendMetall(messageChatId, body);
+        Request(globalMetallJson, function(aErr, aRes, aBody) {
+            if (!aErr) {
+                sendMetallValues(messageChatId, aBody);
+            } else {
+                sendMessageByBot(messageChatId, 'Error: ' + aErr);
             }
         });
     }
@@ -360,6 +344,23 @@ bot.on('text', function(msg)
     }
 
     // ADMINISTRATION COMMANDS
+    // SEND COMMAND
+    if (messageText.indexOf('/send') === 0) {
+        if (getAdminRights()) {
+            messageText = messageText.trim();
+            var splitSendList = messageText.split(' ');
+            if (splitSendList.length > 2) {
+                var targetChatID = splitSendList[1];
+                sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID));
+            } else {
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.chartCommand[0]);
+            }
+        } else {
+            sendNoAccessMessage(messageChatId);
+        }
+    }
+
     // CLEARSTACK COMMAND
     if (messageText === '/stackClear' || messageText === '/clearStack') {
         if (getAdminRights()) {
@@ -514,16 +515,18 @@ function getMessageDelay(aCountOfDay)
     return aCountOfDay * 86400;
 }
 
-function getSendMessage(aString, aTrim){
-	return aString.replace(aTrim, "").trim();
+function getSendMessage(aString, aTrim)
+{
+    return aString.replace(aTrim, '').trim();
 }
-	
-function getQuote(aString){
-	var quote = "";
-	if ( /"/.test( aString ) ){
-		quote = aString.match( /"([^"]*)"/ )[1];
-	}
-	return quote;
+
+function getQuote(aString)
+{
+    var quote = '';
+    if (/"/.test(aString)) {
+        quote = aString.match(/"([^"]*)"/ )[1];
+    }
+    return quote;
 }
 
 function trimEachString(aString)
@@ -848,23 +851,32 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
     request.end();
 }
 
-function sendMetall(messageChatId, body){
+function getMetallValueFromJson(aIndex, aValue, aJson)
+{
+    return aJson.results.metall[aIndex][aValue].replace(/\s+/g, '').replace(',', '.');
+}
+
+function sendMetallValues(messageChatId, body)
+{
     var json = JSON.parse(body);
-	var currencyAnswer = 'Цены за 1гр.:' + '\n';
-		
-    // Получаем данные и убираем пробелы из чисел.
-	var gold = json.results.metall[0]["gold"].replace(/\s+/g, '');
-	var silver = json.results.metall[0]["silver"].replace(/\s+/g, '');
-	var platinum = json.results.metall[0]["platinum"].replace(/\s+/g, '');
-	var palladium = json.results.metall[0]["palladium"].replace(/\s+/g, '');
 
-    // Парсим данные в float с точностью до 2 символов после запятой.
-	currencyAnswer += "Золото: " + parseFloat(gold).toFixed(2) + ' руб.\n';
-	currencyAnswer += "Серебро: " + parseFloat(silver).toFixed(2) + ' руб.\n';
-	currencyAnswer += "Платина: " + parseFloat(platinum).toFixed(2) + ' руб.\n';
-	currencyAnswer += "Палладий: " + parseFloat(palladium).toFixed(2) + ' руб.\n';
+    var currencyAnswer = catchPhrases.metallCommand[0];
+    currencyAnswer += '\n';
 
-	// Send currency answer to chat.
+    currencyAnswer += catchPhrases.metallCommand[1] + ' '
+            + parseFloat(getMetallValueFromJson(0, 'gold', json)).toFixed(2)
+            + ' ' + catchPhrases.metallCommand[5] + '\n';
+    currencyAnswer += catchPhrases.metallCommand[2] + ' '
+            + parseFloat(getMetallValueFromJson(0, 'silver', json)).toFixed(2)
+            + ' ' + catchPhrases.metallCommand[5] + '\n';
+    currencyAnswer += catchPhrases.metallCommand[3] + ' '
+            + parseFloat(getMetallValueFromJson(0, 'platinum', json)).toFixed(2)
+            + ' ' + catchPhrases.metallCommand[5] + '\n';
+    currencyAnswer += catchPhrases.metallCommand[4] + ' '
+            + parseFloat(getMetallValueFromJson(0, 'palladium', json)).toFixed(2)
+            + ' ' + catchPhrases.metallCommand[5];
+
+    // Send metall answer to chat.
     sendMessageByBot(messageChatId, currencyAnswer);
 }
 
