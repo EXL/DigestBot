@@ -57,7 +57,9 @@
         "Количество сообщений c тегом #digest во всех чатах с момента запуска: ",
         "Слишком длинное сообщение. Низзя такое добавлять в дайджест! :3",
         "Из стека удалена запись под номером:",
-        "Не могу в стеке найти запись под номером:"
+        "Не могу в стеке найти запись под номером:",
+        "Неправильное использование команды.",
+        "Биржевой график:"
     ],
 
     "roubleCommandUp" : [
@@ -103,23 +105,8 @@
         "/digest <x> -- Показать сообщения с тегом digest за <x> дней (1-7).",
         "/rouble -- Текущий курс рубля ЦБ РФ.",
         "/grivna -- Текущий курс гривны по НБУ.",
-        "/chart mmvb -- График ММВБ-индекса.",
-        "/chart rts -- График РТС-индекса по ММВБ.",
-        "/chart usd_rub -- Текущий курс USD/RUB по Nasdaq, Nyse.",
-        "/chart eur_rub -- Текущий курс EUR/RUB по Nasdaq, Nyse.",
-        "/chart usd_uah -- Текущий курс USD/UAH по Nasdaq, Nyse.",
-        "/chart eur_uah -- Текущий курс EUR/UAH по Nasdaq, Nyse.",
-        "/chart btc_usd -- Текущий курс BTC/USD по BTC-E.",
-        "/chart btc_rub -- Текущий курс BTC/RUB по BTC-E.",
-        "/chart forex -- Текущий курс USD/RUB по Forex.",
-        "/chart brent -- Нефть Brent USD/баррель по Nasdaq, Nyse.",
-        "/chart wti -- Нефть WTI USD/баррель по Nasdaq, Nyse.",
-        "/chart gold -- Золото по Nasdaq",
-        "/chart silver -- Серебро по Nasdaq",
-        "/chart platinum -- Платина по Nasdaq",
-        "/chart palladium -- Палладий по Nasdaq",
-        "/chart rhodium -- Родий по Nasdaq",
-        "/metall -- Текущий курс 1гр. металлов по ЦБ РФ.",
+        "/chart -- Справка по командам показа графиков.",
+        "/metall -- Текущий курс драгоценных металлов по ЦБ РФ.",
         "/start -- Приветствие.",
         "/help -- Эта справка."
     ],
@@ -131,12 +118,27 @@
         "/delete <arg> -- Удалить запись из стека под номером <arg>.",
         "/stackView или /viewStack -- Распечатать стек.",
         "/stackSave или /saveStack -- Сохранить стек в JSON-файл.",
-        "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла."
+        "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла.",
+        "/send <chat id> <message> -- Отправить <message> в <chat id>."
     ],
 
-    "chartCommand" : [
-        "Неправильное использование команды.",
-        "Биржевой график:"
+    "chartHelp" : [
+        "/chart mmvb -- График ММВБ-индекса.",
+        "/chart rts -- График РТС-индекса по ММВБ.",
+        "/chart usd_rub -- Текущий курс USD/RUB по Nasdaq, Nyse.",
+        "/chart eur_rub -- Текущий курс EUR/RUB по Nasdaq, Nyse.",
+        "/chart usd_uah -- Текущий курс USD/UAH по Nasdaq, Nyse.",
+        "/chart eur_uah -- Текущий курс EUR/UAH по Nasdaq, Nyse.",
+        "/chart btc_usd -- Текущий курс BTC/USD по BTC-E.",
+        "/chart btc_rub -- Текущий курс BTC/RUB по BTC-E.",
+        "/chart forex -- Текущий курс USD/RUB по Forex.",
+        "/chart brent -- Нефть Brent USD/баррель по Nasdaq, Nyse.",
+        "/chart wti -- Нефть WTI USD/баррель по Nasdaq, Nyse.",
+        "/chart gold -- Золото по Nasdaq.",
+        "/chart silver -- Серебро по Nasdaq.",
+        "/chart platinum -- Платина по Nasdaq.",
+        "/chart palladium -- Палладий по Nasdaq.",
+        "/chart rhodium -- Родий по Nasdaq."
     ],
 
     "metallCommand" : [

@@ -309,7 +309,7 @@ bot.on('text', function(msg)
             sendChartToChat(messageChatId, splitCommandList[1]);
         } else {
             sendMessageByBot(messageChatId,
-                             catchPhrases.chartCommand[0]);
+                             generateChartsHelpString());
         }
     }
 
@@ -354,7 +354,7 @@ bot.on('text', function(msg)
                 sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID));
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.chartCommand[0]);
+                                 catchPhrases.debugCommandMessages[8]);
             }
         } else {
             sendNoAccessMessage(messageChatId);
@@ -450,6 +450,19 @@ bot.on('text', function(msg)
     // END DEBUG SECTION
 });
 
+function generateChartsHelpString()
+{
+    var helpChartsAnswer = '';
+    for (var i = 0; i < catchPhrases.chartHelp.length; ++i) {
+        helpChartsAnswer += catchPhrases.chartHelp[i] + '\n';
+    }
+
+    // Delete last line break
+    helpChartsAnswer.trim();
+
+    return helpChartsAnswer;
+}
+
 function downloadImageAndSendToChat(aUri, aFileName, aChatId)
 {
     Request.head(aUri, function(aErr, aRes, aBody) {
@@ -462,7 +475,7 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId)
 function sendChartFileToChat(aChatId, aImageName)
 {
     if (aImageName) {
-        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.chartCommand[1] + ' ' + globalExchange.desc });
+        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.debugCommandMessages[9] + ' ' + globalExchange.desc });
     }
 }
 
@@ -475,7 +488,7 @@ function sendChartToChat(aChatId, aExchangeId)
                                    aChatId);
     } else {
         sendMessageByBot(aChatId,
-                         catchPhrases.chartCommand[0]);
+                         generateChartsHelpString());
     }
 }
 
