@@ -62,7 +62,7 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 var bankCBR = 0;
 var bankNBU = 1;
 
-var globalMetallJson = 'http://api.z-lab.me/charts/metall.php';
+var globalMetallJson = 'http://api.z-lab.me/charts/metall.json';
 
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
@@ -80,47 +80,47 @@ initilizeCurrencyListAndGetUsdValue();
 var globalExchangeList = {
     'mmvb': {
         desc: 'MMVB (MOEX) Index.',
-        url: 'http://api.z-lab.me/charts/mmvb.php'
+        url: 'http://api.z-lab.me/charts/mmvb.png'
     },
     'usd_rub': {
         desc: 'USD/RUB from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/usd_rub.php'
+        url: 'http://api.z-lab.me/charts/usd_rub.png'
     },
     'usd_uah': {
         desc: 'USD/UAH from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/usd_uah.php'
+        url: 'http://api.z-lab.me/charts/usd_uah.png'
     },
     'eur_rub': {
         desc: 'EUR/RUB from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/eur_rub.php'
+        url: 'http://api.z-lab.me/charts/eur_rub.png'
     },
     'eur_uah': {
         desc: 'EUR/UAH from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/eur_uah.php'
+        url: 'http://api.z-lab.me/charts/eur_uah.png'
     },
     'gold': {
         desc: 'Gold from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/gold.php'
+        url: 'http://api.z-lab.me/charts/gold.png'
     },
     'palladium': {
         desc: 'Palladium from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/palladium.php'
+        url: 'http://api.z-lab.me/charts/palladium.png'
     },
     'platinum': {
         desc: 'Platinum from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/platinum.php'
+        url: 'http://api.z-lab.me/charts/platinum.png'
     },
     'rhodium': {
         desc: 'Rhodium from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/rhodium.php'
+        url: 'http://api.z-lab.me/charts/rhodium.png'
     },
     'silver': {
         desc: 'Silver from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/silver.php'
+        url: 'http://api.z-lab.me/charts/silver.png'
     },
     'rts': {
         desc: 'RTS Index from MMVB (MOEX).',
-        url: 'http://api.z-lab.me/charts/rts.php'
+        url: 'http://api.z-lab.me/charts/rts.png'
     },
     'btc_usd': {
         desc: 'BTC/USD from BTC-E.',
@@ -136,11 +136,11 @@ var globalExchangeList = {
     },
     'brent': {
         desc: 'Brent from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/brent.php'
+        url: 'http://api.z-lab.me/charts/brent.png'
     },
     'wti': {
         desc: 'WTI from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/wti.php'
+        url: 'http://api.z-lab.me/charts/wti.png'
     }
 };
 
