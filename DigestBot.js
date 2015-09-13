@@ -124,11 +124,11 @@ var globalExchangeList = {
     },
     'btc_usd': {
         desc: 'BTC/USD from BTC-E.',
-        url: 'http://api.z-lab.me/btce/btc_usd.png'
+        url: 'http://api.z-lab.me/btce/btc_usd.php'
     },
     'btc_rub': {
         desc: 'BTC/RUB from BTC-E.',
-        url: 'http://api.z-lab.me/btce/btc_rur.png'
+        url: 'http://api.z-lab.me/btce/btc_rur.php'
     },
     'forex': {
         desc: 'USD/RUB from Forex.',
