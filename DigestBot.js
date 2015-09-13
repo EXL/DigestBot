@@ -71,7 +71,8 @@ var globalCurrencyList =  {
     'RUB': 0.0,
     'UAH': 0.0,
     'KZT': 0.0,
-    'BYR': 0.0
+    'BYR': 0.0,
+    'GBP': 0.0
 };
 
 initilizeCurrencyListAndGetUsdValue();
@@ -146,7 +147,7 @@ var globalExchangeList = {
 var globalExchange;
 // END CURRENCY SECTION
 
-bot.getMe().then(function (me)
+bot.getMe().then(function(me)
 {
     console.log('Hello! My name is %s!', me.first_name);
     console.log('My id is %s.', me.id);
@@ -186,7 +187,7 @@ bot.on('text', function(msg)
             }
         } else {
             sendMessageByBot(messageChatId,
-                           catchPhrases.debugCommandMessages[5]);
+                             catchPhrases.debugCommandMessages[5]);
         }
     }
 
@@ -525,6 +526,7 @@ function sendNoAccessMessage(aChatId)
 
 function getMessageDelay(aCountOfDay)
 {
+    // 86 400 for 24-hours.
     return aCountOfDay * 86400;
 }
 
@@ -748,11 +750,6 @@ function addYourStringToString(aYourString, aString)
     return aYourString + aString;
 }
 
-function getCountOfMessageWithDigest()
-{
-    return 'Count of digest messages is ' + globalCountOfMessagesWithDigest;
-}
-
 // CURRENCY SECTION
 function createReportCurrencyHeader(aCatchPhrase)
 {
@@ -767,7 +764,8 @@ function getCurrencyTableString(bankID)
     currencyTable += '1 ' + bankForeignCurrency[bankID] + ' = '
             + globalCurrencyList[bankForeignCurrency[bankID]] + ' ' + bankLocalCurrency[bankID] + ';\n';
     currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' ' + bankLocalCurrency[bankID] + '.';
+    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 GBP = ' + globalCurrencyList.GBP + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
 
@@ -830,6 +828,7 @@ function shittyParseXML(aAllXml, bankID)
         globalCurrencyList[bankForeignCurrency[bankID]] = 'Error';
         globalCurrencyList.KZT = 'Error';
         globalCurrencyList.BYR = 'Error';
+        globalCurrencyList.GBP = 'Error';
     }
 
     globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
@@ -837,6 +836,7 @@ function shittyParseXML(aAllXml, bankID)
     globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
     globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
+    globalCurrencyList.GBP = getCurrentValue('GBP', aAllXml);
 
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
@@ -868,7 +868,7 @@ function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
 
 function getMetallValueFromJson(aIndex, aValue, aJson)
 {
-    return aJson.results.metall[aIndex][aValue].replace(/\s+/g, '').replace(',', '.');
+    return replaceCommasByDots(aJson.results.metall[aIndex][aValue].replace(/\s+/g, ''));
 }
 
 function sendMetallValues(messageChatId, body)
