@@ -284,6 +284,8 @@ bot.on('text', function(msg)
             } else {
                 sendNoDigestMessages(messageChatId);
             }
+        } else {
+            sendMessageByBot(messageChatId, catchPhrases.helpCommand[2]);
         }
     }
 
