@@ -197,7 +197,7 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    gadgetHackwrench = new GadgetHackwrench;
+    gadgetHackwrench = new GadgetHackwrench(this);
 
     startTimer(300);
 
