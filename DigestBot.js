@@ -875,6 +875,11 @@ function getMetallValueFromJson(aIndex, aValue, aJson)
 
 function sendMetallValues(messageChatId, body)
 {
+    if (!body) {
+        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[10]);
+        return;
+    }
+
     var json = JSON.parse(body);
 
     var currencyAnswer = catchPhrases.metallCommand[0];
