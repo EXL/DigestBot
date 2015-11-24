@@ -284,6 +284,8 @@ bot.on('text', function(msg)
             } else {
                 sendNoDigestMessages(messageChatId);
             }
+        } else {
+            sendMessageByBot(messageChatId, catchPhrases.helpCommand[2]);
         }
     }
 
@@ -873,6 +875,11 @@ function getMetallValueFromJson(aIndex, aValue, aJson)
 
 function sendMetallValues(messageChatId, body)
 {
+    if (!body) {
+        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[10]);
+        return;
+    }
+
     var json = JSON.parse(body);
 
     var currencyAnswer = catchPhrases.metallCommand[0];
