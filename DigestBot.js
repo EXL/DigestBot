@@ -50,6 +50,7 @@ var bot = new TelegramBot(token, botOptions);
 
 var globalCountOfMessagesWithDigest = 0;
 var globalUserNameIs;
+var globalBotUserName;
 
 var globalStackListDigestMessages = [ ];
 
@@ -152,6 +153,7 @@ bot.getMe().then(function(me)
     console.log('Hello! My name is %s!', me.first_name);
     console.log('My id is %s.', me.id);
     console.log('And my username is @%s.', me.username);
+    globalBotUserName = me.username;
 });
 
 bot.on('text', function(msg)
@@ -192,13 +194,13 @@ bot.on('text', function(msg)
     }
 
     // DIGEST COMMAND
-    if (messageText.indexOf('/digest') === 0) {
+    if (messageText.indexOf('/digest') === 0 || messageText.indexOf('/digest@'+globalBotUserName) === 0) {
         var bGoodCommand = false;
         var messageDelay = 0;
 
         messageText = messageText.trim();
 
-        if (messageText === '/digest') {
+        if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
             bGoodCommand = true;
             messageDelay = getMessageDelay(1);
         }
@@ -290,10 +292,11 @@ bot.on('text', function(msg)
     }
 
     // ROUBLE AND GRIVNA COMMAND
-    if (messageText === '/rouble' || messageText === '/grivna') {
+    if (messageText === '/rouble' || messageText === '/grivna' ||
+            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName) {
         var bankID = bankCBR;
         
-        if (messageText === '/grivna') {
+        if (messageText === '/grivna' || messageText === '/grivna@'+globalBotUserName) {
             bankID = bankNBU;
         }
         
@@ -305,7 +308,7 @@ bot.on('text', function(msg)
     }
 
     // CHART COMMAND
-    if (messageText.indexOf('/chart') === 0) {
+    if (messageText.indexOf('/chart') === 0 || messageText.indexOf('/chart@'+globalBotUserName) === 0) {
         messageText = messageText.trim();
         var splitCommandList = messageText.split(' ');
         if (splitCommandList.length === 2) {
@@ -317,7 +320,7 @@ bot.on('text', function(msg)
     }
 
     // METALL COMMAND
-    if (messageText === '/metall') {
+    if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
         Request(globalMetallJson, function(aErr, aRes, aBody) {
             if (!aErr) {
                 sendMetallValues(messageChatId, aBody);
@@ -328,18 +331,19 @@ bot.on('text', function(msg)
     }
 
     // HELP COMMAND
-    if (messageText === '/help') {
+    if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
         sendMessageByBot(messageChatId, generateHelpString());
     }
 
     // START COMMAND
-    if (messageText === '/start') {
+    if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
         sendMessageByBot(messageChatId, catchPhrases.startCommand[0]);
     }
     
     // DEBUG SECTION
     // HELLO COMMAND
-    if (messageText === '/hello' || messageText === '/hi') {
+    if (messageText === '/hello' || messageText === '/hi'
+            || messageText === '/hello@'+globalBotUserName || messageText === '/hi@'+globalBotUserName) {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
@@ -376,7 +380,7 @@ bot.on('text', function(msg)
     }
 
     // DIGESTCOUNT COMMAND
-    if (messageText === '/digestCount') {
+    if (messageText === '/count') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
