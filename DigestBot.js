@@ -379,7 +379,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // DIGESTCOUNT COMMAND
+    // COUNT COMMAND
     if (messageText === '/count') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
@@ -491,7 +491,7 @@ function sendChartToChat(aChatId, aExchangeId)
     if (globalExchangeList[aExchangeId]) {
         globalExchange = globalExchangeList[aExchangeId];
         downloadImageAndSendToChat(globalExchangeList[aExchangeId].url,
-                                   addYourStringToString('./', globalExchangeList[aExchangeId].name + '_image.png'),
+                                   addYourStringToString('./', aExchangeId + '_image.png'),
                                    aChatId);
     } else {
         sendMessageByBot(aChatId,
