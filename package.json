@@ -1,0 +1,40 @@
+{
+  "name": "DigestBot",
+  "version": "1.0.0",
+  "description": "Telegram digest bot for group chats",
+  "keywords": [
+    "OpenShift",
+    "Node.js",
+    "application",
+    "openshift",
+    "digest",
+    "Telegram",
+    "DigestBot",
+    "telegram"
+  ],
+  "author": {
+    "name": "EXL: Serg Koles",
+    "email": "exlmotodev@gmail.com",
+    "url": "http://exlmoto.ru"
+  },
+  "homepage": "http://exlmoto.ru/writing-telegram-bots/#8",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EXL/DigestBot"
+  },
+
+  "engines": {
+    "node": ">= 0.6.0",
+    "npm": ">= 1.0.0"
+  },
+
+  "dependencies": {
+    "request": "*",
+    "node-telegram-bot-api": "*"
+  },
+  "devDependencies": {},
+  "bundleDependencies": [],
+
+  "private": true,
+  "main": "DigestBot.js"
+}
