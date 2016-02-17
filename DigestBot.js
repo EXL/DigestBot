@@ -41,6 +41,11 @@ var httpOptions = [
         path: '/export/currrate.xml'
     }
 ];
+var httpMetallOptions = {
+    host: "www.cbr.ru",
+    port: 80,
+    path: "/hd_base/?PrtId=metall_base_new"
+};
 
 var botOptions = {
     polling: true
@@ -62,8 +67,6 @@ var bankLocalCurrency = ['RUB', 'UAH'];
 
 var bankCBR = 0;
 var bankNBU = 1;
-
-var globalMetallJson = 'http://api.z-lab.me/charts/metall.json';
 
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
@@ -304,7 +307,7 @@ bot.on('text', function(msg)
         var lastForeignValue = globalUSD[bankID];
 
         // Update currency list.
-        updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId);
+        updateGlobalCurrencyList(bankID, false, lastForeignValue, messageChatId);
     }
 
     // CHART COMMAND
@@ -321,13 +324,7 @@ bot.on('text', function(msg)
 
     // METALL COMMAND
     if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
-        Request(globalMetallJson, function(aErr, aRes, aBody) {
-            if (!aErr) {
-                sendMetallValues(messageChatId, aBody);
-            } else {
-                sendMessageByBot(messageChatId, 'Error: ' + aErr);
-            }
-        });
+        updateGlobalCurrencyList(bankID, true, lastForeignValue, messageChatId);
     }
 
     // HELP COMMAND
@@ -826,7 +823,7 @@ function getCurrentValue(aCurrency, aString)
     return (value / nominal).toFixed(4);
 }
 
-function shittyParseXML(aAllXml, bankID)
+function shittyParseCurrencyXML(aAllXml, bankID)
 {
     if (isEmpty(aAllXml)) {
         globalCurrencyList.USD = 'Error';
@@ -847,63 +844,80 @@ function shittyParseXML(aAllXml, bankID)
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
 
-function updateGlobalCurrencyList(bankID, lastForeignValue, messageChatId)
+function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId)
 {
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
     }
 
-    var request = Http.request(httpOptions[bankID], function(aRes) {
+    var request = Http.request((!aMetall) ? httpOptions[bankID] : httpMetallOptions, function(aRes) {
         aRes.setEncoding('utf-8');
         aRes.on('data', function(aChunk) {
             xmlContent += aChunk;
         });
-        
-        // console.log('Http-request');
 
         aRes.on('end', function() {
-            shittyParseXML(xmlContent, bankID);
-            if (messageChatId) {
-                sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId);
+            if (!aMetall) {
+                shittyParseCurrencyXML(xmlContent, bankID);
+                if (messageChatId) {
+                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId);
+                }
+            } else {
+                if (messageChatId) {
+                    sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent));
+                }
             }
         });
     });
     request.end();
 }
 
-function getMetallValueFromJson(aIndex, aValue, aJson)
+function shittyParseMetallXML(aAllXml)
 {
-    return replaceCommasByDots(aJson.results.metall[aIndex][aValue].replace(/\s+/g, ''));
+    var metallList = {
+        'Date': "",
+        'Au': 0.0,
+        'Ag': 0.0,
+        'Pt': 0.0,
+        'Pd': 0.0
+    };
+
+    // 9  - Date, 10 - Gold, 11 - Silver, 12 - Platinum, 13 - Palladium
+    metallList.Date = getCurrentMetallValue(9, aAllXml, true);
+    metallList.Au = getCurrentMetallValue(10, aAllXml, false);
+    metallList.Ag = getCurrentMetallValue(11, aAllXml, false);
+    metallList.Pt = getCurrentMetallValue(12, aAllXml, false);
+    metallList.Pd = getCurrentMetallValue(13, aAllXml, false);
+
+    return generateBotMetallAnswer(metallList);
 }
 
-function sendMetallValues(messageChatId, body)
+function generateBotMetallAnswer(aCurrencyList)
 {
-    if (!body) {
-        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[10]);
-        return;
+    var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n';
+    metallTable += catchPhrases.metallCommand[1] + aCurrencyList.Au + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[2] + aCurrencyList.Ag + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[3] + aCurrencyList.Pt + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[4] + aCurrencyList.Pd + catchPhrases.metallCommand[5] + '.';
+    return metallTable;
+}
+
+function getCurrentMetallValue(aNum, aString, aDate)
+{
+    // 'table class=\"data\"' - is a marker
+    var marker = 'table class=\"data\"';
+    if (!aDate) {
+        var value = parseFloat(deleteAllSpaces(replaceCommasByDots(getStringBelow(aString.indexOf(marker), aNum, aString))));
+        return value.toFixed(2);
+    } else {
+        return getStringBelow(aString.indexOf(marker), aNum, aString);
     }
+}
 
-    var json = JSON.parse(body);
-
-    var currencyAnswer = catchPhrases.metallCommand[0];
-    currencyAnswer += '\n';
-
-    currencyAnswer += catchPhrases.metallCommand[1] + ' '
-            + parseFloat(getMetallValueFromJson(0, 'gold', json)).toFixed(2)
-            + ' ' + catchPhrases.metallCommand[5] + '\n';
-    currencyAnswer += catchPhrases.metallCommand[2] + ' '
-            + parseFloat(getMetallValueFromJson(0, 'silver', json)).toFixed(2)
-            + ' ' + catchPhrases.metallCommand[5] + '\n';
-    currencyAnswer += catchPhrases.metallCommand[3] + ' '
-            + parseFloat(getMetallValueFromJson(0, 'platinum', json)).toFixed(2)
-            + ' ' + catchPhrases.metallCommand[5] + '\n';
-    currencyAnswer += catchPhrases.metallCommand[4] + ' '
-            + parseFloat(getMetallValueFromJson(0, 'palladium', json)).toFixed(2)
-            + ' ' + catchPhrases.metallCommand[5];
-
-    // Send metall answer to chat.
-    sendMessageByBot(messageChatId, currencyAnswer);
+function deleteAllSpaces(aString)
+{
+    return aString.replace(/\s/g, '');
 }
 
 function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId)
