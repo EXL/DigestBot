@@ -200,21 +200,22 @@ bot.on('text', function(msg)
     if (messageText.indexOf('/digest') === 0 || messageText.indexOf('/digest@'+globalBotUserName) === 0) {
         var bGoodCommand = false;
         var messageDelay = 0;
+        var fullCommand = '/digest@' + globalBotUserName;
+        var msgLength = messageText.length;
+        var fullCommandLength = fullCommand.length + 2;
 
         messageText = messageText.trim();
 
-        if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
+        if (messageText === '/digest' || messageText === fullCommand) {
             bGoodCommand = true;
             messageDelay = getMessageDelay(1);
         }
 
-        if (messageText.length === 9) {
-            var arg = parseInt(messageText[8]);
-            if (parseInt(messageText[8])) {
-                if (arg >= 1 && arg <= 7) {
-                    bGoodCommand = true;
-                    messageDelay = getMessageDelay(arg);
-                }
+        if (msgLength === 9 || msgLength === fullCommandLength) {
+            var arg = parseInt(messageText[msgLength - 1]);
+            if (arg >= 1 && arg <= 7) {
+                bGoodCommand = true;
+                messageDelay = getMessageDelay(arg);
             }
         }
 
