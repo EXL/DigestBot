@@ -189,6 +189,9 @@ bot.on('text', function(msg)
                 // Send message by bot.
                 sendMessageByBot(messageChatId,
                                  catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
+
+                // Save Stack to File
+                writeJSONFileToFileSystem('DigestBotStackLog.json', messageChatId, false);
             }
         } else {
             sendMessageByBot(messageChatId,
@@ -271,8 +274,9 @@ bot.on('text', function(msg)
                     // Don't need
                     // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
 
-                    // Remove username URI
-                    botAnswer = botAnswer.replace(/@/g,'');
+                    // Remove username URI only
+                    botAnswer = botAnswer.replace(/^@/,'');
+                    botAnswer = botAnswer.replace(/ @/g, ' ');
 
                     // Add dot to end of line.
                     if (botAnswer.substr(botAnswer.length - 1) !== '.') {
@@ -299,11 +303,11 @@ bot.on('text', function(msg)
     if (messageText === '/rouble' || messageText === '/grivna' ||
             messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName) {
         var bankID = bankCBR;
-        
+
         if (messageText === '/grivna' || messageText === '/grivna@'+globalBotUserName) {
             bankID = bankNBU;
         }
-        
+
         // Store last USD value.
         var lastForeignValue = globalUSD[bankID];
 
@@ -337,7 +341,7 @@ bot.on('text', function(msg)
     if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
         sendMessageByBot(messageChatId, catchPhrases.startCommand[0]);
     }
-    
+
     // DEBUG SECTION
     // HELLO COMMAND
     if (messageText === '/hello' || messageText === '/hi'
@@ -438,7 +442,7 @@ bot.on('text', function(msg)
     // SAVESTACK COMMAND
     if (messageText === '/stackSave' || messageText === '/saveStack') {
         if (getAdminRights()) {
-            writeJSONFileToFileSystem('DigestBotStackLog.json', messageChatId);
+            writeJSONFileToFileSystem('DigestBotStackLog.json', messageChatId, true);
         } else {
             sendNoAccessMessage(messageChatId);
         }
@@ -730,22 +734,26 @@ function getJSONFileFromFileSystem(aFileName)
     return JSON.parse(FileSystem.readFileSync(dotSlashName, 'utf-8'));
 }
 
-function writeJSONFileToFileSystem(aFileName, aMessageChatId)
+function writeJSONFileToFileSystem(aFileName, aMessageChatId, aAdmin)
 {
     if (globalStackListDigestMessages.length > 0) {
         var dotSlashName = addYourStringToString('./', aFileName);
         FileSystem.writeFile(dotSlashName, JSON.stringify(globalStackListDigestMessages, null, 4), function(aError) {
-            if (aError) {
-                sendMessageByBot(aMessageChatId,
-                                 catchPhrases.fileCommand[2] + '\n' + aError);
-            } else {
-                sendMessageByBot(aMessageChatId,
-                                 catchPhrases.fileCommand[0]);
+            if (aAdmin) {
+                if (aError) {
+                    sendMessageByBot(aMessageChatId,
+                                     catchPhrases.fileCommand[2] + '\n' + aError);
+                } else {
+                    sendMessageByBot(aMessageChatId,
+                                     catchPhrases.fileCommand[0]);
+                }
             }
         });
     } else {
-        sendMessageByBot(aMessageChatId,
-                         catchPhrases.debugCommandMessages[2]);
+        if (aAdmin) {
+            sendMessageByBot(aMessageChatId,
+                             catchPhrases.debugCommandMessages[2]);
+        }
     }
 }
 
