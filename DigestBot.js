@@ -262,7 +262,7 @@ bot.on('text', function(msg)
 
                     // Trim strings
                     botAnswer = botAnswer.trim();
-                    botAnswer = trimEachString(botAnswer);
+                    botAnswer = trimAndRemoveAtInEachString(botAnswer);
 
                     // Capitalize first letter of each string
                     botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
@@ -273,10 +273,6 @@ bot.on('text', function(msg)
                     // Delete last characters (;\n<marker><space>).
                     // Don't need
                     // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
-
-                    // Remove username URI only
-                    botAnswer = botAnswer.replace(/^@/,'\n');
-                    botAnswer = botAnswer.replace(/\W+@/g, ' ');
 
                     // Add dot to end of line.
                     if (botAnswer.substr(botAnswer.length - 1) !== '.') {
@@ -552,11 +548,17 @@ function getQuote(aString)
     return quote;
 }
 
-function trimEachString(aString)
+function trimAndRemoveAtInEachString(aString)
 {
     return aString.split('\n').map(function(aLine)
     {
         aLine = aLine.trim();
+
+        // Remove username URI only
+        aLine = aLine.replace(/^@/,'');
+        aLine = aLine.replace(/^\W+@/,'');
+        aLine = aLine.replace(/\W+@/g, ' ');
+
         return aLine;
     }).join('\n');
 }

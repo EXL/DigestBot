@@ -108,3 +108,20 @@
 Провероооооооооооооочка #digest
 И ещё одна
 ---
+#digest @ZorgeR '@ZorgeR
+
+#digest qweqweqwe
+
+#digest @exlmoto and @exlmoto and <@exlmoto and '@exlmoto and _@exlmoto and email@exlmoto.ru and @exlmoto.
+
+#digest
+
+Тест 1
+Тест 2
+Тест 3
+
+#digest
+@mbv06
+@mbv06
+'@mbv06
+---
