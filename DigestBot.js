@@ -75,7 +75,7 @@ var globalCurrencyList =  {
     'RUB': 0.0,
     'UAH': 0.0,
     'KZT': 0.0,
-    'BYR': 0.0,
+    'BYN': 0.0,
     'GBP': 0.0
 };
 
@@ -778,7 +778,7 @@ function getCurrencyTableString(bankID)
     currencyTable += '1 ' + bankForeignCurrency[bankID] + ' = '
             + globalCurrencyList[bankForeignCurrency[bankID]] + ' ' + bankLocalCurrency[bankID] + ';\n';
     currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 BYR = ' + globalCurrencyList.BYR + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 BYN = ' + globalCurrencyList.BYN + ' ' + bankLocalCurrency[bankID] + ';\n';
     currencyTable += '1 GBP = ' + globalCurrencyList.GBP + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
@@ -841,7 +841,7 @@ function shittyParseCurrencyXML(aAllXml, bankID)
         globalCurrencyList.EUR = 'Error';
         globalCurrencyList[bankForeignCurrency[bankID]] = 'Error';
         globalCurrencyList.KZT = 'Error';
-        globalCurrencyList.BYR = 'Error';
+        globalCurrencyList.BYN = 'Error';
         globalCurrencyList.GBP = 'Error';
     }
 
@@ -849,7 +849,7 @@ function shittyParseCurrencyXML(aAllXml, bankID)
     globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
     globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
-    globalCurrencyList.BYR = getCurrentValue('BYR', aAllXml);
+    globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml);
     globalCurrencyList.GBP = getCurrentValue('GBP', aAllXml);
 
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
