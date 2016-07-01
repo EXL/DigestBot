@@ -557,7 +557,7 @@ function trimAndRemoveAtInEachString(aString)
         // Remove username URI only
         aLine = aLine.replace(/^@/,'');
         aLine = aLine.replace(/^\W+@/,'');
-        aLine = aLine.replace(/\W+@/g, ' ');
+        aLine = aLine.replace(/[\W+\u0430-\u044f]@/g, ' ');
 
         return aLine;
     }).join('\n');
