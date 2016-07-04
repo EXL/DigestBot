@@ -67,7 +67,6 @@ var globalStackListDigestMessages = [ ];
 // CURRENCY SECTION
 var xmlContent = '';
 
-// var bankForeignCurrency = ['BYN', 'UAH', 'RUB'];
 var bankLocalCurrency = ['RUB', 'UAH', 'BYN'];
 
 var bankCBR = 0;
