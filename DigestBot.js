@@ -39,6 +39,11 @@ var httpOptions = [
         host: 'www.bank-ua.com',
         port: 80,
         path: '/export/currrate.xml'
+    },
+    {
+        host: 'nbrb.by',
+        port: 80,
+        path: '/Services/XmlExRates.aspx'
     }
 ];
 var httpMetallOptions = {
@@ -62,11 +67,11 @@ var globalStackListDigestMessages = [ ];
 // CURRENCY SECTION
 var xmlContent = '';
 
-var bankForeignCurrency = ['UAH', 'RUB'];
-var bankLocalCurrency = ['RUB', 'UAH'];
+var bankLocalCurrency = ['RUB', 'UAH', 'BYN'];
 
 var bankCBR = 0;
 var bankNBU = 1;
+var bankNBRB = 2;
 
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
@@ -296,12 +301,16 @@ bot.on('text', function(msg)
     }
 
     // ROUBLE AND GRIVNA COMMAND
-    if (messageText === '/rouble' || messageText === '/grivna' ||
-            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName) {
+    if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
+            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName || messageText === '/belrub@'+globalBotUserName ) {
         var bankID = bankCBR;
 
         if (messageText === '/grivna' || messageText === '/grivna@'+globalBotUserName) {
             bankID = bankNBU;
+        }
+
+        if (messageText === '/belrub' || messageText === '/belrub@'+globalBotUserName) {
+            bankID = bankNBRB;
         }
 
         // Store last USD value.
@@ -790,11 +799,11 @@ function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
     currencyTable += '1 USD = ' + globalCurrencyList.USD + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 ' + bankForeignCurrency[bankID] + ' = '
-            + globalCurrencyList[bankForeignCurrency[bankID]] + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' ' + bankLocalCurrency[bankID] + ';\n';	
     currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 BYN = ' + globalCurrencyList.BYN + ' ' + bankLocalCurrency[bankID] + ';\n';
+	if(bankID != bankNBRB ) {currencyTable += '1 BYN = ' + globalCurrencyList.BYN + ' ' + bankLocalCurrency[bankID] + ';\n';}
+    if(bankID != bankNBU  ) {currencyTable += '1 UAH = ' + globalCurrencyList.UAH + ' ' + bankLocalCurrency[bankID] + ';\n';}
+	if(bankID != bankCBR  ) {currencyTable += '1 RUB = ' + globalCurrencyList.RUB + ' ' + bankLocalCurrency[bankID] + ';\n';}
     currencyTable += '1 GBP = ' + globalCurrencyList.GBP + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
@@ -855,19 +864,20 @@ function shittyParseCurrencyXML(aAllXml, bankID)
     if (isEmpty(aAllXml)) {
         globalCurrencyList.USD = 'Error';
         globalCurrencyList.EUR = 'Error';
-        globalCurrencyList[bankForeignCurrency[bankID]] = 'Error';
         globalCurrencyList.KZT = 'Error';
-        globalCurrencyList.BYN = 'Error';
+		if(bankID != bankNBRB ) {globalCurrencyList.BYN = 'Error';}
+		if(bankID != bankNBU  ) {globalCurrencyList.UAH = 'Error';}
+		if(bankID != bankCBR  ) {globalCurrencyList.RUB = 'Error';}
         globalCurrencyList.GBP = 'Error';
     }
 
     globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
     globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
-    globalCurrencyList[bankForeignCurrency[bankID]] = getCurrentValue(bankForeignCurrency[bankID], aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
-    globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml);
+	if(bankID != bankNBRB ) {globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml);}
+	if(bankID != bankNBU  ) {globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml);}
+	if(bankID != bankCBR  ) {globalCurrencyList.RUB = getCurrentValue('RUB', aAllXml);}
     globalCurrencyList.GBP = getCurrentValue('GBP', aAllXml);
-
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
 
@@ -978,5 +988,6 @@ function initilizeCurrencyListAndGetUsdValue()
 {
     updateGlobalCurrencyList(bankCBR);
     updateGlobalCurrencyList(bankNBU);
+    updateGlobalCurrencyList(bankNBRB);
 }
 // END CURRENCY SECTION
