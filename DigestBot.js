@@ -555,12 +555,28 @@ function trimAndRemoveAtInEachString(aString)
         aLine = aLine.trim();
 
         // Remove username URI only
-        aLine = aLine.replace(/^@/,'');
-        aLine = aLine.replace(/^\W+@/,'');
-        aLine = aLine.replace(/[\W+\u0430-\u044f]@/g, ' ');
+        aLine = splitLineToWords(aLine);
 
         return aLine;
     }).join('\n');
+}
+
+function splitLineToWords(aString)
+{
+    return aString.split(' ').map(function(aWord)
+    {
+        if (aWord.indexOf('@') >= 0) {
+            if (!validateEmail(aWord)) {
+                aWord = aWord.replace(/@/g, '');
+            }
+        }
+        return aWord;
+    }).join(' ');
+}
+
+function validateEmail(aEmail)
+{
+    return /\S+@\S+\.\S+/.test(aEmail);
 }
 
 function capitalizeFirstLetterOfEachString(aString)
