@@ -39,6 +39,11 @@ var httpOptions = [
         host: 'www.bank-ua.com',
         port: 80,
         path: '/export/currrate.xml'
+    },
+    {
+        host: 'nbrb.by',
+        port: 80,
+        path: '/Services/XmlExRates.aspx'
     }
 ];
 var httpMetallOptions = {
@@ -62,11 +67,12 @@ var globalStackListDigestMessages = [ ];
 // CURRENCY SECTION
 var xmlContent = '';
 
-var bankForeignCurrency = ['UAH', 'RUB'];
-var bankLocalCurrency = ['RUB', 'UAH'];
+var bankForeignCurrency = ['BYN', 'UAH', 'RUB'];
+var bankLocalCurrency = ['RUB', 'UAH', 'BYN'];
 
 var bankCBR = 0;
 var bankNBU = 1;
+var bankNBRB = 2;
 
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList =  {
@@ -296,12 +302,16 @@ bot.on('text', function(msg)
     }
 
     // ROUBLE AND GRIVNA COMMAND
-    if (messageText === '/rouble' || messageText === '/grivna' ||
-            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName) {
+    if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
+            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName || messageText === '/belrub@'+globalBotUserName ) {
         var bankID = bankCBR;
 
         if (messageText === '/grivna' || messageText === '/grivna@'+globalBotUserName) {
             bankID = bankNBU;
+        }
+
+        if (messageText === '/belrub' || messageText === '/belrub@'+globalBotUserName) {
+            bankID = bankNBRB;
         }
 
         // Store last USD value.
@@ -978,5 +988,6 @@ function initilizeCurrencyListAndGetUsdValue()
 {
     updateGlobalCurrencyList(bankCBR);
     updateGlobalCurrencyList(bankNBU);
+    updateGlobalCurrencyList(bankNBRB);
 }
 // END CURRENCY SECTION
