@@ -1,4 +1,5 @@
 digest - Get digest from current chat.
 rouble - Get current exchange rate of RUB.
 grivna - Get current exchange rate of UAH.
+belrub - Get current exchange rate of BYN.
 help - Extended help for bot commands.

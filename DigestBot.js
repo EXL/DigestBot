@@ -300,7 +300,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // ROUBLE AND GRIVNA COMMAND
+    // ROUBLE, GRIVNA AND BELRUB COMMAND
     if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
             messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName || messageText === '/belrub@'+globalBotUserName ) {
         var bankID = bankCBR;
@@ -799,11 +799,11 @@ function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
     currencyTable += '1 USD = ' + globalCurrencyList.USD + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' ' + bankLocalCurrency[bankID] + ';\n';	
+    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' ' + bankLocalCurrency[bankID] + ';\n';
     currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' ' + bankLocalCurrency[bankID] + ';\n';
-	if(bankID != bankNBRB ) {currencyTable += '1 BYN = ' + globalCurrencyList.BYN + ' ' + bankLocalCurrency[bankID] + ';\n';}
-    if(bankID != bankNBU  ) {currencyTable += '1 UAH = ' + globalCurrencyList.UAH + ' ' + bankLocalCurrency[bankID] + ';\n';}
-	if(bankID != bankCBR  ) {currencyTable += '1 RUB = ' + globalCurrencyList.RUB + ' ' + bankLocalCurrency[bankID] + ';\n';}
+    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + globalCurrencyList.BYN + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + globalCurrencyList.UAH + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + globalCurrencyList.RUB + ' ' + bankLocalCurrency[bankID] + ';\n'; }
     currencyTable += '1 GBP = ' + globalCurrencyList.GBP + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
@@ -865,18 +865,18 @@ function shittyParseCurrencyXML(aAllXml, bankID)
         globalCurrencyList.USD = 'Error';
         globalCurrencyList.EUR = 'Error';
         globalCurrencyList.KZT = 'Error';
-		if(bankID != bankNBRB ) {globalCurrencyList.BYN = 'Error';}
-		if(bankID != bankNBU  ) {globalCurrencyList.UAH = 'Error';}
-		if(bankID != bankCBR  ) {globalCurrencyList.RUB = 'Error';}
+        if(bankID !== bankNBRB ) { globalCurrencyList.BYN = 'Error'; }
+        if(bankID !== bankNBU  ) { globalCurrencyList.UAH = 'Error'; }
+        if(bankID !== bankCBR  ) { globalCurrencyList.RUB = 'Error'; }
         globalCurrencyList.GBP = 'Error';
     }
 
     globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
     globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
     globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
-	if(bankID != bankNBRB ) {globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml);}
-	if(bankID != bankNBU  ) {globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml);}
-	if(bankID != bankCBR  ) {globalCurrencyList.RUB = getCurrentValue('RUB', aAllXml);}
+    if(bankID !== bankNBRB ) { globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml); }
+    if(bankID !== bankNBU  ) { globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml); }
+    if(bankID !== bankCBR  ) { globalCurrencyList.RUB = getCurrentValue('RUB', aAllXml); }
     globalCurrencyList.GBP = getCurrentValue('GBP', aAllXml);
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
