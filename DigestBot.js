@@ -325,7 +325,7 @@ bot.on('text', function(msg)
         messageText = messageText.trim();
         var splitCommandList = messageText.split(' ');
         if (splitCommandList.length === 2) {
-            sendChartToChat(messageChatId, splitCommandList[2]);
+            sendChartToChat(messageChatId, splitCommandList[1]);
         } else {
             sendMessageByBot(messageChatId,
                              generateChartsHelpString());
