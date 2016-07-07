@@ -374,6 +374,26 @@ bot.on('text', function(msg)
             sendNoAccessMessage(messageChatId);
         }
     }
+	
+	// SEND STICKER COMMAND
+    if (messageText.indexOf('/sticker') === 0 || messageText.indexOf('/sticker@'+globalBotUserName) === 0) {
+		if (getAdminRights()) {
+        messageText = messageText.trim();
+		
+        var splitCommandList = messageText.split(' ');
+        if (splitCommandList.length === 3) {
+			var targetChatID = splitCommandList[1];
+			
+			Request.head(splitCommandList[2], function(aErr, aRes, aBody) {
+				Request(splitCommandList[2]).pipe(FileSystem.createWriteStream("sticker.webp")).on('close', function() {
+					sendSticker(targetChatID, "sticker.webp");
+				});
+			});
+        }
+		} else {
+            sendNoAccessMessage(messageChatId);
+        }
+    }
 
     // CLEARSTACK COMMAND
     if (messageText === '/stackClear' || messageText === '/clearStack') {
@@ -484,6 +504,13 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId)
             sendChartFileToChat(aChatId, aFileName);
         });
     });
+}
+
+function sendSticker(aChatId, aStickerName)
+{
+    if (aStickerName) {
+        bot.sendSticker(aChatId, aStickerName);
+    }
 }
 
 function sendChartFileToChat(aChatId, aImageName)
