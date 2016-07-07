@@ -331,6 +331,15 @@ bot.on('text', function(msg)
                              generateChartsHelpString());
         }
     }
+	
+	// coffee COMMAND
+    if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {        
+		Request.head("https://api.z-lab.me/stickers/cofe.webp", function(aErr, aRes, aBody) {
+				Request("https://api.z-lab.me/stickers/cofe.webp").pipe(FileSystem.createWriteStream("coffee.webp")).on('close', function() {
+					sendSticker(messageChatId, "coffee.webp");
+				});
+			});
+    }
 
     // METALL COMMAND
     if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
