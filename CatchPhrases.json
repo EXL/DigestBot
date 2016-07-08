@@ -106,9 +106,11 @@
         "/digest <x> -- Показать сообщения с тегом digest за <x> дней (1-7).",
         "/rouble -- Текущий курс рубля ЦБ РФ.",
         "/grivna -- Текущий курс гривны по НБУ.",
+        "/belrub -- Текущий курс белорусского рубля по НБРБ.",
         "/chart -- Справка по командам показа графиков.",
         "/metall -- Текущий курс драгоценных металлов по ЦБ РФ.",
         "/start -- Приветствие.",
+        "/coffee -- Стикер с кофе.",
         "/help -- Эта справка."
     ],
 
@@ -120,7 +122,8 @@
         "/stackView или /viewStack -- Распечатать стек.",
         "/stackSave или /saveStack -- Сохранить стек в JSON-файл.",
         "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла.",
-        "/send <chat id> <message> -- Отправить <message> в <chat id>."
+        "/send <chat id> <message> -- Отправить <message> в <chat id>.",
+        "/sticker <chat id> <link-to-webp> -- Отправить стикер в <chat id>."
     ],
 
     "chartHelp" : [
