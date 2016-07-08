@@ -66,6 +66,8 @@ var globalStackListDigestMessages = [ ];
 
 var globalCofeeSticker = 'https://api.z-lab.me/stickers/cofe.webp';
 
+var globalJsonStackName = 'DigestBotStackLog.json';
+
 // CURRENCY SECTION
 var xmlContent = '';
 
@@ -164,6 +166,7 @@ bot.getMe().then(function(me)
     console.log('My id is %s.', me.id);
     console.log('And my username is @%s.', me.username);
     globalBotUserName = me.username;
+    readSavedStackFromFileSystem(globalJsonStackName, 0, true);
 });
 
 bot.on('text', function(msg)
@@ -198,7 +201,7 @@ bot.on('text', function(msg)
                                  catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
 
                 // Save Stack to File
-                writeJSONFileToFileSystem('DigestBotStackLog.json', messageChatId, false);
+                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false);
             }
         } else {
             sendMessageByBot(messageChatId,
@@ -476,7 +479,7 @@ bot.on('text', function(msg)
     // SAVESTACK COMMAND
     if (messageText === '/stackSave' || messageText === '/saveStack') {
         if (getAdminRights()) {
-            writeJSONFileToFileSystem('DigestBotStackLog.json', messageChatId, true);
+            writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true);
         } else {
             sendNoAccessMessage(messageChatId);
         }
@@ -485,7 +488,7 @@ bot.on('text', function(msg)
     // RESTORESTACK COMMAND
     if (messageText === '/stackRestore' || messageText === '/restoreStack') {
         if (getAdminRights()) {
-            readSavedStackFromFileSystem('DigestBotStackLog.json', messageChatId);
+            readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false);
         } else {
             sendNoAccessMessage(messageChatId);
         }
@@ -767,17 +770,21 @@ function getCatchPhrases()
     return getJSONFileFromFileSystem('CatchPhrases.json');
 }
 
-function readSavedStackFromFileSystem(aFileName, aMessageId)
+function readSavedStackFromFileSystem(aFileName, aMessageId, aFirstRun)
 {
     var dotSlashName = addYourStringToString('./', aFileName);
     FileSystem.readFile(dotSlashName, 'utf-8', function(aError, aData) {
         if (aError) {
-            sendMessageByBot(aMessageId,
-                             catchPhrases.fileCommand[3]);
+            if (!aFirstRun) {
+                sendMessageByBot(aMessageId,
+                                 catchPhrases.fileCommand[3]);
+            }
             return aError;
         }
-        sendMessageByBot(aMessageId,
-                         catchPhrases.fileCommand[1]);
+        if (!aFirstRun) {
+            sendMessageByBot(aMessageId,
+                             catchPhrases.fileCommand[1]);
+        }
         globalStackListDigestMessages = JSON.parse(aData);
     });
 }
