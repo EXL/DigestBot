@@ -654,9 +654,11 @@ function sendNoDigestMessages(aChatId)
 
 function sendMessageByBot(aChatId, aMessage)
 {
-    // Replace '%username%' by userName.
-    var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
-    bot.sendMessage(aChatId, readyMessage, { caption: 'I\'m a cute bot!' });
+    if (aChatId && aMessage) {
+        // Replace '%username%' by userName.
+        var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
+        bot.sendMessage(aChatId, readyMessage, { caption: 'I\'m a cute bot!' });
+    }
 }
 
 function getRandomInt(aMin, aMax)
