@@ -47,9 +47,9 @@ var httpOptions = [
     }
 ];
 var httpMetallOptions = {
-    host: "www.cbr.ru",
+    host: 'www.cbr.ru',
     port: 80,
-    path: "/hd_base/?PrtId=metall_base_new"
+    path: '/hd_base/?PrtId=metall_base_new'
 };
 
 var botOptions = {
@@ -63,6 +63,8 @@ var globalUserNameIs;
 var globalBotUserName;
 
 var globalStackListDigestMessages = [ ];
+
+var globalCofeeSticker = 'https://api.z-lab.me/stickers/cofe.webp';
 
 // CURRENCY SECTION
 var xmlContent = '';
@@ -331,14 +333,14 @@ bot.on('text', function(msg)
                              generateChartsHelpString());
         }
     }
-	
-	// coffee COMMAND
-    if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {        
-		Request.head("https://api.z-lab.me/stickers/cofe.webp", function(aErr, aRes, aBody) {
-				Request("https://api.z-lab.me/stickers/cofe.webp").pipe(FileSystem.createWriteStream("coffee.webp")).on('close', function() {
-					sendSticker(messageChatId, "coffee.webp");
-				});
-			});
+
+    // COFFEE COMMAND
+    if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
+        Request.head(globalCofeeSticker, function(aErr, aRes, aBody) {
+            Request(globalCofeeSticker).pipe(FileSystem.createWriteStream('coffee.webp')).on('close', function() {
+                sendSticker(messageChatId, 'coffee.webp');
+            });
+        });
     }
 
     // METALL COMMAND
@@ -383,23 +385,21 @@ bot.on('text', function(msg)
             sendNoAccessMessage(messageChatId);
         }
     }
-	
-	// SEND STICKER COMMAND
+
+    // STICKER COMMAND
     if (messageText.indexOf('/sticker') === 0 || messageText.indexOf('/sticker@'+globalBotUserName) === 0) {
-		if (getAdminRights()) {
-        messageText = messageText.trim();
-		
-        var splitCommandList = messageText.split(' ');
-        if (splitCommandList.length === 3) {
-			var targetChatID = splitCommandList[1];
-			
-			Request.head(splitCommandList[2], function(aErr, aRes, aBody) {
-				Request(splitCommandList[2]).pipe(FileSystem.createWriteStream("sticker.webp")).on('close', function() {
-					sendSticker(targetChatID, "sticker.webp");
-				});
-			});
-        }
-		} else {
+        if (getAdminRights()) {
+            messageText = messageText.trim();
+            var splitCommandListSticker = messageText.split(' ');
+            if (splitCommandListSticker.length === 3) {
+                var targetStickerChatID = splitCommandListSticker[1];
+                Request.head(splitCommandListSticker[2], function(aErr, aRes, aBody) {
+                    Request(splitCommandListSticker[2]).pipe(FileSystem.createWriteStream('sticker.webp')).on('close', function() {
+                        sendSticker(targetStickerChatID, 'sticker.webp');
+                    });
+                });
+            }
+        } else {
             sendNoAccessMessage(messageChatId);
         }
     }
@@ -582,15 +582,6 @@ function getMessageDelay(aCountOfDay)
 function getSendMessage(aString, aTrim)
 {
     return aString.replace(aTrim, '').trim();
-}
-
-function getQuote(aString)
-{
-    var quote = '';
-    if (/"/.test(aString)) {
-        quote = aString.match(/"([^"]*)"/ )[1];
-    }
-    return quote;
 }
 
 function trimAndRemoveAtInEachString(aString)
@@ -949,7 +940,7 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
 function shittyParseMetallXML(aAllXml)
 {
     var metallList = {
-        'Date': "",
+        'Date': '',
         'Au': 0.0,
         'Ag': 0.0,
         'Pt': 0.0,
