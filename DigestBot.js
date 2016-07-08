@@ -934,6 +934,9 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
             }
         });
     });
+    request.on('error', function(error) {
+        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message);
+    });
     request.end();
 }
 
