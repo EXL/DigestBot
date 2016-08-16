@@ -65,6 +65,7 @@ var globalBotUserName;
 var globalStackListDigestMessages = [ ];
 
 var globalCofeeSticker = 'https://api.z-lab.me/stickers/cofe.webp';
+var gameStatURL = "https://api.z-lab.me/img/lgsl/servers_stats.png";
 
 var globalJsonStackName = 'DigestBotStackLog.json';
 
@@ -344,6 +345,11 @@ bot.on('text', function(msg)
                 sendSticker(messageChatId, 'coffee.webp');
             });
         });
+    }
+    
+    // GAME COMMAND
+    if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
+        downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId)
     }
 
     // METALL COMMAND
