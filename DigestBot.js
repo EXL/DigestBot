@@ -182,33 +182,35 @@ bot.on('text', function(msg)
     // console.log(msg);
     // END DEBUG SECTION
 
+    if (msg.forward_date) { // Skip All Forward Messages
+        return;
+    }
+
     // DIGEST TAG
-    if (!msg.forward_date) { // No Forwards messages
-        if (messageText.indexOf('#digest') >= 0) {
-            if (messageText.length < 3000) {
-                globalCountOfMessagesWithDigest++;
-                var normalMessage = normalizeMessage(messageText);
-                if (!(isBlank(normalMessage))) {
-                    var messageInfoStruct = {
-                        's_chatID': messageChatId,
-                        's_date': messageDate,
-                        's_message': normalMessage,
-                        's_username': globalUserNameIs
-                    };
+    if (messageText.indexOf('#digest') >= 0) {
+        if (messageText.length < 3000) {
+            globalCountOfMessagesWithDigest++;
+            var normalMessage = normalizeMessage(messageText);
+            if (!(isBlank(normalMessage))) {
+                var messageInfoStruct = {
+                    's_chatID': messageChatId,
+                    's_date': messageDate,
+                    's_message': normalMessage,
+                    's_username': globalUserNameIs
+                };
 
-                    globalStackListDigestMessages.push(messageInfoStruct);
+                globalStackListDigestMessages.push(messageInfoStruct);
 
-                    // Send message by bot.
-                    sendMessageByBot(messageChatId,
-                                     catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
-
-                    // Save Stack to File
-                    writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false);
-                }
-            } else {
+                // Send message by bot.
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[5]);
+                                 catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
+
+                // Save Stack to File
+                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false);
             }
+        } else {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[5]);
         }
     }
 
