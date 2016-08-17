@@ -349,7 +349,7 @@ bot.on('text', function(msg)
 
     // GAME COMMAND
     if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
-        downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId, false, catchPhrases.debugCommandMessages[13]);
+        downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId, false, catchPhrases.debugCommandMessages[12]);
     }
 
     // METALL COMMAND
