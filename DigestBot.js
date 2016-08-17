@@ -65,7 +65,7 @@ var globalBotUserName;
 var globalStackListDigestMessages = [ ];
 
 var globalCofeeSticker = 'https://api.z-lab.me/stickers/cofe.webp';
-var gameStatURL = "https://api.z-lab.me/img/lgsl/servers_stats.png";
+var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 
 var globalJsonStackName = 'DigestBotStackLog.json';
 
@@ -349,7 +349,7 @@ bot.on('text', function(msg)
 
     // GAME COMMAND
     if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
-        downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId)
+        downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId, false, catchPhrases.debugCommandMessages[13]);
     }
 
     // METALL COMMAND
@@ -515,11 +515,15 @@ function generateChartsHelpString()
     return helpChartsAnswer;
 }
 
-function downloadImageAndSendToChat(aUri, aFileName, aChatId)
+function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc)
 {
     Request.head(aUri, function(aErr, aRes, aBody) {
         Request(aUri).pipe(FileSystem.createWriteStream(aFileName)).on('close', function() {
-            sendChartFileToChat(aChatId, aFileName);
+            if (aChart) {
+                sendChartFileToChat(aChatId, aFileName);
+            } else {
+                bot.sendPhoto(aChatId, aFileName, { caption: aDesc });
+            }
         });
     });
 }
@@ -544,7 +548,8 @@ function sendChartToChat(aChatId, aExchangeId)
         globalExchange = globalExchangeList[aExchangeId];
         downloadImageAndSendToChat(globalExchangeList[aExchangeId].url,
                                    addYourStringToString('./', aExchangeId + '_image.png'),
-                                   aChatId);
+                                   aChatId,
+                                   true, null);
     } else {
         sendMessageByBot(aChatId,
                          generateChartsHelpString());
