@@ -183,30 +183,32 @@ bot.on('text', function(msg)
     // END DEBUG SECTION
 
     // DIGEST TAG
-    if (messageText.indexOf('#digest') >= 0) {
-        if (messageText.length < 3000) {
-            globalCountOfMessagesWithDigest++;
-            var normalMessage = normalizeMessage(messageText);
-            if (!(isBlank(normalMessage))) {
-                var messageInfoStruct = {
-                    's_chatID': messageChatId,
-                    's_date': messageDate,
-                    's_message': normalMessage,
-                    's_username': globalUserNameIs
-                };
+    if (!msg.forward_date) { // No Forwards messages
+        if (messageText.indexOf('#digest') >= 0) {
+            if (messageText.length < 3000) {
+                globalCountOfMessagesWithDigest++;
+                var normalMessage = normalizeMessage(messageText);
+                if (!(isBlank(normalMessage))) {
+                    var messageInfoStruct = {
+                        's_chatID': messageChatId,
+                        's_date': messageDate,
+                        's_message': normalMessage,
+                        's_username': globalUserNameIs
+                    };
 
-                globalStackListDigestMessages.push(messageInfoStruct);
+                    globalStackListDigestMessages.push(messageInfoStruct);
 
-                // Send message by bot.
+                    // Send message by bot.
+                    sendMessageByBot(messageChatId,
+                                     catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
+
+                    // Save Stack to File
+                    writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false);
+                }
+            } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
-
-                // Save Stack to File
-                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false);
+                                 catchPhrases.debugCommandMessages[5]);
             }
-        } else {
-            sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[5]);
         }
     }
 
