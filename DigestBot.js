@@ -346,7 +346,7 @@ bot.on('text', function(msg)
             });
         });
     }
-    
+
     // GAME COMMAND
     if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
         downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId)
