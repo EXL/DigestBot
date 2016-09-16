@@ -29,8 +29,7 @@ git clone https://github.com/EXL/DigestBot DigestBotDeploy
 
 ```sh
 cd ~/Deploy/DigestBotDeploy/
-npm install node-telegram-bot-api
-npm install request
+npm install 
 ```
 
 * Write your token in "BOT_TOKEN_ACCESS.json" file.
