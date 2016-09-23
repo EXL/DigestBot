@@ -633,7 +633,7 @@ function capitalizeFirstLetterOfEachString(aString)
 {
     return aString.split('\n').map(function(aLine)
     {
-        if (aLine.indexOf('http') !== 0) {
+        if (aLine && aLine.indexOf('http') !== 0) {
             aLine = aLine[0].toUpperCase() + aLine.substr(1);
         }
         return aLine;
