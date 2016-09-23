@@ -61,6 +61,7 @@ var bot = new TelegramBot(token, botOptions);
 var globalCountOfMessagesWithDigest = 0;
 var globalUserNameIs;
 var globalBotUserName;
+var globalMessageIdForReply;
 
 var globalStackListDigestMessages = [ ];
 
@@ -176,6 +177,7 @@ bot.on('text', function(msg)
     var messageChatId = msg.chat.id;
     var messageText = msg.text;
     var messageDate = msg.date;
+    globalMessageIdForReply = msg.message_id;
     globalUserNameIs = msg.from.username;
 
     // DEBUG SECTION
@@ -389,7 +391,7 @@ bot.on('text', function(msg)
             var splitSendList = messageText.split(' ');
             if (splitSendList.length > 2) {
                 var targetChatID = splitSendList[1];
-                sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID));
+                sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID), true);
             } else {
                 sendMessageByBot(messageChatId,
                                  catchPhrases.debugCommandMessages[8]);
@@ -526,7 +528,7 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc)
             if (aChart) {
                 sendChartFileToChat(aChatId, aFileName);
             } else {
-                bot.sendPhoto(aChatId, aFileName, { caption: aDesc });
+                bot.sendPhoto(aChatId, aFileName, { caption: aDesc, reply_to_message_id: globalMessageIdForReply });
             }
         });
     });
@@ -535,14 +537,15 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc)
 function sendSticker(aChatId, aStickerName)
 {
     if (aStickerName) {
-        bot.sendSticker(aChatId, aStickerName);
+        bot.sendSticker(aChatId, aStickerName, { reply_to_message_id: globalMessageIdForReply });
     }
 }
 
 function sendChartFileToChat(aChatId, aImageName)
 {
     if (aImageName) {
-        bot.sendPhoto(aChatId, aImageName, { caption: catchPhrases.debugCommandMessages[9] + ' ' + globalExchange.desc });
+        bot.sendPhoto(aChatId, aImageName,
+                      { caption: catchPhrases.debugCommandMessages[9] + ' ' + globalExchange.desc, reply_to_message_id: globalMessageIdForReply });
     }
 }
 
@@ -667,12 +670,12 @@ function sendNoDigestMessages(aChatId)
                          getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)]);
 }
 
-function sendMessageByBot(aChatId, aMessage)
+function sendMessageByBot(aChatId, aMessage, aSendMessageToAnotherChat)
 {
     if (aChatId && aMessage) {
         // Replace '%username%' by userName.
         var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
-        bot.sendMessage(aChatId, readyMessage, { caption: 'I\'m a cute bot!' });
+        bot.sendMessage(aChatId, readyMessage, { disable_web_page_preview: true, reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply });
     }
 }
 
