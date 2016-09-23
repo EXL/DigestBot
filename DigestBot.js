@@ -284,17 +284,9 @@ bot.on('text', function(msg)
                     // Capitalize first letter of each string
                     botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
 
-                    // Replace all line breaks by semicolon, line break and digestMarker.
-                    botAnswer = catchPhrases.digestMarker + replaceLineBreaksByYourString(botAnswer, ';\n' + catchPhrases.digestMarker);
-
-                    // Delete last characters (;\n<marker><space>).
-                    // Don't need
-                    // botAnswer = botAnswer.substring(0, botAnswer.length - 4);
-
-                    // Add dot to end of line.
-                    if (botAnswer.substr(botAnswer.length - 1) !== '.') {
-                        botAnswer += '.';
-                    }
+                    // Replace all line breaks by line break, digestMarker and space.
+                    botAnswer = catchPhrases.digestMarker + ' '
+                            + replaceLineBreaksByYourString(botAnswer, '\n' + catchPhrases.digestMarker + ' ');
 
                     // Add digest header
                     botAnswer = getDigestReportHeader() + botAnswer;
@@ -314,7 +306,8 @@ bot.on('text', function(msg)
 
     // ROUBLE, GRIVNA AND BELRUB COMMAND
     if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
-            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName || messageText === '/belrub@'+globalBotUserName ) {
+            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName
+            || messageText === '/belrub@'+globalBotUserName ) {
         var bankID = bankCBR;
 
         if (messageText === '/grivna' || messageText === '/grivna@'+globalBotUserName) {
@@ -640,7 +633,9 @@ function capitalizeFirstLetterOfEachString(aString)
 {
     return aString.split('\n').map(function(aLine)
     {
-        aLine = aLine[0].toUpperCase() + aLine.substr(1);
+        if (aLine.indexOf('http') !== 0) {
+            aLine = aLine[0].toUpperCase() + aLine.substr(1);
+        }
         return aLine;
     }).join('\n');
 }
