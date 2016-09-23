@@ -1,40 +1,51 @@
 {
-  "name": "DigestBot",
+  "name": "digestbot",
   "version": "1.0.0",
   "description": "Telegram digest bot for group chats",
   "keywords": [
-    "OpenShift",
-    "Node.js",
-    "application",
-    "openshift",
-    "digest",
+    "Telegram Bot",
     "Telegram",
     "DigestBot",
-    "telegram"
+    "digestbot",
+    "digest-bot",
+    "telegram",
+    "telegram bot",
+    "digest"
   ],
   "author": {
-    "name": "EXL: Serg Koles",
+    "name": "EXL",
     "email": "exlmotodev@gmail.com",
     "url": "http://exlmoto.ru"
   },
   "homepage": "http://exlmoto.ru/writing-telegram-bots/#8",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/EXL/DigestBot"
   },
-
+  "bugs": {
+    "url": "https://github.com/EXL/DigestBot/issues"
+  },
   "engines": {
     "node": ">= 0.6.0",
     "npm": ">= 1.0.0"
   },
-
   "dependencies": {
     "request": "*",
     "node-telegram-bot-api": "*"
   },
-  "devDependencies": {},
-  "bundleDependencies": [],
-
-  "private": true,
-  "main": "DigestBot.js"
+  "main": "DigestBot.js",
+  "contributors": [ {
+    "name": "EXL",
+    "email": "exlmotodev@gmail.com",
+    "url": "http://exlmoto.ru"
+  }, {
+    "name": "Zorge.R",
+    "email": "zorg.rhrd@gmail.com",
+    "url": "http://z-lab.me"
+  }, {
+    "name": "Andrey",
+    "email": "kovirolikmeow@gmail.com",
+    "url": "https://github.com/kovirolik"
+  } ]
 }
