@@ -75,6 +75,8 @@ var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 
 var globalJsonStackName = 'DigestBotStackLog.json';
 
+readSavedStackFromFileSystem(globalJsonStackName, 0, true);
+
 // CURRENCY SECTION
 var xmlContent = '';
 
@@ -174,7 +176,6 @@ bot.getMe().then(function(me)
     console.log('My id is %s.', me.id);
     console.log('And my username is @%s.', me.username);
     globalBotUserName = me.username;
-    readSavedStackFromFileSystem(globalJsonStackName, 0, true);
 });
 
 bot.on('text', function(msg)
