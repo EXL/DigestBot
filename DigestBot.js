@@ -22,11 +22,16 @@
 ** SOFTWARE.
 ************************************************************************************/
 
+// Set current dir as working dir for script
+process.chdir(__dirname);
+
+// Requires
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
 var Request = require('request');
 
+// Globals
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
 var httpOptions = [
@@ -162,6 +167,7 @@ var globalExchangeList = {
 var globalExchange;
 // END CURRENCY SECTION
 
+// Functions
 bot.getMe().then(function(me)
 {
     console.log('Hello! My name is %s!', me.first_name);
