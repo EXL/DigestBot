@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup of DigestBot Stack Log
+
+[Service]
+Type=simple
+ExecStart=/root/backup_digest_log.sh
+
+[Install]
+WantedBy=multi-user.target

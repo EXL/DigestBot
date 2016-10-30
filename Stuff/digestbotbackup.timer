@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for DigestBot Log Stack BackUp
+
+[Timer]
+OnCalendar=*-*-* 22:00:00
+Unit=digestbotbackup.service
+
+[Install]
+WantedBy=multi-user.target
