@@ -40,4 +40,4 @@ npm install
 nodejs DigestBot
 ```
 
-Please read [tutorial (In Russian)](http://exlmoto.ru/writing-telegram-bots/#8) about creating bots for Telegram.
+Please read [tutorial (In Russian)](http://exlmoto.ru/writing-telegram-bots/) about creating bots for Telegram.
