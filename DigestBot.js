@@ -77,7 +77,7 @@ var globalJsonStackName = 'DigestBotStackLog.json';
 
 readSavedStackFromFileSystem(globalJsonStackName, 0, true);
 
-// CURRENCY SECTION
+// ----- CURRENCY SECTION
 var xmlContent = '';
 
 var bankLocalCurrency = ['RUB', 'UAH', 'BYN'];
@@ -167,7 +167,7 @@ var globalExchangeList = {
 };
 
 var globalExchange;
-// END CURRENCY SECTION
+// ----- END CURRENCY SECTION
 
 // Functions
 bot.getMe().then(function(me)
@@ -186,10 +186,6 @@ bot.on('text', function(msg)
     var messageDate = msg.date;
     globalMessageIdForReply = msg.message_id;
     globalUserNameIs = msg.from.username;
-
-    // DEBUG SECTION
-    // console.log(msg);
-    // END DEBUG SECTION
 
     if (msg.forward_date) { // Skip All Forward Messages
         return;
@@ -224,7 +220,7 @@ bot.on('text', function(msg)
     }
 
     // DIGEST COMMAND
-    if (messageText.indexOf('/digest') === 0 || messageText.indexOf('/digest@'+globalBotUserName) === 0) {
+    else if (messageText.indexOf('/digest') === 0 || messageText.indexOf('/digest@'+globalBotUserName) === 0) {
         var bGoodCommand = false;
         var messageDelay = 0;
         var fullCommand = '/digest@' + globalBotUserName;
@@ -312,7 +308,7 @@ bot.on('text', function(msg)
     }
 
     // ROUBLE, GRIVNA AND BELRUB COMMAND
-    if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
+    else if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
             messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName
             || messageText === '/belrub@'+globalBotUserName ) {
         var bankID = bankCBR;
@@ -333,7 +329,7 @@ bot.on('text', function(msg)
     }
 
     // CHART COMMAND
-    if (messageText.indexOf('/chart') === 0 || messageText.indexOf('/chart@'+globalBotUserName) === 0) {
+    else if (messageText.indexOf('/chart') === 0 || messageText.indexOf('/chart@'+globalBotUserName) === 0) {
         messageText = messageText.trim();
         var splitCommandList = messageText.split(' ');
         if (splitCommandList.length === 2) {
@@ -345,7 +341,7 @@ bot.on('text', function(msg)
     }
 
     // COFFEE COMMAND
-    if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
+    else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
         Request.head(globalCofeeSticker, function(aErr, aRes, aBody) {
             Request(globalCofeeSticker).pipe(FileSystem.createWriteStream('coffee.webp')).on('close', function() {
                 sendSticker(messageChatId, 'coffee.webp');
@@ -354,28 +350,28 @@ bot.on('text', function(msg)
     }
 
     // GAME COMMAND
-    if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
+    else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
         downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId, false, catchPhrases.debugCommandMessages[12]);
     }
 
     // METALL COMMAND
-    if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
+    else if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
         updateGlobalCurrencyList(bankID, true, lastForeignValue, messageChatId);
     }
 
     // HELP COMMAND
-    if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
+    else if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
         sendMessageByBot(messageChatId, generateHelpString());
     }
 
     // START COMMAND
-    if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
+    else if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
         sendMessageByBot(messageChatId, catchPhrases.startCommand[0]);
     }
 
-    // DEBUG SECTION
+    // ----- ADMINISTRATION COMMANDS
     // HELLO COMMAND
-    if (messageText === '/hello' || messageText === '/hi'
+    else if (messageText === '/hello' || messageText === '/hi'
             || messageText === '/hello@'+globalBotUserName || messageText === '/hi@'+globalBotUserName) {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
@@ -383,9 +379,8 @@ bot.on('text', function(msg)
         }
     }
 
-    // ADMINISTRATION COMMANDS
     // SEND COMMAND
-    if (messageText.indexOf('/send') === 0) {
+    else if (messageText.indexOf('/send') === 0) {
         if (getAdminRights()) {
             messageText = messageText.trim();
             var splitSendList = messageText.split(' ');
@@ -402,7 +397,7 @@ bot.on('text', function(msg)
     }
 
     // STICKER COMMAND
-    if (messageText.indexOf('/sticker') === 0 || messageText.indexOf('/sticker@'+globalBotUserName) === 0) {
+    else if (messageText.indexOf('/sticker') === 0 || messageText.indexOf('/sticker@'+globalBotUserName) === 0) {
         if (getAdminRights()) {
             messageText = messageText.trim();
             var splitCommandListSticker = messageText.split(' ');
@@ -420,7 +415,7 @@ bot.on('text', function(msg)
     }
 
     // CLEARSTACK COMMAND
-    if (messageText === '/stackClear' || messageText === '/clearStack') {
+    else if (messageText === '/stackClear' || messageText === '/clearStack') {
         if (getAdminRights()) {
             globalStackListDigestMessages = [ ];
             sendMessageByBot(messageChatId,
@@ -431,7 +426,7 @@ bot.on('text', function(msg)
     }
 
     // COUNT COMMAND
-    if (messageText === '/count') {
+    else if (messageText === '/count') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
@@ -441,7 +436,7 @@ bot.on('text', function(msg)
     }
 
     // DELETE COMMAND
-    if (messageText.indexOf('/delete') === 0) {
+    else if (messageText.indexOf('/delete') === 0) {
         if (getAdminRights()) {
             var stackLength = globalStackListDigestMessages.length;
             if (stackLength > 0) {
@@ -465,7 +460,7 @@ bot.on('text', function(msg)
     }
 
     // VIEWSTACK COMMAND
-    if (messageText === '/stackView' || messageText === '/viewStack') {
+    else if (messageText === '/stackView' || messageText === '/viewStack') {
         if (getAdminRights()) {
             var stack = '\n';
             var sizeOfStack = globalStackListDigestMessages.length;
@@ -489,7 +484,7 @@ bot.on('text', function(msg)
     }
 
     // SAVESTACK COMMAND
-    if (messageText === '/stackSave' || messageText === '/saveStack') {
+    else if (messageText === '/stackSave' || messageText === '/saveStack') {
         if (getAdminRights()) {
             writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true);
         } else {
@@ -498,14 +493,14 @@ bot.on('text', function(msg)
     }
 
     // RESTORESTACK COMMAND
-    if (messageText === '/stackRestore' || messageText === '/restoreStack') {
+    else if (messageText === '/stackRestore' || messageText === '/restoreStack') {
         if (getAdminRights()) {
             readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false);
         } else {
             sendNoAccessMessage(messageChatId);
         }
     }
-    // END DEBUG SECTION
+    // ----- END ADMINISTRATION COMMANDS
 });
 
 function generateChartsHelpString()
@@ -845,7 +840,7 @@ function addYourStringToString(aYourString, aString)
     return aYourString + aString;
 }
 
-// CURRENCY SECTION
+// ----- CURRENCY SECTION
 function createReportCurrencyHeader(aCatchPhrase)
 {
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
@@ -1049,4 +1044,4 @@ function initilizeCurrencyListAndGetUsdValue()
     updateGlobalCurrencyList(bankNBU);
     updateGlobalCurrencyList(bankNBRB);
 }
-// END CURRENCY SECTION
+// ----- END CURRENCY SECTION
