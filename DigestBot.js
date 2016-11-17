@@ -372,8 +372,7 @@ bot.on('text', function(msg)
 
     // ----- ADMINISTRATION COMMANDS
     // HELLO COMMAND
-    else if (messageText === '/hello' || messageText === '/hi'
-            || messageText === '/hello@'+globalBotUserName || messageText === '/hi@'+globalBotUserName) {
+    else if (messageText === '/hello' || messageText === '/hi') {
         if (getAdminRights()) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
@@ -398,7 +397,7 @@ bot.on('text', function(msg)
     }
 
     // STICKER COMMAND
-    else if (messageText.indexOf('/sticker') === 0 || messageText.indexOf('/sticker@'+globalBotUserName) === 0) {
+    else if (messageText.indexOf('/sticker') === 0) {
         if (getAdminRights()) {
             messageText = messageText.trim();
             var splitCommandListSticker = messageText.split(' ');
