@@ -30,6 +30,7 @@ var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
 var Request = require('request');
+var Exec = require('child_process').exec;
 
 // Globals
 var token = getTokenAccess();
@@ -500,8 +501,27 @@ bot.on('text', function(msg)
             sendNoAccessMessage(messageChatId);
         }
     }
+
+    // HOSTIP COMMAND
+    else if (messageText === '/hostip') {
+        if (getAdminRights()) {
+            sendHostIpToChat(messageChatId);
+        } else {
+            sendNoAccessMessage(messageChatId);
+        }
+    }
     // ----- END ADMINISTRATION COMMANDS
 });
+
+function sendHostIpToChat(aMessageChatId) {
+    Exec('hostname -i', function(err, stdout, stderr) {
+        if (err) {
+            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14]);
+            return;
+        }
+        sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + stdout);
+    });
+}
 
 function generateChartsHelpString()
 {

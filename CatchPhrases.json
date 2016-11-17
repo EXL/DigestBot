@@ -62,7 +62,9 @@
         "Биржевой график:",
         "Ошибка получения данных. @ZorgeR || @exlmoto, проверьте пожалуйста API.",
         "Ошибка: ",
-        "Игровая статистика:"
+        "Игровая статистика:",
+        "Войди в меня (по SSH)\nМой IP: ",
+        "Ошибка получения IP-адреса. Администраторы, проверьте результат выполнения команды 'hostname -i'."
     ],
 
     "roubleCommandUp" : [
@@ -126,7 +128,8 @@
         "/stackSave или /saveStack -- Сохранить стек в JSON-файл.",
         "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла.",
         "/send <chat id> <message> -- Отправить <message> в <chat id>.",
-        "/sticker <chat id> <link-to-webp> -- Отправить стикер в <chat id>."
+        "/sticker <chat id> <link-to-webp> -- Отправить стикер в <chat id>.",
+        "/hostip -- IP хост-сервера."
     ],
 
     "chartHelp" : [
