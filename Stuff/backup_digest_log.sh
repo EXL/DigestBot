@@ -1,5 +1,5 @@
 #!/bin/bash
-DAYMONTH=`date +"%Y%M%d_%H%M%S"`
+DAYMONTH=`date +"%Y%m%d_%H%M%S"`
 /bin/tar -czf /root/digestbot/BackUpDigestLog/backup_digest_log_$DAYMONTH.tar.gz -C /root/digestbot/DigestBot/ DigestBotStackLog.json
 
 # Backup rotation, default 100 files
