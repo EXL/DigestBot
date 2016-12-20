@@ -7,3 +7,5 @@ http://www.cbr-xml-daily.ru/daily_eng.xml
 http://www.cbr-xml-daily.ru/daily_eng_utf8.xml
 http://www.cbr-xml-daily.ru/daily_json.js
 http://www.cbr-xml-daily.ru/daily_jsonp.js
+
+Thanks @alexkbs from https://toster.ru/q/56614
