@@ -153,6 +153,18 @@ var globalExchangeList = {
         desc: 'BTC/RUB from BTC-E.',
         url: 'http://api.z-lab.me/btce/btc_rur.php'
     },
+    'dsh_usd': {
+        desc: 'DSH/USD from BTC-E.',
+        url: 'http://api.z-lab.me/btce/dsh_usd.php'
+    },
+    'ltc_usd': {
+        desc: 'LTC/USD from BTC-E.',
+        url: 'http://api.z-lab.me/btce/ltc_usd.php'
+    },
+    'eth_usd': {
+        desc: 'ETH/USD from BTC-E.',
+        url: 'http://api.z-lab.me/btce/eth_usd.php'
+    },
     'forex': {
         desc: 'USD/RUB from Forex.',
         url: 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5'
