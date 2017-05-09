@@ -357,7 +357,7 @@ bot.on('text', function(msg)
     else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
         Request.head(globalCofeeSticker, function(aErr, aRes, aBody) {
             Request(globalCofeeSticker).pipe(FileSystem.createWriteStream('coffee.webp')).on('close', function() {
-                sendSticker(messageChatId, 'coffee.webp');
+                sendSticker(messageChatId, 'coffee.webp', true);
             });
         });
     }
@@ -560,10 +560,14 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc)
     });
 }
 
-function sendSticker(aChatId, aStickerName)
+function sendSticker(aChatId, aStickerName, aReply)
 {
     if (aStickerName) {
-        bot.sendSticker(aChatId, aStickerName, { reply_to_message_id: globalMessageIdForReply });
+        if (aReply) {
+            bot.sendSticker(aChatId, aStickerName, { reply_to_message_id: globalMessageIdForReply });
+        } else {
+            bot.sendSticker(aChatId, aStickerName);
+        }
     }
 }
 
