@@ -128,7 +128,7 @@
         "/stackSave или /saveStack -- Сохранить стек в JSON-файл.",
         "/stackRestore или /restoreStack -- Восстановить стек из JSON-файла.",
         "/send <chat id> <message> -- Отправить <message> в <chat id>.",
-        "/sticker <chat id> <link-to-webp> -- Отправить стикер в <chat id>.",
+        "/sticker <chat id> <sticker id> -- Отправить стикер в <chat id>.",
         "/hostip -- IP хост-сервера."
     ],
 

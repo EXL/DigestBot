@@ -71,7 +71,7 @@ var globalMessageIdForReply;
 
 var globalStackListDigestMessages = [ ];
 
-var globalCofeeSticker = 'https://api.z-lab.me/stickers/cofe.webp';
+var globalCofeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
 var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 
 var globalJsonStackName = 'DigestBotStackLog.json';
@@ -355,11 +355,7 @@ bot.on('text', function(msg)
 
     // COFFEE COMMAND
     else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
-        Request.head(globalCofeeSticker, function(aErr, aRes, aBody) {
-            Request(globalCofeeSticker).pipe(FileSystem.createWriteStream('coffee.webp')).on('close', function() {
-                sendSticker(messageChatId, 'coffee.webp', true);
-            });
-        });
+        sendSticker(messageChatId, globalCofeeSticker, true);
     }
 
     // GAME COMMAND
@@ -414,12 +410,7 @@ bot.on('text', function(msg)
             messageText = messageText.trim();
             var splitCommandListSticker = messageText.split(' ');
             if (splitCommandListSticker.length === 3) {
-                var targetStickerChatID = splitCommandListSticker[1];
-                Request.head(splitCommandListSticker[2], function(aErr, aRes, aBody) {
-                    Request(splitCommandListSticker[2]).pipe(FileSystem.createWriteStream('sticker.webp')).on('close', function() {
-                        sendSticker(targetStickerChatID, 'sticker.webp');
-                    });
-                });
+                sendSticker(splitCommandListSticker[1], splitCommandListSticker[2]);
             }
         } else {
             sendNoAccessMessage(messageChatId);
@@ -560,13 +551,13 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc)
     });
 }
 
-function sendSticker(aChatId, aStickerName, aReply)
+function sendSticker(aChatId, aStickerId, aReply)
 {
-    if (aStickerName) {
+    if (aStickerId) {
         if (aReply) {
-            bot.sendSticker(aChatId, aStickerName, { reply_to_message_id: globalMessageIdForReply });
+            bot.sendSticker(aChatId, aStickerId, { reply_to_message_id: globalMessageIdForReply });
         } else {
-            bot.sendSticker(aChatId, aStickerName);
+            bot.sendSticker(aChatId, aStickerId);
         }
     }
 }
