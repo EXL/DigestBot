@@ -11,7 +11,7 @@ Thanks to the creators of [node-telegram-bot-api](https://github.com/yagop/node-
 
 For example, GNU/Linux:
 
-* Install the "Node.js" and Node.js package manager, the "npm";
+* Install the "Node.js" and the "npm" Node.js package manager;
 
 ```sh
 sudo apt-get install nodejs
@@ -40,4 +40,4 @@ npm install
 nodejs DigestBot
 ```
 
-Please read [tutorial (In Russian)](http://exlmoto.ru/writing-telegram-bots/) about creating bots for Telegram.
+Please read [big tutorial (In Russian)](http://exlmoto.ru/writing-telegram-bots/) about creating bots for Telegram.
