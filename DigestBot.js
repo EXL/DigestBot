@@ -715,7 +715,7 @@ function sendMessageByBot(aChatId, aMessage, aSendMessageToAnotherChat)
             return bot.sendMessage(aChatId, readyMessage, {
                     disable_web_page_preview: true,
                     reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply
-                }).then(function(response) {
+                }).delay(1000).then(function(response) { // 1 sec delay
                     resolve(response);
                 })
             // TODO make error handling
