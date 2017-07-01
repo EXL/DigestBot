@@ -586,9 +586,12 @@ function sendChartToChat(aChatId, aExchangeId)
 
 function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize)
 {
-    for (var j = 0, botAnswerLength = aMesssage.length; j < botAnswerLength; j+=aChunkSize) {
-        sendMessageByBot(aChatId,  aMesssage.substring(j, j + aChunkSize));
-    }
+    // send messages synchronous
+    (async function loop() {
+        for (var j = 0, botAnswerLength = aMesssage.length; j < botAnswerLength; j+=aChunkSize) {
+                await sendMessageByBot(aChatId,  aMesssage.substring(j, j + aChunkSize));
+        }
+    })();
 }
 
 function generateHelpString()
@@ -698,7 +701,14 @@ function sendMessageByBot(aChatId, aMessage, aSendMessageToAnotherChat)
     if (aChatId && aMessage) {
         // Replace '%username%' by userName.
         var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
-        bot.sendMessage(aChatId, readyMessage, { disable_web_page_preview: true, reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply });
+        // return Promise
+        return new Promise((resolve, reject) => {
+            bot.sendMessage(aChatId, readyMessage, { disable_web_page_preview: true, reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply })
+            .then(response => {
+                resolve(response);
+            })
+            // TODO make error handling
+        });
     }
 }
 
