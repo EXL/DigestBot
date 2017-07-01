@@ -586,11 +586,19 @@ function sendChartToChat(aChatId, aExchangeId)
 
 function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize)
 {
-    // send messages synchronous
-    (async function loop() {
-        for (var j = 0, botAnswerLength = aMesssage.length; j < botAnswerLength; j+=aChunkSize) {
-                await sendMessageByBot(aChatId,  aMesssage.substring(j, j + aChunkSize));
+    var times = parseInt(aMesssage.length / aChunkSize) + 1; // +1 for last chunk
+    var current = 0;
+    var chunkOffset = 0;
+
+    (function nextLap() {
+        if (current >= times) {
+            return;
         }
+        ++current;
+        sendMessageByBot(aChatId, aMesssage.substring(chunkOffset, chunkOffset + aChunkSize)).then(function() {
+            chunkOffset += aChunkSize;
+            nextLap();
+        });
     })();
 }
 
@@ -701,12 +709,15 @@ function sendMessageByBot(aChatId, aMessage, aSendMessageToAnotherChat)
     if (aChatId && aMessage) {
         // Replace '%username%' by userName.
         var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
-        // return Promise
-        return new Promise((resolve) => {
-            bot.sendMessage(aChatId, readyMessage, { disable_web_page_preview: true, reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply })
-            .then(response => {
-                resolve(response);
-            })
+
+        // Return Promise
+        return new Promise(function(resolve) {
+            return bot.sendMessage(aChatId, readyMessage, {
+                    disable_web_page_preview: true,
+                    reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply
+                }).then(function(response) {
+                    resolve(response);
+                })
             // TODO make error handling
         });
     }
