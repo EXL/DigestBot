@@ -702,7 +702,7 @@ function sendMessageByBot(aChatId, aMessage, aSendMessageToAnotherChat)
         // Replace '%username%' by userName.
         var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
         // return Promise
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             bot.sendMessage(aChatId, readyMessage, { disable_web_page_preview: true, reply_to_message_id: (aSendMessageToAnotherChat) ? null : globalMessageIdForReply })
             .then(response => {
                 resolve(response);
