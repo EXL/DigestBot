@@ -34,8 +34,6 @@ npm install
 
 * Write your token in "BOT_TOKEN_ACCESS.json" file.
 
-* Run and enjoy!
-
-`node DigestBot` or `nodejs DigestBot`
+* Run with `node DigestBot` or `nodejs DigestBot` and enjoy!
 
 Please read [big tutorial (in Russian)](http://exlmoto.ru/writing-telegram-bots/) about creating various bots for Telegram.
