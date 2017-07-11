@@ -5,7 +5,7 @@ Digest Bot
 
 Telegram digest bot for group chats.
 Bot records all messages with the #digest tag and displays them on the /digest command.
-Thanks to the creators of [node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api) and the creators of powerful and awesome JavaScript framework — [Node.js](https://nodejs.org/en/).
+Thanks to the creators of [node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api) and the creators of powerful and awesome JavaScript framework — [Node.js](https://nodejs.org/en/)
 
 ## Install instructions
 
@@ -29,21 +29,13 @@ git clone https://github.com/EXL/DigestBot DigestBotDeploy
 
 ```sh
 cd ~/Deploy/DigestBotDeploy/
-npm install 
+npm install
 ```
 
 * Write your token in "BOT_TOKEN_ACCESS.json" file.
 
 * Run and enjoy!
 
-```sh
-nodejs DigestBot
-```
+`node DigestBot` or `nodejs DigestBot`
 
-or
-
-```sh
-node DigestBot
-```
-
-Please read [big tutorial (In Russian)](http://exlmoto.ru/writing-telegram-bots/) about creating bots for Telegram.
+Please read [big tutorial (in Russian)](http://exlmoto.ru/writing-telegram-bots/) about creating various bots for Telegram.
