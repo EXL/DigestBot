@@ -65,7 +65,6 @@ var botOptions = {
 var bot = new TelegramBot(token, botOptions);
 
 var globalCountOfMessagesWithDigest = 0;
-var globalUserNameIs;
 var globalBotUserName;
 var globalMessageIdForReply;
 
@@ -76,7 +75,7 @@ var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 
 var globalJsonStackName = 'DigestBotStackLog.json';
 
-readSavedStackFromFileSystem(globalJsonStackName, 0, true);
+readSavedStackFromFileSystem(globalJsonStackName, 0, true, null);
 
 // ----- CURRENCY SECTION
 var xmlContent = '';
@@ -198,7 +197,7 @@ bot.on('text', function(msg)
     var messageText = msg.text;
     var messageDate = msg.date;
     globalMessageIdForReply = msg.message_id;
-    globalUserNameIs = msg.from.username;
+    var messageUserName = msg.from.username;
 
     if (msg.forward_date) { // Skip All Forward Messages
         return;
@@ -214,21 +213,23 @@ bot.on('text', function(msg)
                     's_chatID': messageChatId,
                     's_date': messageDate,
                     's_message': normalMessage,
-                    's_username': globalUserNameIs
+                    's_username': messageUserName
                 };
 
                 globalStackListDigestMessages.push(messageInfoStruct);
 
                 // Send message by bot.
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)]);
+                                 catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)],
+                                 messageUserName);
 
                 // Save Stack to File
-                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false);
+                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false, messageUserName);
             }
         } else {
             sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[5]);
+                             catchPhrases.debugCommandMessages[5],
+                             messageUserName);
         }
     }
 
@@ -308,15 +309,15 @@ bot.on('text', function(msg)
                     botAnswer = getDigestReportHeader() + botAnswer;
 
                     // Send botAnswer as chunks
-                    sendChunksMessagesByBot(messageChatId, botAnswer, 3500);
+                    sendChunksMessagesByBot(messageChatId, botAnswer, 3500, messageUserName);
                 } else {
-                    sendNoDigestMessages(messageChatId);
+                    sendNoDigestMessages(messageChatId, messageUserName);
                 }
             } else {
-                sendNoDigestMessages(messageChatId);
+                sendNoDigestMessages(messageChatId, messageUserName);
             }
         } else {
-            sendMessageByBot(messageChatId, catchPhrases.helpCommand[2]);
+            sendMessageByBot(messageChatId, catchPhrases.helpCommand[2], messageUserName);
         }
     }
 
@@ -338,7 +339,7 @@ bot.on('text', function(msg)
         var lastForeignValue = globalUSD[bankID];
 
         // Update currency list.
-        updateGlobalCurrencyList(bankID, false, lastForeignValue, messageChatId);
+        updateGlobalCurrencyList(bankID, false, lastForeignValue, messageChatId, messageUserName);
     }
 
     // CHART COMMAND
@@ -346,10 +347,10 @@ bot.on('text', function(msg)
         messageText = messageText.trim();
         var splitCommandList = messageText.split(' ');
         if (splitCommandList.length === 2) {
-            sendChartToChat(messageChatId, splitCommandList[1]);
+            sendChartToChat(messageChatId, splitCommandList[1], messageUserName);
         } else {
             sendMessageByBot(messageChatId,
-                             generateChartsHelpString());
+                             generateChartsHelpString(), messageUserName);
         }
     }
 
@@ -365,82 +366,83 @@ bot.on('text', function(msg)
 
     // METALL COMMAND
     else if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
-        updateGlobalCurrencyList(bankID, true, lastForeignValue, messageChatId);
+        updateGlobalCurrencyList(bankID, true, lastForeignValue, messageChatId, messageUserName);
     }
 
     // HELP COMMAND
     else if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
-        sendMessageByBot(messageChatId, generateHelpString());
+        sendMessageByBot(messageChatId, generateHelpString(messageUserName), messageUserName);
     }
 
     // START COMMAND
     else if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
-        sendMessageByBot(messageChatId, catchPhrases.startCommand[0]);
+        sendMessageByBot(messageChatId, catchPhrases.startCommand[0], messageUserName);
     }
 
     // ----- ADMINISTRATION COMMANDS
     // HELLO COMMAND
     else if (messageText === '/hello' || messageText === '/hi') {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             sendMessageByBot(messageChatId,
-                             catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)]);
+                             catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)],
+                             messageUserName);
         }
     }
 
     // SEND COMMAND
     else if (messageText.indexOf('/send') === 0) {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             messageText = messageText.trim();
             var splitSendList = messageText.split(' ');
             if (splitSendList.length > 2) {
                 var targetChatID = splitSendList[1];
-                sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID), true);
+                sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID), messageUserName, true);
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[8]);
+                                 catchPhrases.debugCommandMessages[8], messageUserName);
             }
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // STICKER COMMAND
     else if (messageText.indexOf('/sticker') === 0) {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             messageText = messageText.trim();
             var splitCommandListSticker = messageText.split(' ');
             if (splitCommandListSticker.length === 3) {
                 sendSticker(splitCommandListSticker[1], splitCommandListSticker[2]);
             }
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // CLEARSTACK COMMAND
     else if (messageText === '/stackClear' || messageText === '/clearStack') {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             globalStackListDigestMessages = [ ];
             sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[1]);
+                             catchPhrases.debugCommandMessages[1], messageUserName);
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // COUNT COMMAND
     else if (messageText === '/count') {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest);
+                             catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest, messageUserName);
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // DELETE COMMAND
     else if (messageText.indexOf('/delete') === 0) {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             var stackLength = globalStackListDigestMessages.length;
             if (stackLength > 0) {
                 var chunksMsg = messageText.split(' ');
@@ -448,23 +450,23 @@ bot.on('text', function(msg)
                     var delArg = parseInt(chunksMsg[1]);
                     if (delArg <= stackLength) {
                         globalStackListDigestMessages.splice(delArg - 1, 1);
-                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.');
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.', messageUserName);
                     } else {
-                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.');
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.', messageUserName);
                     }
                 }
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[2]);
+                                 catchPhrases.debugCommandMessages[2], messageUserName);
             }
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // VIEWSTACK COMMAND
     else if (messageText === '/stackView' || messageText === '/viewStack') {
-        if (getAdminRights()) {
+        if (getAdminRights(messageUserName)) {
             var stack = '\n';
             var sizeOfStack = globalStackListDigestMessages.length;
             if (sizeOfStack > 0) {
@@ -476,52 +478,52 @@ bot.on('text', function(msg)
                     stack += globalStackListDigestMessages[j].s_message + '\n';
                 }
                 sendChunksMessagesByBot(messageChatId,
-                                        catchPhrases.debugCommandMessages[3] + stack, 3500);
+                                        catchPhrases.debugCommandMessages[3] + stack, 3500, messageUserName);
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[2]);
+                                 catchPhrases.debugCommandMessages[2], messageUserName);
             }
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // SAVESTACK COMMAND
     else if (messageText === '/stackSave' || messageText === '/saveStack') {
-        if (getAdminRights()) {
-            writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true);
+        if (getAdminRights(messageUserName)) {
+            writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true, messageUserName);
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // RESTORESTACK COMMAND
     else if (messageText === '/stackRestore' || messageText === '/restoreStack') {
-        if (getAdminRights()) {
-            readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false);
+        if (getAdminRights(messageUserName)) {
+            readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false, messageUserName);
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
 
     // HOSTIP COMMAND
     else if (messageText === '/hostip') {
-        if (getAdminRights()) {
-            sendHostIpToChat(messageChatId);
+        if (getAdminRights(messageUserName)) {
+            sendHostIpToChat(messageChatId, messageUserName);
         } else {
-            sendNoAccessMessage(messageChatId);
+            sendNoAccessMessage(messageChatId, messageUserName);
         }
     }
     // ----- END ADMINISTRATION COMMANDS
 });
 
-function sendHostIpToChat(aMessageChatId) {
+function sendHostIpToChat(aMessageChatId, aUserName) {
     Exec('hostname -i', function(err, stdout, stderr) {
         if (err) {
-            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14]);
+            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName);
             return;
         }
-        sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + stdout);
+        sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + stdout, aUserName);
     });
 }
 
@@ -570,7 +572,7 @@ function sendChartFileToChat(aChatId, aImageName)
     }
 }
 
-function sendChartToChat(aChatId, aExchangeId)
+function sendChartToChat(aChatId, aExchangeId, aUserName)
 {
     if (globalExchangeList[aExchangeId]) {
         globalExchange = globalExchangeList[aExchangeId];
@@ -580,11 +582,11 @@ function sendChartToChat(aChatId, aExchangeId)
                                    true, null);
     } else {
         sendMessageByBot(aChatId,
-                         generateChartsHelpString());
+                         generateChartsHelpString(), aUserName);
     }
 }
 
-function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize)
+function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize, aUserName)
 {
     var times = parseInt(aMesssage.length / aChunkSize) + 1; // +1 for last chunk
     var current = 0;
@@ -595,21 +597,21 @@ function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize)
             return;
         }
         ++current;
-        sendMessageByBot(aChatId, aMesssage.substring(chunkOffset, chunkOffset + aChunkSize)).then(function() {
+        sendMessageByBot(aChatId, aMesssage.substring(chunkOffset, chunkOffset + aChunkSize), aUserName).then(function() {
             chunkOffset += aChunkSize;
             nextLap();
         });
     })();
 }
 
-function generateHelpString()
+function generateHelpString(aUserName)
 {
     var botAnswer = '';
     for (var i = 0; i < catchPhrases.helpCommand.length; ++i) {
         botAnswer += catchPhrases.helpCommand[i] + '\n';
     }
 
-    if (getAdminRights()) {
+    if (getAdminRights(aUserName)) {
         for (var j = 0; j < catchPhrases.helpCommandAdmin.length; ++j) {
             botAnswer += catchPhrases.helpCommandAdmin[j] + '\n';
         }
@@ -621,9 +623,9 @@ function generateHelpString()
     return botAnswer;
 }
 
-function sendNoAccessMessage(aChatId)
+function sendNoAccessMessage(aChatId, aUserName)
 {
-    sendMessageByBot(aChatId, catchPhrases.debugCommandMessages[0]);
+    sendMessageByBot(aChatId, catchPhrases.debugCommandMessages[0], aUserName);
 }
 
 function getMessageDelay(aCountOfDay)
@@ -684,9 +686,9 @@ function replaceLineBreaksByYourString(aString, aYourString)
     return aString.replace(/(?:\r\n|\r|\n)/g, aYourString);
 }
 
-function getAdminRights()
+function getAdminRights(aUserName)
 {
-    return globalUserNameIs === 'exlmoto' || globalUserNameIs === 'ZorgeR';
+    return aUserName === 'exlmoto' || aUserName === 'ZorgeR';
 }
 
 function getDigestReportHeader()
@@ -697,18 +699,18 @@ function getDigestReportHeader()
             + '\n';
 }
 
-function sendNoDigestMessages(aChatId)
+function sendNoDigestMessages(aChatId, aUserName)
 {
     sendMessageByBot(aChatId,
                      catchPhrases.digestCommandNoMessages[
-                         getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)]);
+                         getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)], aUserName);
 }
 
-function sendMessageByBot(aChatId, aMessage, aSendMessageToAnotherChat)
+function sendMessageByBot(aChatId, aMessage, aUserName, aSendMessageToAnotherChat)
 {
     if (aChatId && aMessage) {
         // Replace '%username%' by userName.
-        var readyMessage = aMessage.replace('%username%', '@' + globalUserNameIs);
+        var readyMessage = aMessage.replace('%username%', '@' + aUserName);
 
         // Return Promise
         return new Promise(function(resolve) {
@@ -834,20 +836,20 @@ function getCatchPhrases()
     return getJSONFileFromFileSystem('CatchPhrases.json');
 }
 
-function readSavedStackFromFileSystem(aFileName, aMessageId, aFirstRun)
+function readSavedStackFromFileSystem(aFileName, aMessageId, aFirstRun, aUserName)
 {
     var dotSlashName = addYourStringToString('./', aFileName);
     FileSystem.readFile(dotSlashName, 'utf-8', function(aError, aData) {
         if (aError) {
             if (!aFirstRun) {
                 sendMessageByBot(aMessageId,
-                                 catchPhrases.fileCommand[3]);
+                                 catchPhrases.fileCommand[3], aUserName);
             }
             return aError;
         }
         if (!aFirstRun) {
             sendMessageByBot(aMessageId,
-                             catchPhrases.fileCommand[1]);
+                             catchPhrases.fileCommand[1], aUserName);
         }
         globalStackListDigestMessages = JSON.parse(aData);
     });
@@ -859,7 +861,7 @@ function getJSONFileFromFileSystem(aFileName)
     return JSON.parse(FileSystem.readFileSync(dotSlashName, 'utf-8'));
 }
 
-function writeJSONFileToFileSystem(aFileName, aMessageChatId, aAdmin)
+function writeJSONFileToFileSystem(aFileName, aMessageChatId, aAdmin, aUserName)
 {
     if (globalStackListDigestMessages.length > 0) {
         var dotSlashName = addYourStringToString('./', aFileName);
@@ -867,17 +869,17 @@ function writeJSONFileToFileSystem(aFileName, aMessageChatId, aAdmin)
             if (aAdmin) {
                 if (aError) {
                     sendMessageByBot(aMessageChatId,
-                                     catchPhrases.fileCommand[2] + '\n' + aError);
+                                     catchPhrases.fileCommand[2] + '\n' + aError, aUserName);
                 } else {
                     sendMessageByBot(aMessageChatId,
-                                     catchPhrases.fileCommand[0]);
+                                     catchPhrases.fileCommand[0], aUserName);
                 }
             }
         });
     } else {
         if (aAdmin) {
             sendMessageByBot(aMessageChatId,
-                             catchPhrases.debugCommandMessages[2]);
+                             catchPhrases.debugCommandMessages[2], aUserName);
         }
     }
 }
@@ -979,7 +981,7 @@ function shittyParseCurrencyXML(aAllXml, bankID)
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
 
-function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId)
+function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId, aUserName)
 {
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
@@ -996,17 +998,17 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
             if (!aMetall) {
                 shittyParseCurrencyXML(xmlContent, bankID);
                 if (messageChatId) {
-                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId);
+                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName);
                 }
             } else {
                 if (messageChatId) {
-                    sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent));
+                    sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName);
                 }
             }
         });
     });
     request.on('error', function(error) {
-        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message);
+        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName);
     });
     request.end();
 }
@@ -1058,7 +1060,7 @@ function deleteAllSpaces(aString)
     return aString.replace(/\s/g, '');
 }
 
-function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId)
+function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, aUserName)
 {
     // Generate currency answer.
     var currencyAnswer = '';
@@ -1082,7 +1084,7 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId)
     currencyAnswer += getCurrencyTableString(bankID);
 
     // Send currency answer to chat.
-    sendMessageByBot(messageChatId, currencyAnswer);
+    sendMessageByBot(messageChatId, currencyAnswer, aUserName);
 }
 
 function initilizeCurrencyListAndGetUsdValue()
