@@ -641,7 +641,7 @@ function trimAndRemoveAtInEachString(aString)
         aLine = aLine.trim();
 
         // Remove username URI only
-        aLine = splitLineToWords(aLine);
+        // aLine = splitLineToWords(aLine);
 
         return aLine;
     }).join('\n');
@@ -711,6 +711,7 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId)
         return new Promise(function(resolve) {
             return bot.sendMessage(aChatId, readyMessage, {
                     disable_web_page_preview: true,
+                    disable_notification: true,
                     reply_to_message_id: aMsgId
                 }).delay(1000).then(function(response) { // 1 sec delay
                     resolve(response);
