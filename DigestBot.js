@@ -515,7 +515,7 @@ bot.on('text', function(msg)
 function generateDigestKeyboard(aPagesCount)
 {
     if (aPagesCount <= 1) {
-        return null;
+        return [];
     }
     var keyboard = [];
     var row = [];
