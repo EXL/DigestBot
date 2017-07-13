@@ -378,7 +378,7 @@ bot.on('text', function(msg)
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
         generateChartsKeyboard();
         sendMessageByBot(messageChatId,
-                         catchPhrases.buttons[5], messageUserName, messsageId, generateChartsKeyboard());
+                         catchPhrases.buttons[5], messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
     // CHART COMMAND
