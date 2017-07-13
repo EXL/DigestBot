@@ -200,12 +200,10 @@ bot.getMe().then(function(me)
 function generateChartsKeyboard() {
     var keyboard = [];
     var row = [];
-    var size = Object.keys(globalExchangeList).length;
-    var col = 4;
     var ind = 0;
     for (k in globalExchangeList) {
         ind++;
-        row.push( { text: k, callback_data: 'z.' + k.replace('_', '.')} );
+        row.push( { text: k, callback_data: 'data.' + k.replace('_', '.')} );
         if (ind == 4) {
             ind = 0;
             keyboard.push(row);
@@ -213,7 +211,6 @@ function generateChartsKeyboard() {
         }
     }
     keyboard.push(row);
-    console.log(keyboard);
     return keyboard;
 }
 
@@ -234,7 +231,12 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery) {
     } else if (action === 'met') {
         text += catchPhrases.buttons[3];
         updateGlobalCurrencyList(null, true, null, msg.chat.id, msg.from.username, msg.message_id, true);
+    } else if (action.indexOf('data.') === 0) {
+        var arg = action.replace('data.', '').replace('.', '_');
+        text += arg;
+        sendChartToChat(messageChatId, arg, msg.from.username, msg.message_id);
     }
+
     bot.answerCallbackQuery(callbackQuery.id, text, false);
 });
 
