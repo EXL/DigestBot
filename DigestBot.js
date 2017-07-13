@@ -204,13 +204,13 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery) {
     var text = catchPhrases.buttons[4];
     if (action === 'rub') {
         text += catchPhrases.buttons[0];
-        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, null, msg.message_id, true);
+        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, msg.from.username, msg.message_id, true);
     } else if (action === 'uah') {
         text += catchPhrases.buttons[1];
-        updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, null, msg.message_id, true);
+        updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, msg.from.username, msg.message_id, true);
     } else if (action === 'byn') {
         text += catchPhrases.buttons[2];
-        updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, null, msg.message_id, true);
+        updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, msg.from.username, msg.message_id, true);
     } else if (action === 'met') {
         text += catchPhrases.buttons[3];
     }
@@ -1042,7 +1042,8 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
                     if (!aEditText) {
                         sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId, globalRatesKeyboard);
                     } else {
-                        bot.editMessageText(shittyParseMetallXML(xmlContent), { chat_id: messageChatId, message_id: aMsgId });
+                        bot.editMessageText(shittyParseMetallXML(xmlContent),
+                                            { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard });
                     }
                 }
             }
@@ -1052,7 +1053,8 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
         if (!aEditText) {
             sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId, globalRatesKeyboard);
         } else {
-            bot.editMessageText(catchPhrases.debugCommandMessages[11] + error.message, { chat_id: messageChatId, message_id: aMsgId });
+            bot.editMessageText(catchPhrases.debugCommandMessages[11] + error.message,
+                                { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard });
         }
     });
     request.end();
@@ -1132,7 +1134,8 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
     if (!aEditText) {
         sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId, globalRatesKeyboard);
     } else {
-        bot.editMessageText(currencyAnswer, { chat_id: messageChatId, message_id: aMsgId });
+        bot.editMessageText(currencyAnswer,
+                            { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard });
     }
 }
 
