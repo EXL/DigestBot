@@ -908,16 +908,26 @@ function createReportCurrencyHeader(aCatchPhrase)
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
+function addZerosToRate(aRate) {
+    var suff = 8;
+    var str = aRate.toString();
+    var start = str.length;
+    for (var i = start; i < suff; ++i) {
+        str += '0';
+    }
+    return str;
+}
+
 function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
-    currencyTable += '1 USD = ' + globalCurrencyList.USD + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 EUR = ' + globalCurrencyList.EUR + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 KZT = ' + globalCurrencyList.KZT + ' ' + bankLocalCurrency[bankID] + ';\n';
-    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + globalCurrencyList.BYN + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + globalCurrencyList.UAH + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + globalCurrencyList.RUB + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    currencyTable += '1 GBP = ' + globalCurrencyList.GBP + ' ' + bankLocalCurrency[bankID] + '.';
+    currencyTable += '1 USD = ' + addZerosToRate(globalCurrencyList.USD) + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 EUR = ' + addZerosToRate(globalCurrencyList.EUR) + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 KZT = ' + addZerosToRate(globalCurrencyList.KZT) + ' ' + bankLocalCurrency[bankID] + ';\n';
+    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + addZerosToRate(globalCurrencyList.BYN) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + addZerosToRate(globalCurrencyList.UAH) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + addZerosToRate(globalCurrencyList.RUB) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    currencyTable += '1 GBP = ' + addZerosToRate(globalCurrencyList.GBP) + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
 
