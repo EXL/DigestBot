@@ -728,7 +728,8 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey)
                     disable_web_page_preview: true,
                     disable_notification: true,
                     reply_to_message_id: aMsgId,
-                    reply_markup: (aKey) ? aKey : null
+                    reply_markup: (aKey) ? aKey : null,
+                    parse_mode: (aKey) ? 'HTML' : null
                 }).delay(1000).then(function(response) { // 1 sec delay
                     resolve(response);
                 })
@@ -1014,22 +1015,26 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
                 }
             } else {
                 if (messageChatId) {
+                    var msgTxt = '<code>' + shittyParseMetallXML(xmlContent) + '</code>';
                     if (!aEditText) {
-                        sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId, globalRatesKeyboard);
+                        sendMessageByBot(messageChatId, msgTxt, aUserName, aMsgId, globalRatesKeyboard);
                     } else {
-                        bot.editMessageText(shittyParseMetallXML(xmlContent),
-                                            { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard });
+                        bot.editMessageText(msgTxt,
+                                            { chat_id: messageChatId, message_id: aMsgId,
+                                              reply_markup: globalRatesKeyboard, parse_mode: 'HTML' });
                     }
                 }
             }
         });
     });
     request.on('error', function(error) {
+        var msgTxt = '<code>' + catchPhrases.debugCommandMessages[11] + error.message + '</code>';
         if (!aEditText) {
-            sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId, globalRatesKeyboard);
+            sendMessageByBot(messageChatId, msgTxt, aUserName, aMsgId, globalRatesKeyboard);
         } else {
-            bot.editMessageText(catchPhrases.debugCommandMessages[11] + error.message,
-                                { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard });
+            bot.editMessageText(msgTxt,
+                                { chat_id: messageChatId, message_id: aMsgId,
+                                  reply_markup: globalRatesKeyboard, parse_mode: 'HTML' });
         }
     });
     request.end();
@@ -1106,11 +1111,12 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
     currencyAnswer += getCurrencyTableString(bankID);
 
     // Send currency answer to chat.
+    var msgTxt = '<code>' + currencyAnswer + '</code>';
     if (!aEditText) {
-        sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId, globalRatesKeyboard);
+        sendMessageByBot(messageChatId, msgTxt, aUserName, aMsgId, globalRatesKeyboard);
     } else {
-        bot.editMessageText(currencyAnswer,
-                            { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard });
+        bot.editMessageText(msgTxt,
+                            { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard, parse_mode: 'HTML' });
     }
 }
 
