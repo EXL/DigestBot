@@ -178,6 +178,14 @@ var globalExchangeList = {
 };
 
 var globalExchange;
+var globalRatesKeyboard = {
+    inline_keyboard: [ [
+            { text: catchPhrases.buttons[0], callback_data: 'rub' },
+            { text: catchPhrases.buttons[1], callback_data: 'uah' },
+            { text: catchPhrases.buttons[2], callback_data: 'byn' },
+            { text: catchPhrases.buttons[3], callback_data: 'met' }
+        ] ]
+};
 // ----- END CURRENCY SECTION
 
 // Functions
@@ -322,19 +330,7 @@ bot.on('text', function(msg)
 
     // RATES COMMAND
     else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
-        bot.sendMessage(messageChatId,
-                        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR],
-                                                 messageChatId, messageUserName, messsageId), {
-                            reply_to: messsageId,
-                            reply_markup: {
-                                inline_keyboard: [ [
-                                        { text: catchPhrases.buttons[0], callback_data: 'rub' },
-                                        { text: catchPhrases.buttons[1], callback_data: 'uah' },
-                                        { text: catchPhrases.buttons[2], callback_data: 'byn' },
-                                        { text: catchPhrases.buttons[3], callback_data: 'met' }
-                                    ] ]
-                            }
-                        });
+        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
     }
 
     // ROUBLE, GRIVNA AND BELRUB COMMAND
@@ -725,7 +721,7 @@ function sendNoDigestMessages(aChatId, aUserName, aMsgId)
                          getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)], aUserName, aMsgId);
 }
 
-function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId)
+function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey)
 {
     if (aChatId && aMessage) {
         // Replace '%username%' by userName.
@@ -736,7 +732,8 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId)
             return bot.sendMessage(aChatId, readyMessage, {
                     disable_web_page_preview: true,
                     disable_notification: true,
-                    reply_to_message_id: aMsgId
+                    reply_to_message_id: aMsgId,
+                    reply_markup: (aKey) ? aKey : null
                 }).delay(1000).then(function(response) { // 1 sec delay
                     resolve(response);
                 })
@@ -1018,19 +1015,17 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
             if (!aMetall) {
                 shittyParseCurrencyXML(xmlContent, bankID);
                 if (messageChatId) {
-                    return sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName, aMsgId);
+                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName, aMsgId);
                 }
             } else {
                 if (messageChatId) {
-                    return shittyParseMetallXML(xmlContent);
-                    // sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId);
+                    sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId, globalRatesKeyboard);
                 }
             }
         });
     });
     request.on('error', function(error) {
-        return catchPhrases.debugCommandMessages[11] + error.message;
-        // sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId);
+        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId, globalRatesKeyboard);
     });
     request.end();
 }
@@ -1106,8 +1101,7 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
     currencyAnswer += getCurrencyTableString(bankID);
 
     // Send currency answer to chat.
-    return currencyAnswer;
-    // sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId);
+    sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId, globalRatesKeyboard);
 }
 
 function initilizeCurrencyListAndGetUsdValue()
