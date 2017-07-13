@@ -322,7 +322,7 @@ bot.on('text', function(msg)
 
     // RATES COMMAND
     else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
-        bot.sendMessage(messageChatId, 'Зачем ты это читаешь?', {
+        bot.sendMessage(messageChatId, updateGlobalCurrencyList(bankCBR, false, lastForeignValue, messageChatId, messageUserName, messsageId), {
                             reply_to: messsageId,
                             reply_markup: {
                                 inline_keyboard: [ [
@@ -1016,17 +1016,19 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
             if (!aMetall) {
                 shittyParseCurrencyXML(xmlContent, bankID);
                 if (messageChatId) {
-                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName, aMsgId);
+                    return sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName, aMsgId);
                 }
             } else {
                 if (messageChatId) {
-                    sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId);
+                    return shittyParseMetallXML(xmlContent);
+                    // sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId);
                 }
             }
         });
     });
     request.on('error', function(error) {
-        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId);
+        return catchPhrases.debugCommandMessages[11] + error.message;
+        // sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId);
     });
     request.end();
 }
@@ -1102,7 +1104,8 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
     currencyAnswer += getCurrencyTableString(bankID);
 
     // Send currency answer to chat.
-    sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId);
+    return currencyAnswer;
+    // sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId);
 }
 
 function initilizeCurrencyListAndGetUsdValue()
