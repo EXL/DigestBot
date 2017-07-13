@@ -908,11 +908,10 @@ function createReportCurrencyHeader(aCatchPhrase)
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
-function addZerosToRate(aRate) {
-    var suff = 8;
+function addZerosToRate(aRate, aSuff) {
     var str = aRate.toString();
     var start = str.length;
-    for (var i = start; i < suff; ++i) {
+    for (var i = start; i < aSuff; ++i) {
         str += '0';
     }
     return str;
@@ -921,13 +920,13 @@ function addZerosToRate(aRate) {
 function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
-    currencyTable += '1 USD = ' + addZerosToRate(globalCurrencyList.USD) + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 EUR = ' + addZerosToRate(globalCurrencyList.EUR) + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 KZT = ' + addZerosToRate(globalCurrencyList.KZT) + ' ' + bankLocalCurrency[bankID] + ';\n';
-    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + addZerosToRate(globalCurrencyList.BYN) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + addZerosToRate(globalCurrencyList.UAH) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + addZerosToRate(globalCurrencyList.RUB) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    currencyTable += '1 GBP = ' + addZerosToRate(globalCurrencyList.GBP) + ' ' + bankLocalCurrency[bankID] + '.';
+    currencyTable += '1 USD = ' + addZerosToRate(globalCurrencyList.USD, 8) + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 EUR = ' + addZerosToRate(globalCurrencyList.EUR, 8) + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 KZT = ' + addZerosToRate(globalCurrencyList.KZT, 8) + ' ' + bankLocalCurrency[bankID] + ';\n';
+    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + addZerosToRate(globalCurrencyList.BYN, 8) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + addZerosToRate(globalCurrencyList.UAH, 8) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + addZerosToRate(globalCurrencyList.RUB, 8) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    currencyTable += '1 GBP = ' + addZerosToRate(globalCurrencyList.GBP, 8) + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
 
@@ -1073,10 +1072,10 @@ function shittyParseMetallXML(aAllXml)
 function generateBotMetallAnswer(aCurrencyList)
 {
     var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n';
-    metallTable += catchPhrases.metallCommand[1] + aCurrencyList.Au + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[2] + aCurrencyList.Ag + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[3] + aCurrencyList.Pt + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[4] + aCurrencyList.Pd + catchPhrases.metallCommand[5] + '.';
+    metallTable += catchPhrases.metallCommand[1] + addZerosToRate(aCurrencyList.Au, 7) + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[2] + addZerosToRate(aCurrencyList.Ag, 7) + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[3] + addZerosToRate(aCurrencyList.Pt, 7) + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7) + catchPhrases.metallCommand[5] + '.';
     return metallTable;
 }
 
