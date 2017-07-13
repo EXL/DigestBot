@@ -322,7 +322,9 @@ bot.on('text', function(msg)
 
     // RATES COMMAND
     else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
-        bot.sendMessage(messageChatId, updateGlobalCurrencyList(bankCBR, false, lastForeignValue, messageChatId, messageUserName, messsageId), {
+        bot.sendMessage(messageChatId,
+                        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR],
+                                                 messageChatId, messageUserName, messsageId), {
                             reply_to: messsageId,
                             reply_markup: {
                                 inline_keyboard: [ [
