@@ -553,7 +553,9 @@ function getDigestPages(stackSize, messageChatId, dayDelay, aCountOnPage)
             }
         }
     }
-    pageStack.push(pageRow.reverse());
+    if (pageRow.length > 0) {
+        pageStack.push(pageRow.reverse());
+    }
     return pageStack;
 }
 
