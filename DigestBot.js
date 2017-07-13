@@ -379,7 +379,8 @@ bot.on('text', function(msg)
     // CHARTS COMMAND
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
         sendMessageByBot(messageChatId,
-                         catchPhrases.buttons[5] + generateChartsHelpString(), messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
+                         '<code>' + catchPhrases.buttons[5] + generateChartsHelpString() + '</code>',
+                         messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
     // CHART COMMAND
@@ -579,7 +580,7 @@ function generateChartsHelpString()
     // Delete last line break
     helpChartsAnswer.trim();
 
-    return '\n' + helpChartsAnswer;
+    return '\n\n' + helpChartsAnswer;
 }
 
 function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc, aMsgId)
@@ -936,11 +937,11 @@ function createReportCurrencyHeader(aCatchPhrase)
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
-function addZerosToRate(aRate, aSuff) {
+function addZerosToRate(aRate, aSuff, aZero) {
     var str = aRate.toString();
     var start = str.length;
     for (var i = start; i < aSuff; ++i) {
-        str += '0';
+        str += aZero;
     }
     return str;
 }
@@ -948,13 +949,13 @@ function addZerosToRate(aRate, aSuff) {
 function getCurrencyTableString(bankID)
 {
     var currencyTable = '';
-    currencyTable += '1 USD = ' + addZerosToRate(globalCurrencyList.USD, 8) + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 EUR = ' + addZerosToRate(globalCurrencyList.EUR, 8) + ' ' + bankLocalCurrency[bankID] + ';\n';
-    currencyTable += '1 KZT = ' + addZerosToRate(globalCurrencyList.KZT, 8) + ' ' + bankLocalCurrency[bankID] + ';\n';
-    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + addZerosToRate(globalCurrencyList.BYN, 8) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + addZerosToRate(globalCurrencyList.UAH, 8) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + addZerosToRate(globalCurrencyList.RUB, 8) + ' ' + bankLocalCurrency[bankID] + ';\n'; }
-    currencyTable += '1 GBP = ' + addZerosToRate(globalCurrencyList.GBP, 8) + ' ' + bankLocalCurrency[bankID] + '.';
+    currencyTable += '1 USD = ' + addZerosToRate(globalCurrencyList.USD, 8, '0') + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 EUR = ' + addZerosToRate(globalCurrencyList.EUR, 8, '0') + ' ' + bankLocalCurrency[bankID] + ';\n';
+    currencyTable += '1 KZT = ' + addZerosToRate(globalCurrencyList.KZT, 8, '0') + ' ' + bankLocalCurrency[bankID] + ';\n';
+    if(bankID !== bankNBRB ) { currencyTable += '1 BYN = ' + addZerosToRate(globalCurrencyList.BYN, 8, '0') + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankNBU  ) { currencyTable += '1 UAH = ' + addZerosToRate(globalCurrencyList.UAH, 8, '0') + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    if(bankID !== bankCBR  ) { currencyTable += '1 RUB = ' + addZerosToRate(globalCurrencyList.RUB, 8, '0') + ' ' + bankLocalCurrency[bankID] + ';\n'; }
+    currencyTable += '1 GBP = ' + addZerosToRate(globalCurrencyList.GBP, 8, '0') + ' ' + bankLocalCurrency[bankID] + '.';
     return currencyTable;
 }
 
@@ -1100,10 +1101,10 @@ function shittyParseMetallXML(aAllXml)
 function generateBotMetallAnswer(aCurrencyList)
 {
     var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n';
-    metallTable += catchPhrases.metallCommand[1] + addZerosToRate(aCurrencyList.Au, 7) + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[2] + addZerosToRate(aCurrencyList.Ag, 7) + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[3] + addZerosToRate(aCurrencyList.Pt, 7) + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7) + catchPhrases.metallCommand[5] + '.';
+    metallTable += catchPhrases.metallCommand[1] + addZerosToRate(aCurrencyList.Au, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[2] + addZerosToRate(aCurrencyList.Ag, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[3] + addZerosToRate(aCurrencyList.Pt, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
+    metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7, '0') + catchPhrases.metallCommand[5] + '.';
     return metallTable;
 }
 
