@@ -320,6 +320,21 @@ bot.on('text', function(msg)
         }
     }
 
+    // RATES COMMAND
+    else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
+        bot.sendMessage(messageChatId, 'Зачем ты это читаешь?', {
+                            reply_to: messsageId,
+                            reply_markup: {
+                                inline_keyboard: [ [
+                                        { text: catchPhrases.buttons[0], callback_data: 'rub' },
+                                        { text: catchPhrases.buttons[1], callback_data: 'uah' },
+                                        { text: catchPhrases.buttons[2], callback_data: 'byn' },
+                                        { text: catchPhrases.buttons[3], callback_data: 'met' }
+                                    ] ]
+                            }
+                        });
+    }
+
     // ROUBLE, GRIVNA AND BELRUB COMMAND
     else if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
             messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName
