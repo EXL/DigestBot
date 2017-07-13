@@ -205,14 +205,16 @@ function generateChartsKeyboard() {
     var ind = 0;
     for (k in globalExchangeList) {
         ind++;
-        row.push( { text: k, callback_data: 'z.' + k} );
+        row.push( { text: k, callback_data: 'z.' + k.replace('_', '.')} );
         if (ind == 4) {
             ind = 0;
             keyboard.push(row);
             row = [];
         }
     }
+    keyboard.push(row);
     console.log(keyboard);
+    return keyboard;
 }
 
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
@@ -376,7 +378,7 @@ bot.on('text', function(msg)
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
         generateChartsKeyboard();
         sendMessageByBot(messageChatId,
-                         catchPhrases.buttons[5], messageUserName, messsageId);
+                         catchPhrases.buttons[5], messageUserName, messsageId, generateChartsKeyboard());
     }
 
     // CHART COMMAND
