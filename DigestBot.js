@@ -197,6 +197,13 @@ bot.getMe().then(function(me)
     globalBotUserName = me.username;
 });
 
+function generateChartsKeyboard() {
+    var keyboard = [];
+    for (k in globalExchangeList) {
+        console.log(k);
+    }
+}
+
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
     // console.log(callbackQuery);
     var action = callbackQuery.data;
@@ -352,6 +359,13 @@ bot.on('text', function(msg)
     // RATES COMMAND
     else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
         updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
+    }
+
+    // CHARTS COMMAND
+    else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
+        generateChartsKeyboard();
+        sendMessageByBot(messageChatId,
+                         catchPhrases.buttons[5], messageUserName, messsageId);
     }
 
     // CHART COMMAND
