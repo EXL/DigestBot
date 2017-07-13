@@ -405,6 +405,13 @@ bot.on('text', function(msg)
         }
     }
 
+    // EVAL COMMAND
+    else if (messageText.indexOf('/eval') === 0) {
+        if (getAdminRights(messageUserName)) {
+            eval(messageText.replace('/eval', '').trim());
+        }
+    }
+
     // STICKER COMMAND
     else if (messageText.indexOf('/sticker') === 0) {
         if (getAdminRights(messageUserName)) {
