@@ -188,7 +188,7 @@ var globalRatesKeyboard = {
 };
 // ----- END CURRENCY SECTION
 
-// Functions
+// Bot Functions
 bot.getMe().then(function(me)
 {
     console.log('Hello! My name is %s!', me.first_name);
@@ -196,23 +196,6 @@ bot.getMe().then(function(me)
     console.log('And my username is @%s.', me.username);
     globalBotUserName = me.username;
 });
-
-function generateChartsKeyboard() {
-    var keyboard = [];
-    var row = [];
-    var ind = 0;
-    for (k in globalExchangeList) {
-        ind++;
-        row.push( { text: k, callback_data: 'data.' + k.replace('_', '.')} );
-        if (ind == 4) {
-            ind = 0;
-            keyboard.push(row);
-            row = [];
-        }
-    }
-    keyboard.push(row);
-    return keyboard;
-}
 
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
     // console.log(callbackQuery);
@@ -560,6 +543,7 @@ bot.on('text', function(msg)
     // ----- END ADMINISTRATION COMMANDS
 });
 
+// Subs Functions
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId) {
     Exec('hostname -i', function(err, stdout, stderr) {
         if (err) {
@@ -601,6 +585,23 @@ function sendSticker(aChatId, aStickerId, aMsgId)
     if (aStickerId) {
         bot.sendSticker(aChatId, aStickerId, { reply_to_message_id: aMsgId });
     }
+}
+
+function generateChartsKeyboard() {
+    var keyboard = [];
+    var row = [];
+    var ind = 0;
+    for (k in globalExchangeList) {
+        ind++;
+        row.push( { text: k, callback_data: 'data.' + k.replace('_', '.')} );
+        if (ind == 4) {
+            ind = 0;
+            keyboard.push(row);
+            row = [];
+        }
+    }
+    keyboard.push(row);
+    return keyboard;
 }
 
 function sendChartFileToChat(aChatId, aImageName, aMsgId)
