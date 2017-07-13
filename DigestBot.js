@@ -198,15 +198,19 @@ bot.getMe().then(function(me)
 });
 
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
-    var action = callbackQuery.data;
     console.log(callbackQuery);
+    var action = callbackQuery.data;
+    var msg = callbackQuery.message;
     var text = catchPhrases.buttons[4];
     if (action === 'rub') {
         text += catchPhrases.buttons[0];
+        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, null, msg.message_id, true);
     } else if (action === 'uah') {
         text += catchPhrases.buttons[1];
+        updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, null, msg.message_id, true);
     } else if (action === 'byn') {
         text += catchPhrases.buttons[2];
+        updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, null, msg.message_id, true);
     } else if (action === 'met') {
         text += catchPhrases.buttons[3];
     }
@@ -1014,7 +1018,7 @@ function shittyParseCurrencyXML(aAllXml, bankID)
     globalUSD[bankID] = getCurrentValue('USD', aAllXml);
 }
 
-function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId, aUserName, aMsgId)
+function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId, aUserName, aMsgId, aEditText)
 {
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
@@ -1031,17 +1035,25 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
             if (!aMetall) {
                 shittyParseCurrencyXML(xmlContent, bankID);
                 if (messageChatId) {
-                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName, aMsgId);
+                    sendCurrency(bankID, lastForeignValue, globalUSD[bankID], messageChatId, aUserName, aMsgId, aEditText);
                 }
             } else {
                 if (messageChatId) {
-                    sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId, globalRatesKeyboard);
+                    if (!aEditText) {
+                        sendMessageByBot(messageChatId, shittyParseMetallXML(xmlContent), aUserName, aMsgId, globalRatesKeyboard);
+                    } else {
+                        bot.editMessageText(shittyParseMetallXML(xmlContent), { chat_id: messageChatId, message_id: aMsgId });
+                    }
                 }
             }
         });
     });
     request.on('error', function(error) {
-        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId, globalRatesKeyboard);
+        if (!aEditText) {
+            sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[11] + error.message, aUserName, aMsgId, globalRatesKeyboard);
+        } else {
+            bot.editMessageText(catchPhrases.debugCommandMessages[11] + error.message, { chat_id: messageChatId, message_id: aMsgId });
+        }
     });
     request.end();
 }
@@ -1093,7 +1105,7 @@ function deleteAllSpaces(aString)
     return aString.replace(/\s/g, '');
 }
 
-function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, aUserName, aMsgId)
+function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, aUserName, aMsgId, aEditText)
 {
     // Generate currency answer.
     var currencyAnswer = '';
@@ -1117,7 +1129,11 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
     currencyAnswer += getCurrencyTableString(bankID);
 
     // Send currency answer to chat.
-    sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId, globalRatesKeyboard);
+    if (!aEditText) {
+        sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId, globalRatesKeyboard);
+    } else {
+        bot.editMessageText(currencyAnswer, { chat_id: messageChatId, message_id: aMsgId });
+    }
 }
 
 function initilizeCurrencyListAndGetUsdValue()
