@@ -197,6 +197,22 @@ bot.getMe().then(function(me)
     globalBotUserName = me.username;
 });
 
+bot.on('callback_query', function onCallbackQuery(callbackQuery) {
+    var action = callbackQuery.data;
+    console.log(callbackQuery);
+    var text = catchPhrases.buttons[4];
+    if (action === 'rub') {
+        text += catchPhrases.buttons[0];
+    } else if (action === 'uah') {
+        text += catchPhrases.buttons[1];
+    } else if (action === 'byn') {
+        text += catchPhrases.buttons[2];
+    } else if (action === 'met') {
+        text += catchPhrases.buttons[3];
+    }
+    bot.answerCallbackQuery(callbackQuery.id, text, false);
+});
+
 bot.on('text', function(msg)
 {
     // Set main variables
