@@ -197,27 +197,53 @@ bot.getMe().then(function(me)
     globalBotUserName = me.username;
 });
 
-bot.on('callback_query', function onCallbackQuery(callbackQuery) {
+bot.on('callback_query', function onCallbackQuery(callbackQuery)
+{
     // console.log(callbackQuery);
     var action = callbackQuery.data;
     var msg = callbackQuery.message;
-    var text = catchPhrases.buttons[4];
+    var text = '';
     if (action === 'rub') {
-        text += catchPhrases.buttons[0];
-        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, msg.from.username, msg.message_id, true);
+        text += catchPhrases.buttons[4] + catchPhrases.buttons[0];
+        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
     } else if (action === 'uah') {
-        text += catchPhrases.buttons[1];
-        updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, msg.from.username, msg.message_id, true);
+        text += catchPhrases.buttons[4] + catchPhrases.buttons[1];
+        updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
     } else if (action === 'byn') {
-        text += catchPhrases.buttons[2];
-        updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, msg.from.username, msg.message_id, true);
+        text += catchPhrases.buttons[4] + catchPhrases.buttons[2];
+        updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
     } else if (action === 'met') {
-        text += catchPhrases.buttons[3];
-        updateGlobalCurrencyList(null, true, null, msg.chat.id, msg.from.username, msg.message_id, true);
+        text += catchPhrases.buttons[4] + catchPhrases.buttons[3];
+        updateGlobalCurrencyList(null, true, null, msg.chat.id, callbackQuery.from.username, msg.message_id, true);
     } else if (action.indexOf('data.') === 0) {
         var arg = action.replace('data.', '').replace('.', '_');
-        text += arg;
-        sendChartToChat(msg.chat.id, arg, msg.from.username, msg.message_id);
+        text += catchPhrases.buttons[4] + arg;
+        sendChartToChat(msg.chat.id, arg, callbackQuery.from.username, msg.message_id);
+    } else if (action.indexOf('digest.') === 0) {
+        var page = parseInt(action.replace('digest.', ''));
+        var dayDelay = msg.date - getMessageDelay(7);
+        text += catchPhrases.buttons[6] + page;
+        bot.editMessageText(generateDigestAnswer(
+                                    globalStackListDigestMessages.length,
+                                    msg.chat.id,
+                                    dayDelay, 8, page
+                                ).replace('%username%',
+                                            '@' + callbackQuery.from.username
+                            ),
+                            { chat_id: msg.chat.id,
+                              message_id: msg.message_id,
+                              reply_markup: {
+                                    inline_keyboard: generateDigestKeyboard(
+                                                         getDigestPages(
+                                                                globalStackListDigestMessages.length,
+                                                                msg.chat.id, dayDelay, 8
+                                                             ).length
+                                                         )
+                                },
+                              parse_mode: 'HTML',
+                              disable_web_page_preview: true,
+                              disable_notification: true
+                            });
     }
 
     bot.answerCallbackQuery(callbackQuery.id, text, false);
@@ -232,13 +258,15 @@ bot.on('text', function(msg)
     var messsageId = msg.message_id;
     var messageUserName = msg.from.username;
 
+    // console.log(msg);
+
     if (msg.forward_date) { // Skip All Forward Messages
         return;
     }
 
     // DIGEST TAG
     if (messageText.indexOf('#digest') >= 0) {
-        if (messageText.length < 3000) {
+        if (messageText.length < 400) {
             globalCountOfMessagesWithDigest++;
             var normalMessage = normalizeMessage(messageText);
             if (!(isBlank(normalMessage))) {
@@ -267,90 +295,42 @@ bot.on('text', function(msg)
     }
 
     // DIGEST COMMAND
-    else if (messageText.indexOf('/digest') === 0 || messageText.indexOf('/digest@'+globalBotUserName) === 0) {
-        var bGoodCommand = false;
-        var messageDelay = 0;
-        var fullCommand = '/digest@' + globalBotUserName;
-        var msgLength = messageText.length;
-        var fullCommandLength = fullCommand.length + 2;
+    else if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
+        var bGoodCommand = true;
+        var messageDelay = getMessageDelay(7);
 
-        messageText = messageText.trim();
+        // Digest delay.
+        // 45 sec for debug.
+        // 43 200 for 12-hours.
+        // 86 400 for 24-hours.
+        // 172 800 for 48-hours.
+        // 604 800 for a week.
+        var mainDelay = 604800 + 43200;
+        var dayDelay = messageDate - messageDelay;
 
-        if (messageText === '/digest' || messageText === fullCommand) {
-            bGoodCommand = true;
-            messageDelay = getMessageDelay(1);
+        var bSendDigest = false;
+
+        if (globalStackListDigestMessages.length > 0) {
+            // Delete all obsolete digest messages from globalStackListDigestMessages
+            bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
         }
 
-        if (msgLength === 9 || msgLength === fullCommandLength) {
-            var arg = parseInt(messageText[msgLength - 1]);
-            if (arg >= 1 && arg <= 7) {
-                bGoodCommand = true;
-                messageDelay = getMessageDelay(arg);
-            }
-        }
-
-        if (bGoodCommand) {
-            // Digest delay.
-            // 45 sec for debug.
-            // 43 200 for 12-hours.
-            // 86 400 for 24-hours.
-            // 172 800 for 48-hours.
-            // 604 800 for a week.
-            var mainDelay = 604800 + 43200;
-            var dayDelay = messageDate - messageDelay;
-
-            var bSendDigest = false;
-
-            if (globalStackListDigestMessages.length > 0) {
-                // Delete all obsolete digest messages from globalStackListDigestMessages
-                bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
-            }
-
-            // Generate Bot Answer
-            if (bSendDigest) {
-                var botAnswer = '';
-                var endLineString = '\n';
-                var stackSize = globalStackListDigestMessages.length;
-
-                // Count of digest messages from one chat.
-                var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId, dayDelay);
-
-                // Check countOfDigestMessagesByChat.
-                if (countOfDigestMessagesByChat > 0) {
-                    // Append answer string.
-                    // botAnswer += 'Hola amigos!\nThere is digest of this chat:\n';
-                    for (var i = 0; i < stackSize; ++i) {
-                        if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
-                            if (globalStackListDigestMessages[i].s_date > dayDelay) {
-                                botAnswer += globalStackListDigestMessages[i].s_message + endLineString;
-                            }
-                        }
-                    }
-
-                    // Trim strings
-                    botAnswer = botAnswer.trim();
-                    botAnswer = trimAndRemoveAtInEachString(botAnswer);
-
-                    // Capitalize first letter of each string
-                    botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
-
-                    // Replace all line breaks by line break, digestMarker and space.
-                    botAnswer = catchPhrases.digestMarker + ' '
-                            + replaceLineBreaksByYourString(botAnswer, '\n' + catchPhrases.digestMarker + ' ');
-
-                    // Add digest header
-                    botAnswer = getDigestReportHeader() + botAnswer;
-
-                    // Send botAnswer as chunks
-                    sendChunksMessagesByBot(messageChatId, botAnswer, 3500, messageUserName, messsageId);
-                } else {
-                    sendNoDigestMessages(messageChatId, messageUserName, messsageId);
-                }
+        // Generate Bot Answer
+        if (bSendDigest) {
+            // Count of digest messages from one chat.
+            var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId, dayDelay);
+            // Check countOfDigestMessagesByChat.
+            if (countOfDigestMessagesByChat > 0) {
+                sendMessageByBot(messageChatId,
+                                 generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, 8, 1),
+                                 messageUserName, messsageId, {
+                                     inline_keyboard: generateDigestKeyboard(getDigestPages(globalStackListDigestMessages.length,
+                                                                                            messageChatId, dayDelay, 8).length) } );
             } else {
                 sendNoDigestMessages(messageChatId, messageUserName, messsageId);
             }
         } else {
-            sendMessageByBot(messageChatId, catchPhrases.helpCommand[2], messageUserName, messsageId);
+            sendNoDigestMessages(messageChatId, messageUserName, messsageId);
         }
     }
 
@@ -373,7 +353,7 @@ bot.on('text', function(msg)
 
     // GAME COMMAND
     else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
-        downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
+        downloadImageAndSendToChat(gameStatURL, 'game.png', messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
     }
 
     // HELP COMMAND
@@ -532,7 +512,83 @@ bot.on('text', function(msg)
 });
 
 // Subs Functions
-function sendHostIpToChat(aMessageChatId, aUserName, aMsgId) {
+function generateDigestKeyboard(aPagesCount)
+{
+    if (aPagesCount <= 1) {
+        return null;
+    }
+    var keyboard = [];
+    var row = [];
+    var ind = 0;
+    for (var i = 0; i < aPagesCount; ++i) {
+        ind++;
+        row.push( { text: '' + (i+1), callback_data: 'digest.' + (i+1) } );
+        if (ind == 7) {
+            ind = 0;
+            keyboard.push(row);
+            row = [];
+        }
+    }
+    keyboard.push(row);
+    return keyboard;
+}
+
+function getDigestPages(stackSize, messageChatId, dayDelay, aCountOnPage)
+{
+    var endLineString = '\n';
+    var pageStack = [];
+    var pageRow = [];
+    var count = 0;
+    // Append answer string.
+    for (var i = stackSize - 1; i >= 0; --i) {
+        if (globalStackListDigestMessages[i].s_chatID === messageChatId) {
+            if (globalStackListDigestMessages[i].s_date > dayDelay) {
+                count++;
+                pageRow.push(globalStackListDigestMessages[i].s_message + endLineString);
+                if (count === aCountOnPage) {
+                    count = 0;
+                    pageStack.push(pageRow.reverse());
+                    pageRow = [];
+                }
+            }
+        }
+    }
+    pageStack.push(pageRow.reverse());
+    return pageStack;
+}
+
+function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, aPage)
+{
+    var botAnswer = '';
+    var page = getDigestPages(stackSize, messageChatId, dayDelay, aCountOnPage);
+    var pageNum = aPage - 1;
+
+    if (pageNum > page.length) {
+        return catchPhrases.buttons[7] + aPage + '.';
+    }
+
+    for (var i = 0; i < page[pageNum].length; ++i) {
+        botAnswer += page[pageNum][i];
+    }
+
+    // Trim strings
+    botAnswer = botAnswer.trim();
+    botAnswer = trimAndRemoveAtInEachString(botAnswer);
+
+    // Capitalize first letter of each string
+    botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
+
+    // Replace all line breaks by line break, digestMarker and space.
+    botAnswer = catchPhrases.digestMarker + ' '
+            + replaceLineBreaksByYourString(botAnswer, '\n' + catchPhrases.digestMarker + ' ');
+
+    // Add digest header
+    botAnswer = getDigestReportHeader(aPage) + botAnswer;
+    return botAnswer;
+}
+
+function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
+{
     Exec('hostname -i', function(err, stdout, stderr) {
         if (err) {
             sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
@@ -575,7 +631,8 @@ function sendSticker(aChatId, aStickerId, aMsgId)
     }
 }
 
-function generateChartsKeyboard() {
+function generateChartsKeyboard()
+{
     var keyboard = [];
     var row = [];
     var ind = 0;
@@ -719,12 +776,12 @@ function getAdminRights(aUserName)
     return aUserName === 'exlmoto' || aUserName === 'ZorgeR';
 }
 
-function getDigestReportHeader()
+function getDigestReportHeader(aPage)
 {
     return catchPhrases.digestCommandHello[getRandomInt(0, catchPhrases.digestCommandHello.length - 1)]
             + '\n'
             + catchPhrases.digestCommandHeader[getRandomInt(0, catchPhrases.digestCommandHeader.length - 1)]
-            + '\n';
+            + aPage + ':\n\n';
 }
 
 function sendNoDigestMessages(aChatId, aUserName, aMsgId)
@@ -926,7 +983,8 @@ function createReportCurrencyHeader(aCatchPhrase)
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
 }
 
-function addZerosToRate(aRate, aSuff, aZero) {
+function addZerosToRate(aRate, aSuff, aZero)
+{
     var str = aRate.toString();
     var start = str.length;
     for (var i = start; i < aSuff; ++i) {
