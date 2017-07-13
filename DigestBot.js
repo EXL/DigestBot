@@ -366,18 +366,6 @@ bot.on('text', function(msg)
                          messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
-    // CHART COMMAND
-    else if (messageText.indexOf('/chart') === 0 || messageText.indexOf('/chart@'+globalBotUserName) === 0) {
-        messageText = messageText.trim();
-        var splitCommandList = messageText.split(' ');
-        if (splitCommandList.length === 2) {
-            sendChartToChat(messageChatId, splitCommandList[1], messageUserName, messsageId);
-        } else {
-            sendMessageByBot(messageChatId,
-                             generateChartsHelpString(), messageUserName, messsageId);
-        }
-    }
-
     // COFFEE COMMAND
     else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
         sendSticker(messageChatId, globalCofeeSticker, messsageId);
