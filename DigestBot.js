@@ -198,7 +198,7 @@ bot.getMe().then(function(me)
 });
 
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
-    console.log(callbackQuery);
+    // console.log(callbackQuery);
     var action = callbackQuery.data;
     var msg = callbackQuery.message;
     var text = catchPhrases.buttons[4];
@@ -213,6 +213,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery) {
         updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, msg.from.username, msg.message_id, true);
     } else if (action === 'met') {
         text += catchPhrases.buttons[3];
+        updateGlobalCurrencyList(null, true, null, msg.chat.id, msg.from.username, msg.message_id, true);
     }
     bot.answerCallbackQuery(callbackQuery.id, text, false);
 });
@@ -353,27 +354,6 @@ bot.on('text', function(msg)
         updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
     }
 
-    // ROUBLE, GRIVNA AND BELRUB COMMAND
-    else if (messageText === '/rouble' || messageText === '/grivna' ||  messageText === '/belrub' ||
-            messageText === '/rouble@'+globalBotUserName || messageText === '/grivna@'+globalBotUserName
-            || messageText === '/belrub@'+globalBotUserName ) {
-        var bankID = bankCBR;
-
-        if (messageText === '/grivna' || messageText === '/grivna@'+globalBotUserName) {
-            bankID = bankNBU;
-        }
-
-        if (messageText === '/belrub' || messageText === '/belrub@'+globalBotUserName) {
-            bankID = bankNBRB;
-        }
-
-        // Store last USD value.
-        var lastForeignValue = globalUSD[bankID];
-
-        // Update currency list.
-        updateGlobalCurrencyList(bankID, false, lastForeignValue, messageChatId, messageUserName, messsageId);
-    }
-
     // CHART COMMAND
     else if (messageText.indexOf('/chart') === 0 || messageText.indexOf('/chart@'+globalBotUserName) === 0) {
         messageText = messageText.trim();
@@ -394,11 +374,6 @@ bot.on('text', function(msg)
     // GAME COMMAND
     else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
         downloadImageAndSendToChat(gameStatURL, "game.png", messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
-    }
-
-    // METALL COMMAND
-    else if (messageText === '/metall' || messageText === '/metall@'+globalBotUserName) {
-        updateGlobalCurrencyList(bankID, true, lastForeignValue, messageChatId, messageUserName, messsageId);
     }
 
     // HELP COMMAND
