@@ -199,9 +199,20 @@ bot.getMe().then(function(me)
 
 function generateChartsKeyboard() {
     var keyboard = [];
+    var row = [];
+    var size = Object.keys(globalExchangeList).length;
+    var col = 4;
+    var ind = 0;
     for (k in globalExchangeList) {
-        console.log(k);
+        ind++;
+        row.push( { text: k, callback_data: 'z.' + k} );
+        if (ind == 4) {
+            ind = 0;
+            keyboard.push(row);
+            row = [];
+        }
     }
+    console.log(keyboard);
 }
 
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
