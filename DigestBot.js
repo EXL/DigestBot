@@ -234,7 +234,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery) {
     } else if (action.indexOf('data.') === 0) {
         var arg = action.replace('data.', '').replace('.', '_');
         text += arg;
-        sendChartToChat(messageChatId, arg, msg.from.username, msg.message_id);
+        sendChartToChat(msg.chat.id, arg, msg.from.username, msg.message_id);
     }
 
     bot.answerCallbackQuery(callbackQuery.id, text, false);
@@ -378,9 +378,8 @@ bot.on('text', function(msg)
 
     // CHARTS COMMAND
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
-        generateChartsKeyboard();
         sendMessageByBot(messageChatId,
-                         catchPhrases.buttons[5], messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
+                         catchPhrases.buttons[5] + generateChartsHelpString(), messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
     // CHART COMMAND
@@ -580,7 +579,7 @@ function generateChartsHelpString()
     // Delete last line break
     helpChartsAnswer.trim();
 
-    return helpChartsAnswer;
+    return '\n' + helpChartsAnswer;
 }
 
 function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc, aMsgId)
