@@ -69,11 +69,13 @@ var globalBotUserName;
 
 var globalStackListDigestMessages = [ ];
 
+var coolDownSec = 5;
+var globalCallbackQueriesStack = [ ];
+
 var globalCofeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
 var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 
 var globalJsonStackName = 'DigestBotStackLog.json';
-
 readSavedStackFromFileSystem(globalJsonStackName, 0, true);
 
 // ----- CURRENCY SECTION
@@ -200,50 +202,56 @@ bot.getMe().then(function(me)
 bot.on('callback_query', function onCallbackQuery(callbackQuery)
 {
     // console.log(callbackQuery);
-    var action = callbackQuery.data;
     var msg = callbackQuery.message;
     var text = '';
-    if (action === 'rub') {
-        text += catchPhrases.buttons[4] + catchPhrases.buttons[0];
-        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
-    } else if (action === 'uah') {
-        text += catchPhrases.buttons[4] + catchPhrases.buttons[1];
-        updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
-    } else if (action === 'byn') {
-        text += catchPhrases.buttons[4] + catchPhrases.buttons[2];
-        updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
-    } else if (action === 'met') {
-        text += catchPhrases.buttons[4] + catchPhrases.buttons[3];
-        updateGlobalCurrencyList(null, true, null, msg.chat.id, callbackQuery.from.username, msg.message_id, true);
-    } else if (action.indexOf('data.') === 0) {
-        var arg = action.replace('data.', '').replace('.', '_');
-        text += catchPhrases.buttons[4] + arg;
-        sendChartToChat(msg.chat.id, arg, callbackQuery.from.username, msg.message_id);
-    } else if (action.indexOf('digest.') === 0) {
-        var page = parseInt(action.replace('digest.', ''));
-        var dayDelay = msg.date - getMessageDelay(7);
-        text += catchPhrases.buttons[6] + page;
-        bot.editMessageText(generateDigestAnswer(
-                                    globalStackListDigestMessages.length,
-                                    msg.chat.id,
-                                    dayDelay, 8, page
-                                ).replace('%username%',
-                                            '@' + callbackQuery.from.username
-                            ),
-                            { chat_id: msg.chat.id,
-                              message_id: msg.message_id,
-                              reply_markup: {
-                                    inline_keyboard: generateDigestKeyboard(
-                                                         getDigestPages(
-                                                                globalStackListDigestMessages.length,
-                                                                msg.chat.id, dayDelay, 8
-                                                             ).length
-                                                         )
-                                },
-                              parse_mode: 'HTML',
-                              disable_web_page_preview: true,
-                              disable_notification: true
-                            });
+
+    var cooldwn = coolDownStep(callbackQuery.from.id, msg.chat.id);
+    if (cooldwn <= 0) {
+        var action = callbackQuery.data;
+        if (action === 'rub') {
+            text += catchPhrases.buttons[4] + catchPhrases.buttons[0];
+            updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
+        } else if (action === 'uah') {
+            text += catchPhrases.buttons[4] + catchPhrases.buttons[1];
+            updateGlobalCurrencyList(bankNBU, false, globalUSD[bankNBU], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
+        } else if (action === 'byn') {
+            text += catchPhrases.buttons[4] + catchPhrases.buttons[2];
+            updateGlobalCurrencyList(bankNBRB, false, globalUSD[bankNBRB], msg.chat.id, callbackQuery.from.username, msg.message_id, true);
+        } else if (action === 'met') {
+            text += catchPhrases.buttons[4] + catchPhrases.buttons[3];
+            updateGlobalCurrencyList(null, true, null, msg.chat.id, callbackQuery.from.username, msg.message_id, true);
+        } else if (action.indexOf('data.') === 0) {
+            var arg = action.replace('data.', '').replace('.', '_');
+            text += catchPhrases.buttons[4] + arg;
+            sendChartToChat(msg.chat.id, arg, callbackQuery.from.username, msg.message_id);
+        } else if (action.indexOf('digest.') === 0) {
+            var page = parseInt(action.replace('digest.', ''));
+            var dayDelay = msg.date - getMessageDelay(7);
+            text += catchPhrases.buttons[6] + page;
+            bot.editMessageText(generateDigestAnswer(
+                                        globalStackListDigestMessages.length,
+                                        msg.chat.id,
+                                        dayDelay, 8, page
+                                    ).replace('%username%',
+                                                '@' + callbackQuery.from.username
+                                ),
+                                { chat_id: msg.chat.id,
+                                  message_id: msg.message_id,
+                                  reply_markup: {
+                                        inline_keyboard: generateDigestKeyboard(
+                                                             getDigestPages(
+                                                                    globalStackListDigestMessages.length,
+                                                                    msg.chat.id, dayDelay, 8
+                                                                 ).length
+                                                             )
+                                    },
+                                  parse_mode: 'HTML',
+                                  disable_web_page_preview: true,
+                                  disable_notification: true
+                                });
+        }
+    } else {
+        text = catchPhrases.buttons[8] + cooldwn + catchPhrases.buttons[9];
     }
 
     bot.answerCallbackQuery(callbackQuery.id, text, false);
@@ -512,6 +520,54 @@ bot.on('text', function(msg)
 });
 
 // Subs Functions
+function getDateTgFormat()
+{
+    return ~~(Date.now() / 1000);
+}
+
+function deleteObsoleteCallbackQueries(aObsoleteDate)
+{
+    var stackSize = globalCallbackQueriesStack.length;
+    var position = 0;
+    for (var i = 0; i < stackSize; ++i) {
+        if (globalCallbackQueriesStack[i].date < aObsoleteDate) {
+            position++;
+        }
+    }
+    if (position == stackSize) {
+        globalCallbackQueriesStack = [ ];
+        return;
+    }
+    if (position == 0) {
+        return;
+    }
+    globalCallbackQueriesStack = globalCallbackQueriesStack.slice(position);
+}
+
+function coolDownStep(aUserId, aChatId)
+{
+    var time = 0;
+
+    var datePrev = getDateTgFormat();
+    deleteObsoleteCallbackQueries(datePrev - coolDownSec);
+
+    if (globalCallbackQueriesStack.length > 0) {
+        for (var i = 0; i < globalCallbackQueriesStack.length; ++i) {
+            if (globalCallbackQueriesStack[i].chat === aChatId) {
+                time = datePrev - globalCallbackQueriesStack[i].date;
+            }
+        }
+        if (time >= coolDownSec) {
+            globalCallbackQueriesStack.push( { user_id: aUserId, date: datePrev, chat: aChatId } );
+        }
+    } else {
+        globalCallbackQueriesStack.push( { user_id: aUserId, date: datePrev, chat: aChatId } );
+        time = coolDownSec + 1;
+    }
+
+    return coolDownSec - time;
+}
+
 function generateDigestKeyboard(aPagesCount)
 {
     if (aPagesCount <= 1) {
