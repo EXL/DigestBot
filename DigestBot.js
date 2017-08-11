@@ -179,7 +179,6 @@ var globalExchangeList = {
     }
 };
 
-var globalExchange;
 var globalRatesKeyboard = {
     inline_keyboard: [ [
             { text: catchPhrases.buttons[0], callback_data: 'rub' },
@@ -674,7 +673,7 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc, aMs
     Request.head(aUri, function(aErr, aRes, aBody) {
         Request(aUri).pipe(FileSystem.createWriteStream(aFileName)).on('close', function() {
             if (aChart) {
-                sendChartFileToChat(aChatId, aFileName, aMsgId);
+                sendChartFileToChat(aChatId, aFileName, aDesc, aMsgId);
             } else {
                 bot.sendPhoto(aChatId, aFileName, { caption: aDesc, reply_to_message_id: aMsgId });
             }
@@ -707,22 +706,21 @@ function generateChartsKeyboard()
     return keyboard;
 }
 
-function sendChartFileToChat(aChatId, aImageName, aMsgId)
+function sendChartFileToChat(aChatId, aImageName, aDesc, aMsgId)
 {
     if (aImageName) {
         bot.sendPhoto(aChatId, aImageName,
-                      { caption: catchPhrases.debugCommandMessages[9] + ' ' + globalExchange.desc, reply_to_message_id: aMsgId });
+                      { caption: catchPhrases.debugCommandMessages[9] + ' ' + aDesc, reply_to_message_id: aMsgId });
     }
 }
 
 function sendChartToChat(aChatId, aExchangeId, aUserName, aMsgId)
 {
     if (globalExchangeList[aExchangeId]) {
-        globalExchange = globalExchangeList[aExchangeId];
         downloadImageAndSendToChat(globalExchangeList[aExchangeId].url,
                                    addYourStringToString('./', aExchangeId + '_image.png'),
                                    aChatId,
-                                   true, null, aMsgId);
+                                   true, globalExchangeList[aExchangeId].desc, aMsgId);
     } else {
         sendMessageByBot(aChatId,
                          generateChartsHelpString(), aUserName, aMsgId);
