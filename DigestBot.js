@@ -350,7 +350,7 @@ bot.on('text', function(msg)
     // CHARTS COMMAND
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
         sendMessageByBot(messageChatId,
-                         '<code>' + catchPhrases.buttons[5] + generateChartsHelpString() + '</code>',
+                         catchPhrases.buttons[5] + '<code>' + generateChartsHelpString() + '</code>',
                          messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
@@ -866,7 +866,7 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey)
                 }).delay(1000).then(function(response) { // 1 sec delay
                     resolve(response);
                 })
-            // TODO make error handling
+            // TODO: Make error handling
         });
     }
 }
@@ -1158,7 +1158,7 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
                 }
             } else {
                 if (messageChatId) {
-                    var msgTxt = '<code>' + shittyParseMetallXML(xmlContent) + '</code>';
+                    var msgTxt = shittyParseMetallXML(xmlContent);
                     if (!aEditText) {
                         sendMessageByBot(messageChatId, msgTxt, aUserName, aMsgId, globalRatesKeyboard);
                     } else {
@@ -1205,11 +1205,11 @@ function shittyParseMetallXML(aAllXml)
 
 function generateBotMetallAnswer(aCurrencyList)
 {
-    var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n';
+    var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n<code>';
     metallTable += catchPhrases.metallCommand[1] + addZerosToRate(aCurrencyList.Au, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
     metallTable += catchPhrases.metallCommand[2] + addZerosToRate(aCurrencyList.Ag, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
     metallTable += catchPhrases.metallCommand[3] + addZerosToRate(aCurrencyList.Pt, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
-    metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7, '0') + catchPhrases.metallCommand[5] + '.';
+    metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7, '0') + catchPhrases.metallCommand[5] + '.</code>';
     return metallTable;
 }
 
@@ -1251,14 +1251,13 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
                     catchPhrases.roubleCommandMiddle[
                         getRandomInt(0, catchPhrases.roubleCommandMiddle.length - 1)]);
     }
-    currencyAnswer += getCurrencyTableString(bankID);
+    currencyAnswer += '<code>' + getCurrencyTableString(bankID) + '</code>';
 
     // Send currency answer to chat.
-    var msgTxt = '<code>' + currencyAnswer + '</code>';
     if (!aEditText) {
-        sendMessageByBot(messageChatId, msgTxt, aUserName, aMsgId, globalRatesKeyboard);
+        sendMessageByBot(messageChatId, currencyAnswer, aUserName, aMsgId, globalRatesKeyboard);
     } else {
-        bot.editMessageText(msgTxt,
+        bot.editMessageText(currencyAnswer.replace('%username%', '@' + aUserName),
                             { chat_id: messageChatId, message_id: aMsgId, reply_markup: globalRatesKeyboard, parse_mode: 'HTML' });
     }
 }

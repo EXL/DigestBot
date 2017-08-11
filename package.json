@@ -35,21 +35,26 @@
     "node-telegram-bot-api": "*"
   },
   "main": "DigestBot.js",
-  "contributors": [ {
-    "name": "EXL",
-    "email": "exlmotodev@gmail.com",
-    "url": "http://exlmoto.ru"
-  }, {
-    "name": "Zorge.R",
-    "email": "zorg.rhrd@gmail.com",
-    "url": "http://z-lab.me"
-  }, {
-    "name": "yakimka",
-    "email": "ss.yakim@gmail.com",
-    "url": "https://github.com/yakimka"
-  }, {
-    "name": "Andrey",
-    "email": "kovirolikmeow@gmail.com",
-    "url": "https://github.com/kovirolik"
-  } ]
+  "contributors": [
+    {
+      "name": "EXL",
+      "email": "exlmotodev@gmail.com",
+      "url": "http://exlmoto.ru"
+    },
+    {
+      "name": "Zorge.R",
+      "email": "zorg.rhrd@gmail.com",
+      "url": "http://z-lab.me"
+    },
+    {
+      "name": "yakimka",
+      "email": "ss.yakim@gmail.com",
+      "url": "https://github.com/yakimka"
+    },
+    {
+      "name": "Andrey",
+      "email": "kovirolikmeow@gmail.com",
+      "url": "https://github.com/kovirolik"
+    }
+  ]
 }
