@@ -61,7 +61,7 @@
     },
     "btc_rub": {
         "desc": "BTC/RUB from BTC-E.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/btc_rud.jpg",
+        "thumb": "http://lab.exlmoto.ru/thumbs/btc_rub.jpg",
         "url": "http://api.z-lab.me/btce/btc_rur.php"
     },
     "dsh_usd": {
