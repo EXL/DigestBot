@@ -1,7 +1,7 @@
 Digest Bot
 =============
 
-![Bot Screen](Screens/DigestBot.png)
+![Bot Screen](Images/DigestBotScreen.png)
 
 Telegram digest bot for group chats.
 Bot records all messages with the #digest tag and displays them on the /digest command.
