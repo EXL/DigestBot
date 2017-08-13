@@ -119,6 +119,26 @@ bot.getMe().then(function(me)
     globalBotUserName = me.username;
 });
 
+bot.on('inline_query', function(msg)
+{
+    var q_id = msg.id;
+    var q_query = msg.query;
+    var results = [];
+    var ind = 0;
+    for (k in globalExchangeList) {
+        if (k.toLowerCase().indexOf(q_query) >= 0) {
+            results.push(generateInlineChartsResult(k));
+            ind++;
+        }
+    }
+    if (!ind) {
+        for (k in globalExchangeList) {
+            results.push(generateInlineChartsResult(k));
+        }
+    }
+    bot.answerInlineQuery(q_id, results);
+});
+
 bot.on('callback_query', function onCallbackQuery(callbackQuery)
 {
     // console.log(callbackQuery);
@@ -440,6 +460,19 @@ bot.on('text', function(msg)
 });
 
 // Subs Functions
+function generateInlineChartsResult(aKey)
+{
+    return {
+        'type': 'article',
+        'id': '08142017/' + aKey,
+        'title': globalExchangeList[aKey].desc,
+        'input_message_content': { 'message_text' : globalExchangeList[aKey].desc + '\n' + globalExchangeList[aKey].url },
+        'thumb_url': globalExchangeList[aKey].thumb,
+        'thumb_width': 64,
+        'thumb_height': 64
+    };
+}
+
 function getDateTgFormat()
 {
     return ~~(Date.now() / 1000);
