@@ -79,10 +79,10 @@ var globalJsonStackName = 'DigestBotStackLog.json';
 readSavedStackFromFileSystem(globalJsonStackName, 0, true);
 
 // ----- CURRENCY SECTION
+var globalExchangeList = getChartsList();
+
 var xmlContent = '';
-
 var bankLocalCurrency = ['RUB', 'UAH', 'BYN'];
-
 var bankCBR = 0;
 var bankNBU = 1;
 var bankNBRB = 2;
@@ -99,85 +99,6 @@ var globalCurrencyList =  {
 };
 
 initilizeCurrencyListAndGetUsdValue();
-
-var globalExchangeList = {
-    'mmvb': {
-        desc: 'MMVB (MOEX) Index.',
-        url: 'http://api.z-lab.me/charts/mmvb.png'
-    },
-    'usd_rub': {
-        desc: 'USD/RUB from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/usd_rub.png'
-    },
-    'usd_uah': {
-        desc: 'USD/UAH from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/usd_uah.png'
-    },
-    'eur_rub': {
-        desc: 'EUR/RUB from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/eur_rub.png'
-    },
-    'eur_uah': {
-        desc: 'EUR/UAH from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/eur_uah.png'
-    },
-    'gold': {
-        desc: 'Gold from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/gold.png'
-    },
-    'palladium': {
-        desc: 'Palladium from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/palladium.png'
-    },
-    'platinum': {
-        desc: 'Platinum from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/platinum.png'
-    },
-    'rhodium': {
-        desc: 'Rhodium from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/rhodium.png'
-    },
-    'silver': {
-        desc: 'Silver from Nasdaq.',
-        url: 'http://api.z-lab.me/charts/silver.png'
-    },
-    'rts': {
-        desc: 'RTS Index from MMVB (MOEX).',
-        url: 'http://api.z-lab.me/charts/rts.png'
-    },
-    'btc_usd': {
-        desc: 'BTC/USD from BTC-E.',
-        url: 'http://api.z-lab.me/btce/btc_usd.php'
-    },
-    'btc_rub': {
-        desc: 'BTC/RUB from BTC-E.',
-        url: 'http://api.z-lab.me/btce/btc_rur.php'
-    },
-    'dsh_usd': {
-        desc: 'DSH/USD from BTC-E.',
-        url: 'http://api.z-lab.me/btce/dsh_usd.php'
-    },
-    'ltc_usd': {
-        desc: 'LTC/USD from BTC-E.',
-        url: 'http://api.z-lab.me/btce/ltc_usd.php'
-    },
-    'eth_usd': {
-        desc: 'ETH/USD from BTC-E.',
-        url: 'http://api.z-lab.me/btce/eth_usd.php'
-    },
-    'forex': {
-        desc: 'USD/RUB from Forex.',
-        url: 'http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5'
-    },
-    'brent': {
-        desc: 'Brent from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/brent.png'
-    },
-    'wti': {
-        desc: 'WTI from Nasdaq, Nyse.',
-        url: 'http://api.z-lab.me/charts/wti.png'
-    }
-};
 
 var globalRatesKeyboard = {
     inline_keyboard: [ [
@@ -973,6 +894,11 @@ function getTokenAccess()
     }
 
     return token;
+}
+
+function getChartsList()
+{
+    return getJSONFileFromFileSystem('ChartsList.json');
 }
 
 function getCatchPhrases()
