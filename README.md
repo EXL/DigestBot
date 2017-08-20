@@ -4,7 +4,7 @@ Digest Bot
 ![Bot Screen](Images/DigestBotScreen.png)
 
 Telegram digest bot for group chats.
-Bot records all messages with the #digest tag and displays them on the /digest command.
+Bot records all messages with the `#digest` tag and displays them on the `/digest` command.
 Thanks to the creators of [node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api) and the creators of powerful and awesome JavaScript framework — [Node.js](https://nodejs.org/en/)
 
 ## Install instructions

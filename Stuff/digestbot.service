@@ -5,7 +5,7 @@ After=multi-user.target
 #Requires=After=mysql.service       # Requires the mysql service to run first
 
 [Service]
-ExecStart=/usr/local/bin/node /root/digestbot/DigestBot
+ExecStart=/usr/bin/node /root/digestbot/DigestBot
 Restart=always
 RestartSec=10                       # Restart service after 10 seconds if node service crashes
 StandardOutput=syslog               # Output to syslog
