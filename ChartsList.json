@@ -5,24 +5,24 @@
         "url": "http://api.z-lab.me/charts/mmvb.png"
     },
     "usd_rub": {
-        "desc": "USD/RUB from Nasdaq, Nyse.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/usd_rub.jpg",
-        "url": "http://api.z-lab.me/charts/usd_rub.png"
+        "desc": "USD/RUB from Forex.",
+        "thumb": "http://lab.exlmoto.ru/thumbs/forex.jpg",
+        "url": "http://api.z-lab.me/charts/usd_rub_forex.png"
     },
     "usd_uah": {
-        "desc": "USD/UAH from Nasdaq, Nyse.",
+        "desc": "USD/UAH from Nasdaq, NYSE.",
         "thumb": "http://lab.exlmoto.ru/thumbs/usd_uah.jpg",
         "url": "http://api.z-lab.me/charts/usd_uah.png"
     },
     "eur_rub": {
-        "desc": "EUR/RUB from Nasdaq, Nyse.",
+        "desc": "EUR/RUB from Forex.",
         "thumb": "http://lab.exlmoto.ru/thumbs/eur_rub.jpg",
-        "url": "http://api.z-lab.me/charts/eur_rub.png"
+        "url": "http://api.z-lab.me/charts/rub_eur_forex.png"
     },
-    "eur_uah": {
-        "desc": "EUR/UAH from Nasdaq, Nyse.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/eur_uah.jpg",
-        "url": "http://api.z-lab.me/charts/eur_uah.png"
+    "eur_usd": {
+        "desc": "EUR/UAH from Forex.",
+        "thumb": "http://lab.exlmoto.ru/thumbs/eur_usd.jpg",
+        "url": "http://api.z-lab.me/charts/eur_usd_forex.png"
     },
     "gold": {
         "desc": "Gold from Nasdaq.",
@@ -55,42 +55,47 @@
         "url": "http://api.z-lab.me/charts/rts.png"
     },
     "btc_usd": {
-        "desc": "BTC/USD from BTC-E.",
+        "desc": "BTC/USD from WorldCoinIndex.",
         "thumb": "http://lab.exlmoto.ru/thumbs/btc_usd.jpg",
-        "url": "http://api.z-lab.me/btce/btc_usd.php"
+        "url": "http://api.z-lab.me/charts/btc_usd.png"
     },
-    "btc_rub": {
-        "desc": "BTC/RUB from BTC-E.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/btc_rub.jpg",
-        "url": "http://api.z-lab.me/btce/btc_rur.php"
+    "bcc_usd": {
+        "desc": "BCC/USD from WorldCoinIndex.",
+        "thumb": "http://lab.exlmoto.ru/thumbs/bcc_usd.jpg",
+        "url": "http://api.z-lab.me/charts/bcc_usd.png"
     },
     "dsh_usd": {
-        "desc": "DSH/USD from BTC-E.",
+        "desc": "DSH/USD from WorldCoinIndex.",
         "thumb": "http://lab.exlmoto.ru/thumbs/dsh_usd.jpg",
-        "url": "http://api.z-lab.me/btce/dsh_usd.php"
+        "url": "http://api.z-lab.me/charts/dsh_usd.png"
     },
     "ltc_usd": {
-        "desc": "LTC/USD from BTC-E.",
+        "desc": "LTC/USD from WorldCoinIndex.",
         "thumb": "http://lab.exlmoto.ru/thumbs/ltc_usd.jpg",
-        "url": "http://api.z-lab.me/btce/ltc_usd.php"
+        "url": "http://api.z-lab.me/charts/ltc_usd.png"
     },
     "eth_usd": {
-        "desc": "ETH/USD from BTC-E.",
+        "desc": "ETH/USD from WorldCoinIndex.",
         "thumb": "http://lab.exlmoto.ru/thumbs/eth_usd.jpg",
-        "url": "http://api.z-lab.me/btce/eth_usd.php"
+        "url": "http://api.z-lab.me/charts/eth_usd.png"
     },
-    "forex": {
-        "desc": "USD/RUB from Forex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/forex.jpg",
-        "url": "http://j1.forexpf.ru/delta/prochart?type=USDRUB&amount=335&chart_height=170&chart_width=330&grtype=2&tictype=0&iId=5"
+    "iota_usd": {
+        "desc": "IOTA/USD from WorldCoinIndex.",
+        "thumb": "http://lab.exlmoto.ru/thumbs/iota_usd.jpg",
+        "url": "http://api.z-lab.me/charts/iota_usd.png"
+    },
+    "usd_rub_n": {
+        "desc": "USD/RUB from Nasdaq, NYSE.",
+        "thumb": "http://lab.exlmoto.ru/thumbs/usd_rub.jpg",
+        "url": "http://api.z-lab.me/charts/usd_rub.png"
     },
     "brent": {
-        "desc": "Brent from Nasdaq, Nyse.",
+        "desc": "Brent from Nasdaq, NYSE.",
         "thumb": "http://lab.exlmoto.ru/thumbs/brent.jpg",
         "url": "http://api.z-lab.me/charts/brent.png"
     },
     "wti": {
-        "desc": "WTI from Nasdaq, Nyse.",
+        "desc": "WTI from Nasdaq, NYSE.",
         "thumb": "http://lab.exlmoto.ru/thumbs/wti.jpg",
         "url": "http://api.z-lab.me/charts/wti.png"
     }
