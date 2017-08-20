@@ -194,7 +194,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
         text = catchPhrases.buttons[8] + cooldwn + catchPhrases.buttons[9];
     }
 
-    bot.answerCallbackQuery(callbackQuery.id, text, false);
+    bot.answerCallbackQuery( { callback_query_id: callbackQuery.id, text: text, show_alert: false } );
 });
 
 bot.on('text', function(msg)
