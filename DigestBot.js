@@ -741,13 +741,13 @@ function trimAndRemoveAtInEachString(aString)
         aLine = aLine.trim();
 
         // Remove username URI only
-        // aLine = splitLineToWords(aLine);
+        aLine = removeUsernameUri(aLine);
 
         return aLine;
     }).join('\n');
 }
 
-function splitLineToWords(aString)
+function removeUsernameUri(aString)
 {
     return aString.split(' ').map(function(aWord)
     {
