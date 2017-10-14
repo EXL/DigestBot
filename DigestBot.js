@@ -197,6 +197,24 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
     bot.answerCallbackQuery( { callback_query_id: callbackQuery.id, text: text, show_alert: false } );
 });
 
+bot.on('new_chat_members', function(msg)
+{
+    sendMessageByBot(msg.chat.id,
+                     catchPhrases.newMember[getRandomInt(0, catchPhrases.newMember.length - 1)]
+                        .replace('%username%',
+                                 (msg.from.last_name) ? msg.from.first_name + ' ' + msg.from.last_name : msg.from.first_name),
+                     msg.from.username, msg.message_id);
+});
+
+bot.on('left_chat_member', function(msg)
+{
+    sendMessageByBot(msg.chat.id,
+                     catchPhrases.leftMember[getRandomInt(0, catchPhrases.leftMember.length - 1)]
+                        .replace('%username%',
+                                 (msg.from.last_name) ? msg.from.first_name + ' ' + msg.from.last_name : msg.from.first_name),
+                     msg.from.username, msg.message_id);
+});
+
 bot.on('text', function(msg)
 {
     // Set main variables
