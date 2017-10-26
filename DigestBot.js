@@ -618,7 +618,7 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
 
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
 {
-    Exec('hostname -i', function(err, stdout, stderr) {
+    Exec('curl http://ipecho.net/plain', function(err, stdout, stderr) {
         if (err) {
             sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
             return;
