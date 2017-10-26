@@ -55,7 +55,7 @@ var httpOptions = [
 var httpMetallOptions = {
     host: 'www.cbr.ru',
     port: 80,
-    path: '/hd_base/?PrtId=metall_base_new'
+    path: '/hd_base/metall/metall_base_new/'
 };
 
 var botOptions = {
