@@ -1,8 +1,9 @@
 [Unit]
 Description=Node.js DigestBot Server
+Wants=network-online.target
 After=multi-user.target
 #After=network.target remote-fs.target timers.target
-#Requires=After=mysql.service       # Requires the mysql service to run first
+#Requires=After=network-online.target
 
 [Service]
 ExecStart=/usr/bin/node /root/digestbot/DigestBot
