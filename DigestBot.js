@@ -37,9 +37,9 @@ var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
 var httpOptions = [
     {
-        host: 'www.cbr.ru',
+        host: 'www.cbr-xml-daily.ru',
         port: 80,
-        path: '/scripts/XML_daily.asp?'
+        path: '/daily.xml'
     },
     {
         host: 'www.bank-ua.com',

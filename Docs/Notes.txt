@@ -1,4 +1,8 @@
-Mirror currency rates from the CBR in the case of ban.
+Official CBR data:
+
+http://www.cbr.ru/scripts/XML_daily.asp?
+
+Mirror currency rates from the CBR in the case of ban:
 
 http://www.cbr-xml-daily.ru/
 http://www.cbr-xml-daily.ru/daily.xml
