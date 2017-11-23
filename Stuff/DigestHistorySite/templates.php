@@ -16,8 +16,10 @@ $main_append1 = '<!DOCTYPE html>
 $main_append2 = '</body>
 </html>';
 
-$css_append1 = "<link rel='stylesheet' id='motofan-css' href='";
-$css_append2 = "' type='text/css' media='all' />";
+$opengraph = '<meta property="og:title" content="Новости MotoFan.Ru в конференции Telegram">
+<meta property="og:image" content="img/logo4.gif">
+<meta property="og:site_name" content="Новости MotoFan.Ru в конференции Telegram">
+<meta property="og:description" content="Вы можете прочитать весь дайджест чата здесь.">';
 
 $header_append1 = '<table cellspacing="0" cellpadding="0" border="0" width="100%">
 <tbody><tr>

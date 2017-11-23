@@ -64,6 +64,7 @@ function pl_pager($curr, $all, $url, $p1, $p2) {
     echo $p2;
 }
 
+echo $opengraph;
 echo $css;
 echo $header_append1 . "<a title='Новости чата MotoFan.Ru, последняя страница' href=\"//" .
     $url ."\"/>" . $header_append2 . "</a>" . $header_append3 .
