@@ -1,4 +1,7 @@
-// Set current dir as working dir for script
+// ImportDigestToDB.js
+// See README.md for Install and Usage instructions
+// EXL, 23-NOV-2017
+
 process.chdir(__dirname);
 
 const Fs = require("fs");
@@ -75,6 +78,11 @@ function decompressTarBall(aFilename, aChatId) {
     });
 }
 
+function toExit() {
+    console.log("++++= Ended at: " + getDate(parseInt(Date.now() / 1000)).toString());
+    process.exit(0);
+}
+
 function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
     var nameDir = (parseInt(aBackupDir.indexOf("/")) === -1) ? aBackupDir + "/" : aBackupDir;
 
@@ -86,12 +94,12 @@ function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
                 // 5. Show All ChatId's
                 console.log("\n===== All ChatId's:");
                 showMap(MapDB);
-                process.exit(0);
+                toExit();
             } else if (aChatId.toString() === "users") {
                 // 6. Show All Users
                 console.log("\n===== All Users:");
                 showMap(MapDB);
-                process.exit(0);
+                toExit();
             } else {
                 // 7. Get User Avatars
                 getUserAvatars(MapDB, aChatId);
@@ -304,8 +312,7 @@ function connectToDataBase(aSettings, aChatId) {
             if (current >= times) {
                 console.log("SQL: " + current + " digests are stored to the DB.");
                 con.end();
-                console.log("++++= Ended at: " + getDate(parseInt(Date.now() / 1000)).toString());
-                process.exit(0);
+                toExit();
                 return;
             }
             process.stdout.write("Commit digest #" + (current+1) + "... ");

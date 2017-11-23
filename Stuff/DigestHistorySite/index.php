@@ -4,6 +4,7 @@
  * User: exl
  * Date: 11/22/17
  * Time: 10:32 AM
+ * See README.md for instructions and usage
  */
 
 include_once 'config.php';
@@ -19,11 +20,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Set UTF-8 charset for DB responses
 if (!$conn->set_charset("utf8")) {
     die("Set UTF-8 charset failed.");
 }
 
-// Get count of digests
+// Get count of digests records in DB
 $sql = "SELECT COUNT(*) FROM digests";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
@@ -34,7 +36,7 @@ if ($result->num_rows > 0) {
 
 $pg_count = intval($count / postsPP);
 
-//echo $count . " " . $page . " " . $url . "<br>";
+// echo "Debug: " . $count . " " . $page . " " . $url . "<br>";
 echo $main_append1;
 
 if (!$page) {
@@ -78,9 +80,9 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         echo $post_append1 . $row["username"] . $post_append2 .
-            $row["date"] . $post_append3 . $row["num"] . $post_append4 .
-            $row["avatar"] . "<br><br>" . $row["grp"] . $post_append5 .
-            $row["msg"] . $post_append6;
+             $row["date"] . $post_append3 . $row["num"] . $post_append4 .
+             $row["avatar"] . "<br><br>" . $row["grp"] . $post_append5 .
+             $row["msg"] . $post_append6;
     }
 } else {
     echo "0 results.";
