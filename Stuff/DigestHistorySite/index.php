@@ -15,9 +15,12 @@ $url = $_SERVER['HTTP_HOST'] . "/digest";
 $page = $_GET['pg'];
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+if (!$conn->set_charset("utf8")) {
+    die("Set UTF-8 charset failed.");
 }
 
 // Get count of digests
