@@ -3,7 +3,7 @@ Description=Import all MotoFan.Ru digests from BackUp's to MySQL DataBase
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /root/digestbot/DigestBot/Stuff/ImportDigestsToDB /root/digestbot/BackUpDigestLog/ -1001045117849
+ExecStart=/usr/bin/node /root/digestbot/DigestBot/Stuff/ImportDigestsToDB/ImportDigestsToDB.js /root/digestbot/BackUpDigestLog/ -1001045117849
 
 [Install]
 WantedBy=multi-user.target
