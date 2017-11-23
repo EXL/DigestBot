@@ -1,3 +1,6 @@
+// Set current dir as working dir for script
+process.chdir(__dirname);
+
 const Fs = require("fs");
 const Zlib = require("zlib");
 const Tar = require("tar-stream");
