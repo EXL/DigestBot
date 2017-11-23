@@ -22,6 +22,7 @@ function main() {
             "3. Show users:\n\t$ node ImportDigestToDB.js <backup-dir> users");
         process.exit(1);
     } else {
+        console.log("++++= Started at: " + getDate(parseInt(Date.now() / 1000)).toString());
         readFiles(process.argv[2], process.argv[3]); // 2 - backupDir, 3 - chatId or parameter
     }
 }
@@ -303,6 +304,7 @@ function connectToDataBase(aSettings, aChatId) {
             if (current >= times) {
                 console.log("SQL: " + current + " digests are stored to the DB.");
                 con.end();
+                console.log("++++= Ended at: " + getDate(parseInt(Date.now() / 1000)).toString());
                 process.exit(0);
                 return;
             }
