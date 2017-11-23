@@ -15,6 +15,7 @@ $main_append1 = '<!DOCTYPE html>
     <meta property="og:site_name" content="MotoFan.Ru в конференции Telegram!">
     <meta property="og:description" content="Вы можете прочитать здесь все новости и сообщения конференции с тегом #digest.">
     <title>Новости MotoFan.Ru в конференции Telegram</title>
+    <link rel="icon" type="image/x-icon" class="js-site-favicon" href="http://lab.exlmoto.ru/favicon.ico">
 </head>
 <body>';
 $main_append2 = '</body>
