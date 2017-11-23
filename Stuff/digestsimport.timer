@@ -1,5 +1,6 @@
 [Unit]
 Description=Timer for Import digests to DataBase from BackUp's
+Requires=digestsimport.service
 
 [Timer]
 OnCalendar=*-*-* 22:10:00
