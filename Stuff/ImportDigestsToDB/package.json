@@ -1,0 +1,12 @@
+{
+  "name": "ImportDigestsToDB",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ImportDigestsToDB"
+  },
+  "dependencies": {
+    "mysql": "~2.15.0",
+    "tar-stream": "~1.5.5"
+  }
+}
