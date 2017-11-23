@@ -210,6 +210,7 @@ function addLeadZeros(aDigit) {
 }
 
 function getUserAvatar(aUserName) {
+    if (!aUserName) return "Без аватарки";
     return '<img width="128px" height="128px" title="' + aUserName + '" src="' + UserAvs.get(aUserName) + '"/>';
 }
 
@@ -218,6 +219,7 @@ function getPostNumber(aNum) {
 }
 
 function getGroup(aUserName, aChatId) {
+    if (!aUserName) return "Группа: Неизвестные";
     if (aChatId.toString() === "-1001045117849") {
         if (aUserName.toString() === "exlmoto") {
             return "Группа: Модераторы";
@@ -229,6 +231,7 @@ function getGroup(aUserName, aChatId) {
 }
 
 function getUserName(aName) {
+    if (!aName) return "Гость";
     if (aName.toString() === "exlmoto") {
         return '<a href="https://t.me/' + aName +'" title="@' + aName + '" target="_blank"><span style="color:blue">'
             + aName + '</span></a>';
