@@ -10,16 +10,15 @@ $main_append1 = '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta property="og:title" content="Новости MotoFan.Ru в конференции Telegram">
+    <meta property="og:image" content="img/logo4.gif">
+    <meta property="og:site_name" content="Новости MotoFan.Ru в конференции Telegram">
+    <meta property="og:description" content="Вы можете прочитать весь дайджест чата здесь.">
     <title>Новости MotoFan.Ru в конференции Telegram</title>
 </head>
 <body>';
 $main_append2 = '</body>
 </html>';
-
-$opengraph = '<meta property="og:title" content="Новости MotoFan.Ru в конференции Telegram">
-<meta property="og:image" content="img/logo4.gif">
-<meta property="og:site_name" content="Новости MotoFan.Ru в конференции Telegram">
-<meta property="og:description" content="Вы можете прочитать весь дайджест чата здесь.">';
 
 $header_append1 = '<table cellspacing="0" cellpadding="0" border="0" width="100%">
 <tbody><tr>
