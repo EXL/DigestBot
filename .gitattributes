@@ -1,1 +1,3 @@
 BOT_TOKEN_ACCESS.json merge=ours
+Stuff/DigestHistorySite/config.php merge=ours
+Stuff/ImportDigestsToDB/DataBaseConfig.json merge=ours
