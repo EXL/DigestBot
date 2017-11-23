@@ -10,3 +10,4 @@ $servername = "write_host_here";
 $username = "user";
 $password = "password";
 $dbname = "database_name";
+$upath = "/digests";

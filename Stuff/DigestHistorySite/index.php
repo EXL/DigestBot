@@ -12,7 +12,7 @@ include_once 'templates.php';
 
 const postsPP = 50;
 
-$url = $_SERVER['HTTP_HOST'] . "/digest";
+$url = $_SERVER['HTTP_HOST'] . $upath;
 $page = $_GET['pg'];
 
 $conn = new mysqli($servername, $username, $password, $dbname);

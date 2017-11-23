@@ -10,10 +10,10 @@ $main_append1 = '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta property="og:title" content="Новости MotoFan.Ru в конференции Telegram">
+    <meta property="og:title" content="MotoFan.Ru в конференции Telegram!">
     <meta property="og:image" content="img/logo4.gif">
-    <meta property="og:site_name" content="Новости MotoFan.Ru в конференции Telegram">
-    <meta property="og:description" content="Вы можете прочитать весь дайджест чата здесь.">
+    <meta property="og:site_name" content="MotoFan.Ru в конференции Telegram!">
+    <meta property="og:description" content="Вы можете прочитать здесь все новости и сообщения конференции с тегом #digest.">
     <title>Новости MotoFan.Ru в конференции Telegram</title>
 </head>
 <body>';
