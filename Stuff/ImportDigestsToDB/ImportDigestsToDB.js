@@ -8,8 +8,8 @@ const DigestFile = "DigestBotStackLog.json";
 const ConfigDB = getJSONFile("DataBaseConfig.json");
 const TmpDir = "/tmp/";
 
-let MapDB = new Map();
-let UserAvs = new Map();
+var MapDB = new Map();
+var UserAvs = new Map();
 
 function main() {
     if (parseInt(process.argv.length) !== 4) {
@@ -24,10 +24,10 @@ function main() {
 }
 
 function readFiles(aBackupDir, aChatId) {
-    let gzFiles = [];
-    Fs.readdir(aBackupDir, (aErr, aFiles) => {
+    var gzFiles = [];
+    Fs.readdir(aBackupDir, function(aErr, aFiles) {
         if (!aErr) {
-            aFiles.forEach((aName) => {
+            aFiles.forEach(function(aName) {
                 if (aName.endsWith(".tar.gz")) {
                     gzFiles.push(aName);
                 }
@@ -41,22 +41,22 @@ function readFiles(aBackupDir, aChatId) {
 }
 
 function decompressTarBall(aFilename, aChatId) {
-    return new Promise((resolve) => {
-        let extract = Tar.extract();
-        let stream = Fs.createReadStream(aFilename).pipe(Zlib.createGunzip()).pipe(extract);
-        let data = "";
-        extract.on("entry", (header, stream, cb) => {
-            stream.on("data", (chunk) => {
+    return new Promise(function(resolve) {
+        var extract = Tar.extract();
+        var stream = Fs.createReadStream(aFilename).pipe(Zlib.createGunzip()).pipe(extract);
+        var data = "";
+        extract.on("entry", function(header, stream, cb) {
+            stream.on("data", function(chunk) {
                 if (header.name.toString() === DigestFile) {
                     data += chunk;
                 }
             });
-            stream.on("end", () => {
+            stream.on("end", function() {
                 cb();
             });
             stream.resume();
         });
-        extract.on("finish", () => {
+        extract.on("finish", function() {
             process.stdout.write("Processing file " + aFilename + "... ");
             // 1. Create JSON File
             Fs.writeFileSync(TmpDir + DigestFile, data);
@@ -72,63 +72,76 @@ function decompressTarBall(aFilename, aChatId) {
 }
 
 function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
-    let nameDir = (parseInt(aBackupDir.indexOf("/")) === -1) ? aBackupDir + "/" : aBackupDir;
-    (async () => {
-        for (let i = 0; i < aGzFiles.length; ++i) {
-            await decompressTarBall(nameDir + aGzFiles[i], aChatId);
+    var nameDir = (parseInt(aBackupDir.indexOf("/")) === -1) ? aBackupDir + "/" : aBackupDir;
+
+    var times = aGzFiles.length;
+    var current = 0;
+    (function nextLapPr() {
+        if (current >= times) {
+            if (parseInt(aChatId) === 0) {
+                // 5. Show All ChatId's
+                console.log("\n===== All ChatId's:");
+                showMap(MapDB);
+                process.exit(0);
+            } else if (aChatId.toString() === "users") {
+                // 6. Show All Users
+                console.log("\n===== All Users:");
+                showMap(MapDB);
+                process.exit(0);
+            } else {
+                // 7. Get User Avatars
+                getUserAvatars(MapDB, aChatId);
+            }
+            return;
         }
-        if (parseInt(aChatId) === 0) {
-            // 5. Show All ChatId's
-            console.log("\n===== All ChatId's:");
-            showMap(MapDB);
-            process.exit(0);
-        } else if (aChatId.toString() === "users") {
-            // 6. Show All Users
-            console.log("\n===== All Users:");
-            showMap(MapDB);
-            process.exit(0);
-        } else {
-            // 7. Get User Avatars
-            getUserAvatars(MapDB, aChatId);
-        }
+        decompressTarBall(nameDir + aGzFiles[current], aChatId).then(function() {
+            ++current;
+            nextLapPr();
+        });
     })();
 }
 
 function getUserAvatars(aMap, aChatId) {
-    let uniqs = new Map();
-    aMap.forEach((aValue) => {
+    var uniqs = new Map();
+    aMap.forEach(function(aValue) {
         uniqs.set(aValue.user, null);
     });
-    let listUsers = [];
-    uniqs.forEach((aValue, aKey) => {
+    var listUsers = [];
+    uniqs.forEach(function(aValue, aKey) {
         listUsers.push(aKey);
     });
-    (async () => {
-        for (let i = 0; i < listUsers.length; ++i) {
-            process.stdout.write("Getting avatar for @" + listUsers[i] + " user... ");
-            await walkToProfilePages(listUsers[i]);
-            process.stdout.write("done.\n");
-        }
 
-        // 8. Push All data to DataBase
-        connectToDataBase(ConfigDB, aChatId);
+    var times = listUsers.length;
+    var current = 0;
+    (function nextLapUa() {
+        if (current >= times) {
+            // 8. Push All data to DataBase
+            connectToDataBase(ConfigDB, aChatId);
+            return;
+        }
+        process.stdout.write("Getting avatar for @" + listUsers[current] + " user... ");
+        walkToProfilePages(listUsers[current]).then(function() {
+            process.stdout.write("done.\n");
+            ++current;
+            nextLapUa();
+        });
     })();
 }
 
 function walkToProfilePages(aName) {
-    return new Promise((resolve) => {
+    return new Promise(function(resolve) {
         // setTimeout(() => {
         //     resolve();
         // }, 2000); // Delay 2 sec...
         Http.request({
             host: "t.me",
             path: "/" + aName
-        }, (response) => {
-            let str = "";
-            response.on("data", (chunk) => {
+        }, function(response) {
+            var str = "";
+            response.on("data", function(chunk) {
                 str += chunk;
             });
-            response.on("end", () => {
+            response.on("end", function() {
                 UserAvs.set(aName, cutImageLink(str));
                 resolve(response);
             });
@@ -137,13 +150,13 @@ function walkToProfilePages(aName) {
 }
 
 function cutImageLink(aPage) {
-    let part1 = aPage.slice(aPage.indexOf('<meta property="og:image"'),
-                aPage.indexOf('<meta property="og:site_name"'));
+    var part1 = aPage.slice(aPage.indexOf('<meta property="og:image"'),
+        aPage.indexOf('<meta property="og:site_name"'));
     return part1.slice(part1.indexOf('http'), part1.indexOf('">'));
 }
 
 function showMap(aMap) {
-    aMap.forEach((aValue, aKey) => {
+    aMap.forEach(function(aValue, aKey) {
         console.log(aKey);
     });
 }
@@ -153,17 +166,17 @@ function getJSONFile(aFilename) {
 }
 
 function processJSONFile(aJson, aChatId) {
-    aJson.forEach((aObject) => {
+    aJson.forEach(function(aObject) {
         if (parseInt(aChatId) === 0) {
             MapDB.set(aObject.s_chatID, null);
         } else if (parseInt(aObject.s_chatID) === parseInt(aChatId)) {
-            let struct = {
+            var struct = {
                 "user": aObject.s_username,
                 "msg": aObject.s_message
             };
             //if (!MAP.get(aObject.s_date)) { // Fix strange bugs with broken symbols.
-                // 2.1. Generate Unique Messages by Date
-                MapDB.set(aObject.s_date, struct);
+            // 2.1. Generate Unique Messages by Date
+            MapDB.set(aObject.s_date, struct);
             //}
         } else if (aChatId.toString() === "users") {
             MapDB.set(aObject.s_username, null);
@@ -172,8 +185,8 @@ function processJSONFile(aJson, aChatId) {
 }
 
 function getDate(aDate) {
-    let date = new Date(0);
-    let m = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    var date = new Date(0);
+    var m = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
         "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     date.setUTCSeconds(aDate);
     return "Дата: " + ('0' + date.getDate()).slice(-2) + "-" + m[date.getMonth()] + "-" + date.getFullYear() + " | Время: " +
@@ -221,7 +234,7 @@ function getUserMessage(aMsg) {
 
 // https://stackoverflow.com/a/7760578
 function escSqlString(str) {
-    return (str) ? str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (char) => {
+    return (str) ? str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function(char) {
         switch (char) {
             case "\0":
                 return "\\0";
@@ -246,7 +259,7 @@ function escSqlString(str) {
 }
 
 function filterMessage(aMsg, aFilter) {
-    return aMsg.split(aFilter).map((aWord) => {
+    return aMsg.split(aFilter).map(function(aWord) {
         if (parseInt(aWord.indexOf("@")) === 0) {
             aWord = getUserName(aWord.slice(1));
         } else if (parseInt(aWord.indexOf("http://")) === 0
@@ -262,14 +275,14 @@ function makeLink(aLink) {
 }
 
 function connectToDataBase(aSettings, aChatId) {
-    let con = MySQL.createConnection({
+    var con = MySQL.createConnection({
         host: aSettings.host,
         user: aSettings.user,
         password: aSettings.password,
         database: aSettings.database
     });
 
-    con.connect((err) => {
+    con.connect(function(err) {
         if (err) {
             throw err;
         }
@@ -279,30 +292,35 @@ function connectToDataBase(aSettings, aChatId) {
             "(num TEXT, date TEXT, username TEXT, grp TEXT, avatar TEXT, msg TEXT);");
         console.log("SQL: Table digests created.");
 
-        (async () => {
-            let arr = Array.from(MapDB);
-            let i = 0;
-            for (; i < arr.length; ++i) {
-                process.stdout.write("Commit digest #" + (i+1) + "... ");
-                await runSqlQuery(con, "INSERT INTO digests (num, date, username, grp, avatar, msg) VALUES ('" +
-                    escSqlString(getPostNumber(i+1)) + "', '" +
-                    escSqlString(getDate(arr[i][0])) + "', '" +
-                    escSqlString(getUserName(arr[i][1].user)) + "', '" +
-                    escSqlString(getGroup(arr[i][1].user, aChatId)) + "', '" +
-                    escSqlString(getUserAvatar(arr[i][1].user)) + "', '" +
-                    escSqlString(getUserMessage(arr[i][1].msg)) + "');");
-                process.stdout.write("done.\n");
+        var arr = Array.from(MapDB);
+        var times = arr.length;
+        var current = 0;
+        (function nextLapDb() {
+            if (current >= times) {
+                console.log("SQL: " + current + " digests are stored to the DB.");
+                con.end();
+                process.exit(0);
+                return;
             }
-            console.log("SQL: " + i + " digests are stored to the DB.");
-            con.end();
-            process.exit(0);
+            process.stdout.write("Commit digest #" + (current+1) + "... ");
+            runSqlQuery(con, "INSERT INTO digests (num, date, username, grp, avatar, msg) VALUES ('" +
+                escSqlString(getPostNumber(current+1)) + "', '" +
+                escSqlString(getDate(arr[current][0])) + "', '" +
+                escSqlString(getUserName(arr[current][1].user)) + "', '" +
+                escSqlString(getGroup(arr[current][1].user, aChatId)) + "', '" +
+                escSqlString(getUserAvatar(arr[current][1].user)) + "', '" +
+                escSqlString(getUserMessage(arr[current][1].msg)) + "');").then(function() {
+                    process.stdout.write("done.\n");
+                    ++current;
+                    nextLapDb();
+            });
         })();
     });
 }
 
 function runSqlQuery(aCon, aQuery) {
-    return new Promise((resolve) => {
-        aCon.query(aQuery, (err, result) => {
+    return new Promise(function(resolve) {
+        aCon.query(aQuery, function(err, result) {
             if (err) {
                 throw err;
             }
