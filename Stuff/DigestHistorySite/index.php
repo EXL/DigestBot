@@ -12,8 +12,8 @@ include_once 'templates.php';
 
 const postsPP = 50;
 
-$url = $_SERVER['HTTP_HOST'] . $upath;
-$page = $_GET['pg'];
+$url = filter_input(INPUT_SERVER, 'HTTP_HOST') . $upath;
+$page = filter_input(INPUT_GET, 'pg');
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
@@ -27,9 +27,9 @@ if (!$conn->set_charset("utf8")) {
 
 // Get count of digests records in DB
 $sql = "SELECT COUNT(*) FROM digests";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-    $count = $result->fetch_row()[0];
+$result_с = $conn->query($sql);
+if ($result_с->num_rows > 0) {
+    $count = $result_с->fetch_row()[0];
 } else {
     die("0 results.");
 }
