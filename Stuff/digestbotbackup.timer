@@ -1,6 +1,5 @@
 [Unit]
 Description=Timer for DigestBot Log Stack BackUp
-Requires=digestbotbackup.service
 
 [Timer]
 OnCalendar=*-*-* 22:00:00
