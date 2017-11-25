@@ -34,9 +34,9 @@ if ($result_с->num_rows > 0) {
     die("0 results.");
 }
 
-$pg_count = intval($count / postsPP);
+$pg_count = intval(($count - 1) / postsPP);
 
-// echo "Debug: " . $count . " " . $page . " " . $url . "<br>";
+// echo "Debug: " . $count . " " . $page . " " . $url . " " . $pg_count . " " . "<br>";
 echo $main_append1;
 
 if (!$page) {
