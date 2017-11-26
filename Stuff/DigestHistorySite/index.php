@@ -21,7 +21,7 @@ if ($conn->connect_error) {
 }
 
 // Set UTF-8 charset for DB responses
-if (!$conn->set_charset("utf8")) {
+if (!$conn->set_charset("utf8mb4")) {
     die("Set UTF-8 charset failed.");
 }
 

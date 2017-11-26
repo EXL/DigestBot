@@ -7,9 +7,9 @@
  */
 
 $main_append1 = '<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta property="og:title" content="MotoFan.Ru в конференции Telegram!">
     <meta property="og:image" content="img/logo4.gif">
     <meta property="og:site_name" content="MotoFan.Ru в конференции Telegram!">
