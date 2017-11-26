@@ -634,7 +634,7 @@ ul#help
 td span,
 .desc
 {
-    font-size: 11px;
+    font-size: 12px;
     color: #495143;
 }
 

@@ -266,7 +266,7 @@ function escSqlString(str) {
             case "\"":
             case "'":
             case "\\":
-            case "%":
+            // case "%":
                 return "\\"+char; // prepends a backslash to backslash, percent,
                                   // and double/single quotes
         }
