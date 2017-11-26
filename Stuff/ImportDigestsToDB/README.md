@@ -7,7 +7,7 @@ The utility for creating a database/table from digest backups. Messages are save
 
 * Install all dependencies with `$ npm install` command.
 
-* Create database or table with `utf8` and `utf8_general_ci` charsets.
+* Create database or table with `utf8mb4` and `utf8mb4_unicode_ci` charsets.
 
 * Edit config "DataBaseConfig.json".
 
@@ -31,4 +31,4 @@ $ node ImportDigestToDB.js <backup-dir> 0
 $ node ImportDigestToDB.js <backup-dir> users
 ```
 
-Make sure that the database is working with UTF-8.
+Make sure that the database is working with UTF-8 (utf8mb4 for unicode smiles) charset.

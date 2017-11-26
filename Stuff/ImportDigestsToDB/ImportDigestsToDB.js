@@ -294,7 +294,8 @@ function connectToDataBase(aSettings, aChatId) {
         host: aSettings.host,
         user: aSettings.user,
         password: aSettings.password,
-        database: aSettings.database
+        database: aSettings.database,
+        charset: 'utf8mb4'
     });
 
     con.connect(function(err) {
@@ -305,7 +306,7 @@ function connectToDataBase(aSettings, aChatId) {
         runSqlQuery(con, "DROP TABLE IF EXISTS digests;");
         runSqlQuery(con, "CREATE TABLE digests " +
             "(num TEXT, date TEXT, username TEXT, grp TEXT, avatar TEXT, msg TEXT) " +
-            "CHARACTER SET utf8 COLLATE utf8_general_ci;");
+            "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         console.log("SQL: Table digests created.");
 
         var arr = Array.from(MapDB);
