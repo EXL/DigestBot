@@ -238,6 +238,7 @@ a:hover
     border: 1px solid #FF6600;
     padding: 1px 3px 1px 3px;
     line-height: 25px;
+    font-size: 11px;
 }
 
 .pagelinklast,
