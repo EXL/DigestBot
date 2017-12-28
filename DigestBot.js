@@ -623,7 +623,11 @@ function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
             sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
             return;
         }
-        sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + stdout, aUserName, aMsgId);
+        if (!isEmpty(stdout)) {
+            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + stdout, aUserName, aMsgId);
+        } else {
+            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[15], aUserName, aMsgId);
+        }
     });
 }
 
