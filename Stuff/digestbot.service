@@ -7,11 +7,15 @@ After=multi-user.target
 
 [Service]
 ExecStart=/usr/bin/node /root/digestbot/DigestBot/DigestBot.js
+WorkingDirectory=/root/digestbot/DigestBot/
+SyslogIdentifier=DigestBot
+# Restart service after 10 seconds if node service crashes
 Restart=always
-RestartSec=10                       # Restart service after 10 seconds if node service crashes
-StandardOutput=syslog               # Output to syslog
-StandardError=syslog                # Output to syslog
-SyslogIdentifier=nodejs-example
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+#StandardOutput=syslog
+#StandardError=syslog
 #User=<alternate user>
 #Group=<alternate group>
 Environment=NODE_ENV=production PORT=1337
