@@ -30,7 +30,7 @@ var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
 var Request = require('request');
-var Exec = require('child_process').exec;
+var ExecSync = require('child_process').execSync;
 
 // Globals
 var token = getTokenAccess();
@@ -618,7 +618,7 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
 
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
 {
-    Exec('curl http://ipecho.net/plain', function(err, stdout, stderr) {
+    ExecSync('curl http://ipecho.net/plain', function(err, stdout, stderr) {
         if (err) {
             sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
             return;
