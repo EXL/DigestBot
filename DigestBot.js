@@ -618,19 +618,13 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
 
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
 {
-    try {
-        ExecSync('curl http://ipecho.net/plain').toString();
-    }
-    catch (out) {
-        if (out.stderr) {
-            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14] + " "
-                + out.stderr, aUserName, aMsgId);
+    ExecSync('curl http://ipecho.net/plain', function(err, stdout, stderr) {
+        if (err) {
+            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
             return;
         }
-        if (out.stdout) {
-            sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + out.stdout, aUserName, aMsgId);
-        }
-    }
+        sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[13] + stdout, aUserName, aMsgId);
+    });
 }
 
 function generateChartsHelpString()
