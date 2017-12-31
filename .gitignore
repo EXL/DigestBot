@@ -16,3 +16,7 @@ DigestBotStackLog.json
 /*.JPG
 /*.JPEG
 /*.GIF
+
+# IntelliJ IDEA files
+.idea/
+DigestBot.iml

@@ -215,6 +215,11 @@ bot.on('left_chat_member', function(msg)
                      msg.from.username, msg.message_id);
 });
 
+bot.on('new_chat_photo', function(msg)
+{
+    sendMessageByBot(msg.chat.id, catchPhrases.others[0], msg.from.username, msg.message_id);
+});
+
 bot.on('text', function(msg)
 {
     // Set main variables
