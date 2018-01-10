@@ -579,14 +579,14 @@ function getDigestPages(stackSize, messageChatId, dayDelay, aCountOnPage)
                 pageRow.push(globalStackListDigestMessages[i].s_message + endLineString);
                 if (count === aCountOnPage) {
                     count = 0;
-                    pageStack.push(pageRow.reverse());
+                    pageStack.push(pageRow);
                     pageRow = [];
                 }
             }
         }
     }
     if (pageRow.length > 0) {
-        pageStack.push(pageRow.reverse());
+        pageStack.push(pageRow);
     }
     return pageStack;
 }
