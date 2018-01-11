@@ -70,6 +70,7 @@ var globalBotUserName;
 var globalStackListDigestMessages = [ ];
 
 var coolDownSec = 5;
+var digestsPerPage = 10;
 var globalCallbackQueriesStack = [ ];
 
 var globalCofeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
@@ -171,7 +172,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
             bot.editMessageText(generateDigestAnswer(
                                         globalStackListDigestMessages.length,
                                         msg.chat.id,
-                                        dayDelay, 8, page
+                                        dayDelay, digestsPerPage, page
                                     ).replace('%username%',
                                                 '@' + callbackQuery.from.username
                                 ),
@@ -181,7 +182,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
                                         inline_keyboard: generateDigestKeyboard(
                                                              getDigestPages(
                                                                     globalStackListDigestMessages.length,
-                                                                    msg.chat.id, dayDelay, 8
+                                                                    msg.chat.id, dayDelay, digestPerPage
                                                                  ).length
                                                              )
                                     },
@@ -293,10 +294,10 @@ bot.on('text', function(msg)
             // Check countOfDigestMessagesByChat.
             if (countOfDigestMessagesByChat > 0) {
                 sendMessageByBot(messageChatId,
-                                 generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, 8, 1),
+                                 generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, digestPerPage, 1),
                                  messageUserName, messsageId, {
                                      inline_keyboard: generateDigestKeyboard(getDigestPages(globalStackListDigestMessages.length,
-                                                                                            messageChatId, dayDelay, 8).length) } );
+                                                                                            messageChatId, dayDelay, digestPerPage).length) } );
             } else {
                 sendNoDigestMessages(messageChatId, messageUserName, messsageId);
             }
