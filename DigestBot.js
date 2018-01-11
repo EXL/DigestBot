@@ -617,8 +617,10 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
     // Replace all line breaks by line break, digestMarker, newMarker and space.
     botAnswer = catchPhrases.digestMarker + ' '
             + replaceLineBreaksByYourString(botAnswer, '\n' + catchPhrases.digestMarker + ' ');
-    botAnswer = addNewMarkers(botAnswer, catchPhrases.digestMarker,
-        countOfNewMarkers, catchPhrases.digestMarker + ' ' + catchPhrases.newMarker);
+    if (aPage === 1) {
+        botAnswer = addNewMarkers(botAnswer, catchPhrases.digestMarker,
+            countOfNewMarkers, catchPhrases.digestMarker + ' ' + catchPhrases.newMarker);
+    }
 
     // Add digest header
     botAnswer = getDigestReportHeader(aPage) + botAnswer;
