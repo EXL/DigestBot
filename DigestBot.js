@@ -183,7 +183,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
                                         inline_keyboard: generateDigestKeyboard(
                                                              getDigestPages(
                                                                     globalStackListDigestMessages.length,
-                                                                    msg.chat.id, dayDelay, digestPerPage
+                                                                    msg.chat.id, dayDelay, digestsPerPage
                                                                  ).length
                                                              )
                                     },
@@ -295,10 +295,10 @@ bot.on('text', function(msg)
             // Check countOfDigestMessagesByChat.
             if (countOfDigestMessagesByChat > 0) {
                 sendMessageByBot(messageChatId,
-                                 generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, digestPerPage, 1),
+                                 generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, digestsPerPage, 1),
                                  messageUserName, messsageId, {
                                      inline_keyboard: generateDigestKeyboard(getDigestPages(globalStackListDigestMessages.length,
-                                                                                            messageChatId, dayDelay, digestPerPage).length) } );
+                                                                                            messageChatId, dayDelay, digestsPerPage).length) } );
             } else {
                 sendNoDigestMessages(messageChatId, messageUserName, messsageId);
             }
@@ -618,7 +618,7 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
     botAnswer = catchPhrases.digestMarker + ' '
             + replaceLineBreaksByYourString(botAnswer, '\n' + catchPhrases.digestMarker + ' ');
     botAnswer = addNewMarkers(botAnswer, catchPhrases.digestMarker,
-        countOfNewMarkers, catchPhrases.newMarker);
+        countOfNewMarkers, catchPhrases.digestMarker + ' ' + catchPhrases.newMarker);
 
     // Add digest header
     botAnswer = getDigestReportHeader(aPage) + botAnswer;
