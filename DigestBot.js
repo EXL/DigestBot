@@ -71,6 +71,7 @@ var globalStackListDigestMessages = [ ];
 
 var coolDownSec = 5;
 var digestsPerPage = 10;
+var countOfNewMarkers = 3;
 var globalCallbackQueriesStack = [ ];
 
 var globalCofeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
@@ -89,7 +90,7 @@ var bankNBU = 1;
 var bankNBRB = 2;
 
 var globalUSD = [0.0, 0.0];
-var globalCurrencyList =  {
+var globalCurrencyList = {
     'USD': 0.0,
     'EUR': 0.0,
     'RUB': 0.0,
@@ -613,13 +614,24 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
     // Capitalize first letter of each string
     botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
 
-    // Replace all line breaks by line break, digestMarker and space.
+    // Replace all line breaks by line break, digestMarker, newMarker and space.
     botAnswer = catchPhrases.digestMarker + ' '
             + replaceLineBreaksByYourString(botAnswer, '\n' + catchPhrases.digestMarker + ' ');
+    botAnswer = addNewMarkers(botAnswer, catchPhrases.digestMarker,
+        countOfNewMarkers, catchPhrases.newMarker);
 
     // Add digest header
     botAnswer = getDigestReportHeader(aPage) + botAnswer;
     return botAnswer;
+}
+
+function addNewMarkers(string, regex, n, replace)
+{
+    var cnt = 0;
+    return string.replace(new RegExp(regex, 'g'), function(match) {
+        cnt++;
+        return (cnt <= n) ? replace : match;
+    });
 }
 
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
@@ -764,8 +776,7 @@ function getSendMessage(aString, aTrim)
 
 function trimAndRemoveAtInEachString(aString)
 {
-    return aString.split('\n').map(function(aLine)
-    {
+    return aString.split('\n').map(function(aLine) {
         aLine = aLine.trim();
 
         // Remove username URI only
@@ -777,8 +788,7 @@ function trimAndRemoveAtInEachString(aString)
 
 function removeUsernameUri(aString)
 {
-    return aString.split(' ').map(function(aWord)
-    {
+    return aString.split(' ').map(function(aWord) {
         if (aWord.indexOf('@') >= 0) {
             if (!validateEmail(aWord)) {
                 aWord = aWord.replace(/@/g, '');
@@ -795,8 +805,7 @@ function validateEmail(aEmail)
 
 function capitalizeFirstLetterOfEachString(aString)
 {
-    return aString.split('\n').map(function(aLine)
-    {
+    return aString.split('\n').map(function(aLine) {
         if (aLine && aLine.indexOf('http') !== 0) {
             aLine = aLine[0].toUpperCase() + aLine.substr(1);
         }

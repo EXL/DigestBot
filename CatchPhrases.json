@@ -1,5 +1,6 @@
 {
-    "digestMarker": "•",
+    "digestMarker" : "•",
+    "newMarker" : "🆕",
 
     "digestTag" : [
         "Записала!",
