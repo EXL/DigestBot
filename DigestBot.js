@@ -1201,10 +1201,11 @@ function shittyParseMetallXML(aAllXml)
 
 function generateBotMetallAnswer(aCurrencyList)
 {
-    var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n<code>';
+    var metallTable = '';
     if (isNaN(aCurrencyList.Au) || isNaN(aCurrencyList.Ag) || isNaN(aCurrencyList.Pt) || isNaN(aCurrencyList.Pd)) {
-        metallTable += catchPhrases.metallCommand[6];
+        metallTable += '<code>' + catchPhrases.metallCommand[6];
     } else {
+        metallTable += catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n<code>';
         metallTable += catchPhrases.metallCommand[1] + addZerosToRate(aCurrencyList.Au, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
         metallTable += catchPhrases.metallCommand[2] + addZerosToRate(aCurrencyList.Ag, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
         metallTable += catchPhrases.metallCommand[3] + addZerosToRate(aCurrencyList.Pt, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
