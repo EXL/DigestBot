@@ -1203,14 +1203,14 @@ function generateBotMetallAnswer(aCurrencyList)
 {
     var metallTable = catchPhrases.metallCommand[0] + aCurrencyList.Date + ':\n<code>';
     if (isNaN(aCurrencyList.Au) || isNaN(aCurrencyList.Ag) || isNaN(aCurrencyList.Pt) || isNaN(aCurrencyList.Pd)) {
-        metallTable += catchPhrases.metallCommand[6] + '</code>';
+        metallTable += catchPhrases.metallCommand[6];
     } else {
         metallTable += catchPhrases.metallCommand[1] + addZerosToRate(aCurrencyList.Au, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
         metallTable += catchPhrases.metallCommand[2] + addZerosToRate(aCurrencyList.Ag, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
         metallTable += catchPhrases.metallCommand[3] + addZerosToRate(aCurrencyList.Pt, 7, '0') + catchPhrases.metallCommand[5] + ';\n';
-        metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7, '0') + catchPhrases.metallCommand[5] + '.</code>';
+        metallTable += catchPhrases.metallCommand[4] + addZerosToRate(aCurrencyList.Pd, 7, '0') + catchPhrases.metallCommand[5] + '.';
     }
-    return metallTable;
+    return metallTable + '</code>';
 }
 
 function getCurrentMetallValue(aNum, aString, aDate)
