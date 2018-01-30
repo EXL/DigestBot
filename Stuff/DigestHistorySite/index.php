@@ -12,6 +12,9 @@ include_once 'templates.php';
 
 const postsPP = 50;
 
+date_default_timezone_set("Europe/Moscow");
+$date = date_create();
+
 $url = filter_input(INPUT_SERVER, 'HTTP_HOST') . $upath;
 $page = filter_input(INPUT_GET, 'pg');
 
@@ -27,9 +30,9 @@ if (!$conn->set_charset("utf8mb4")) {
 
 // Get count of digests records in DB
 $sql = "SELECT COUNT(*) FROM digests";
-$result_с = $conn->query($sql);
-if ($result_с->num_rows > 0) {
-    $count = $result_с->fetch_row()[0];
+$result_c = $conn->query($sql);
+if ($result_c->num_rows > 0) {
+    $count = $result_c->fetch_row()[0];
 } else {
     die("0 results.");
 }
@@ -64,6 +67,73 @@ function pl_pager($curr, $all, $url, $p1, $p2) {
     echo $p2;
 }
 
+function filter_avatars($a_link, $a_name) {
+    if ($a_link === "0" || $a_name === "0") {
+        return "Без аватарки";
+    }
+    return '<img width="128px" height="128px" title="' . $a_name . '" src="' . $a_link . '"/>';
+}
+
+function filter_group($a_group, $a_name) {
+    if ($a_group === "0" || $a_name === "0") {
+        return "Группа: Неизвестные";
+    }
+    if ($a_group === "1") {
+        if (in_array($a_name, $GLOBALS["admins"])) {
+            return "Группа: Администраторы";
+        }
+        if (in_array($a_name, $GLOBALS["moders"])) {
+            return "Группа: Модераторы";
+        }
+    }
+    return "Группа: Пользователи";
+}
+
+function filter_username($a_name) {
+    if ($a_name === "0") {
+        return "Гость";
+    }
+    if (in_array($a_name, $GLOBALS["admins"])) {
+        return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank"><span style="color:red">'
+            . $a_name . '</span></a>';
+    }
+    if (in_array($a_name, $GLOBALS["moders"])) {
+        return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank"><span style="color:blue">'
+            . $a_name . '</span></a>';
+    }
+    return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank">' . $a_name . '</a>';
+}
+
+function filter_num($a_num) {
+    return 'Сообщение №' . $a_num;
+}
+
+function filter_message($a_msg) {
+    $a_msg = make_links_clickable($a_msg);
+    $a_msg = make_links_clickable($a_msg);
+    return $a_msg;
+}
+
+// https://stackoverflow.com/a/5341330
+function make_links_clickable($text) {
+    return preg_replace('!(((f|ht)tp(s)?://)[-a-zA-Zа-яА-Я()0-9@:%_+.~#?&;//=]+)!i',
+        '<a href="$1" title="_blank">$1</a>', $text);
+}
+
+function make_users_clickable($text) {
+    return preg_replace('/(\B\@\w+\b)/', replace_at_to_link_aux('$1'), $text);
+}
+
+function replace_at_to_link_aux($username) {
+    $username = substr($username, 1);
+    return filter_username($username);
+}
+
+function filter_date($a_date) {
+    date_timestamp_set($GLOBALS["date"], $a_date);
+    return date_format($GLOBALS["date"], 'Дата: d-M-Y | Время: H:i:s');
+}
+
 echo $css;
 echo $header_append1 . "<a title='Новости чата MotoFan.Ru, последняя страница' href=\"//" .
     $url ."\"/>" . $header_append2 . "</a>" . $header_append3 .
@@ -79,10 +149,18 @@ $sql = "SELECT num, date, username, grp, avatar, msg FROM digests LIMIT "
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        echo $post_append1 . $row["username"] . $post_append2 .
-             $row["date"] . $post_append3 . $row["num"] . $post_append4 .
-             $row["avatar"] . "<br><br>" . $row["grp"] . $post_append5 .
-             $row["msg"] . $post_append6;
+        $t_username = $row["username"];
+        echo $post_append1 .
+             filter_username($t_username) .
+             $post_append2 .
+             filter_date($row["date"]) .
+             $post_append3 .
+             "<ins>" . filter_num($row["num"]) . "</ins>" .
+             $post_append4 .
+             filter_avatars($row["avatar"], $t_username) . "<br><br>" .
+             filter_group($row["grp"], $t_username) .
+             $post_append5 .
+             filter_message($row["msg"]) . $post_append6;
     }
 } else {
     echo "0 results.";

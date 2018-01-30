@@ -18,14 +18,14 @@ var MapDB = new Map();
 var UserAvs = new Map();
 
 function main() {
-    if (parseInt(process.argv.length) !== 4) {
+    if (process.argv.length !== 4) {
         console.error("Usage.\n" +
             "1. Add digest post to DB:\n\t$ node ImportDigestToDB.js <backup-dir> <chat-id>\n" +
             "2. Show chat ids:\n\t$ node ImportDigestToDB.js <backup-dir> 0\n" +
             "3. Show users:\n\t$ node ImportDigestToDB.js <backup-dir> users");
         process.exit(1);
     } else {
-        console.log("++++= Started at: " + getDate(parseInt(Date.now() / 1000)).toString());
+        console.log("++++= Started at: " + Date());
         readFiles(process.argv[2], process.argv[3]); // 2 - backupDir, 3 - chatId or parameter
     }
 }
@@ -79,12 +79,12 @@ function decompressTarBall(aFilename, aChatId) {
 }
 
 function toExit() {
-    console.log("++++= Ended at: " + getDate(parseInt(Date.now() / 1000)).toString());
+    console.log("++++= Ended at: " + Date());
     process.exit(0);
 }
 
 function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
-    var nameDir = (parseInt(aBackupDir.indexOf("/")) === -1) ? aBackupDir + "/" : aBackupDir;
+    var nameDir = (aBackupDir.indexOf("/") === -1) ? aBackupDir + "/" : aBackupDir;
 
     var times = aGzFiles.length;
     var current = 0;
@@ -102,7 +102,7 @@ function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
                 toExit();
             } else {
                 // 7. Get User Avatars
-                getUserAvatars(MapDB, aChatId);
+                getUserAvatars(MapDB);
             }
             return;
         }
@@ -113,7 +113,7 @@ function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
     })();
 }
 
-function getUserAvatars(aMap, aChatId) {
+function getUserAvatars(aMap) {
     var uniqs = new Map();
     aMap.forEach(function(aValue) {
         uniqs.set(aValue.user, null);
@@ -128,7 +128,7 @@ function getUserAvatars(aMap, aChatId) {
     (function nextLapUa() {
         if (current >= times) {
             // 8. Push All data to DataBase
-            connectToDataBase(ConfigDB, aChatId);
+            connectToDataBase(ConfigDB);
             return;
         }
         process.stdout.write("Getting avatar for @" + listUsers[current] + " user... ");
@@ -196,60 +196,24 @@ function processJSONFile(aJson, aChatId) {
     });
 }
 
-function getDate(aDate) {
-    var date = new Date(0);
-    var m = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    date.setUTCSeconds(aDate);
-    return "Дата: " + ('0' + date.getDate()).slice(-2) + "-" + m[date.getMonth()] + "-" + date.getFullYear() + " | Время: " +
-        addLeadZeros(date.getHours()) + ":" + addLeadZeros(date.getMinutes()) + ":" + addLeadZeros(date.getSeconds());
-}
-
-function addLeadZeros(aDigit) {
-    return ('0' + (aDigit + 1)).slice(-2);
-}
-
 function getUserAvatar(aUserName) {
-    if (!aUserName) return "Без аватарки";
-    return '<img width="128px" height="128px" title="' + aUserName + '" src="' + UserAvs.get(aUserName) + '"/>';
+    if (!aUserName) return "0";
+    return UserAvs.get(aUserName);
 }
 
-function getPostNumber(aNum) {
-    return '<ins>Сообщение №' + aNum + '</ins>';
-}
-
-function getGroup(aUserName, aChatId) {
-    if (!aUserName) return "Группа: Неизвестные";
-    if (aChatId.toString() === "-1001045117849") {
-        if (aUserName.toString() === "exlmoto") {
-            return "Группа: Модераторы";
-        } else if (aUserName.toString() === "ZorgeR") {
-            return "Группа: Администраторы";
-        }
-    }
-    return "Группа: Пользователи";
+function getGroup(aUserName) {
+    if (!aUserName) return "0";
+    return "1";
 }
 
 function getUserName(aName) {
-    if (!aName) return "Гость";
-    if (aName.toString() === "exlmoto") {
-        return '<a href="https://t.me/' + aName +'" title="@' + aName + '" target="_blank"><span style="color:blue">'
-            + aName + '</span></a>';
-    } else if (aName.toString() === "ZorgeR") {
-        return '<a href="https://t.me/' + aName +'" title="@' + aName + '" target="_blank"><span style="color:red">'
-            + aName + '</span></a>';
-    }
-    return '<a href="https://t.me/' + aName +'" title="@' + aName + '" target="_blank">' + aName + '</a>';
-}
-
-function getUserMessage(aMsg) {
-    aMsg = filterMessage(aMsg, " ");
-    return filterMessage(aMsg, "\n");
+    if (!aName) return "0";
+    return aName;
 }
 
 // https://stackoverflow.com/a/7760578
 function escSqlString(str) {
-    return (str) ? str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function(char) {
+    return (str) ? str.replace(/[\0\x08\x09\x1a\n\r"'\\%]/g, function(char) {
         switch (char) {
             case "%":
                 return char;
@@ -274,23 +238,7 @@ function escSqlString(str) {
     }) : "undefined";
 }
 
-function filterMessage(aMsg, aFilter) {
-    return aMsg.split(aFilter).map(function(aWord) {
-        if (parseInt(aWord.indexOf("@")) === 0) {
-            aWord = getUserName(aWord.slice(1));
-        } else if (parseInt(aWord.indexOf("http://")) === 0
-            || parseInt(aWord.indexOf("https://")) === 0) {
-            aWord = makeLink(aWord);
-        }
-        return aWord;
-    }).join(aFilter);
-}
-
-function makeLink(aLink) {
-    return '<a href="' + aLink + '" title="' + aLink + '" target="_blank">' + aLink + '</a>';
-}
-
-function connectToDataBase(aSettings, aChatId) {
+function connectToDataBase(aSettings) {
     var con = MySQL.createConnection({
         host: aSettings.host,
         user: aSettings.user,
@@ -322,12 +270,12 @@ function connectToDataBase(aSettings, aChatId) {
             }
             process.stdout.write("Commit digest #" + (current+1) + "... ");
             runSqlQuery(con, "INSERT INTO digests (num, date, username, grp, avatar, msg) VALUES ('" +
-                escSqlString(getPostNumber(current+1)) + "', '" +
-                escSqlString(getDate(arr[current][0])) + "', '" +
+                escSqlString((current+1).toString()) + "', '" +
+                escSqlString((arr[current][0]).toString()) + "', '" +
                 escSqlString(getUserName(arr[current][1].user)) + "', '" +
-                escSqlString(getGroup(arr[current][1].user, aChatId)) + "', '" +
+                escSqlString(getGroup(arr[current][1].user)) + "', '" +
                 escSqlString(getUserAvatar(arr[current][1].user)) + "', '" +
-                escSqlString(getUserMessage(arr[current][1].msg)) + "');").then(function() {
+                escSqlString(arr[current][1].msg) + "');").then(function() {
                     process.stdout.write("done.\n");
                     ++current;
                     nextLapDb();

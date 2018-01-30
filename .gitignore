@@ -19,4 +19,5 @@ DigestBotStackLog.json
 
 # IntelliJ IDEA files
 .idea/
-DigestBot.iml
+*.iml
+

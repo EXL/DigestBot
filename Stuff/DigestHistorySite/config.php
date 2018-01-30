@@ -11,3 +11,5 @@ $username = "user";
 $password = "password";
 $dbname = "database_name";
 $upath = "/digests";
+$admins = array("ZorgeR", "exlmoto");
+$moders = array("yakimka");
