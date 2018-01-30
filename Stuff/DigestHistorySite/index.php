@@ -85,6 +85,9 @@ function filter_group($a_group, $a_name) {
         if (in_array($a_name, $GLOBALS["moders"])) {
             return "Группа: Модераторы";
         }
+        if (in_array($a_name, $GLOBALS["coords"])) {
+            return "Группа: Координаторы";
+        }
     }
     return "Группа: Пользователи";
 }
@@ -99,6 +102,10 @@ function filter_username($a_name) {
     }
     if (in_array($a_name, $GLOBALS["moders"])) {
         return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank"><span style="color:blue">'
+            . $a_name . '</span></a>';
+    }
+    if (in_array($a_name, $GLOBALS["coords"])) {
+        return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank"><span style="color:purple">'
             . $a_name . '</span></a>';
     }
     return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank">' . $a_name . '</a>';
@@ -121,7 +128,11 @@ function make_links_clickable($text) {
 }
 
 function make_users_clickable($text) {
-    return preg_replace('/(\B\@\w+\b)/', replace_at_to_link_aux('$1'), $text);
+    return preg_replace_callback('/(\B\@\w+\b)/',
+        function ($matches) {
+            return replace_at_to_link_aux($matches[0]);
+        },
+        $text);
 }
 
 function replace_at_to_link_aux($username) {
@@ -142,7 +153,7 @@ echo $header_append1 . "<a title='Новости чата MotoFan.Ru, после
 
 pl_pager($page, $pg_count, $url, $pager_append1, $pager_append2);
 
-echo $header_thread;
+echo str_replace("%chat_id%", $chat_id, $header_thread);
 
 $sql = "SELECT num, date, username, grp, avatar, msg FROM digests LIMIT "
     . strval(($page - 1) * postsPP) . "," . postsPP;

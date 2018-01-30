@@ -70,7 +70,7 @@ $header_thread = '<div class="maintitle" style="padding:4px">
                     <img src="img/nav_m.gif" title="Вперёд!" alt=">" border="0" width="8" height="8">&nbsp;
                     <b>Новости конференции MotoFan.Ru в Telegram</b>, Собранные сообщения с тегом <i>#digest</i>
                     <span style="float:right;">
-                        Chat ID: -1001045117849,
+                        Chat ID: %chat_id%,
                         <a href="http://t.me/motofan_ru" style="color:darkred" target="_blank" title="Чат MotoFan.Ru в Telegram"><ins>@motofan_ru</ins></a>
                     </span>
                 </div>
