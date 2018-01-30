@@ -110,7 +110,7 @@ function filter_num($a_num) {
 
 function filter_message($a_msg) {
     $a_msg = make_links_clickable($a_msg);
-    $a_msg = make_links_clickable($a_msg);
+    $a_msg = make_users_clickable($a_msg);
     return $a_msg;
 }
 
