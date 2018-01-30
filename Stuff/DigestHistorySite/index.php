@@ -39,12 +39,12 @@ if ($result_c->num_rows > 0) {
 
 $pg_count = intval(($count - 1) / postsPP);
 
-// echo "Debug: " . $count . " " . $page . " " . $url . " " . $pg_count . " " . "<br>";
 echo $main_append1;
 
 if (!$page) {
     $page = $pg_count+1;
 }
+// echo "Debug: " . $count . " " . $page . " " . $url . " " . $pg_count . " " . "<br>";
 
 function pl_pager($curr, $all, $url, $p1, $p2) {
     echo $p1;
@@ -124,7 +124,7 @@ function filter_message($a_msg) {
 // https://stackoverflow.com/a/5341330
 function make_links_clickable($text) {
     return preg_replace('!(((f|ht)tp(s)?://)[-a-zA-Zа-яА-Я()0-9@:%_+.~#?&;//=]+)!i',
-        '<a href="$1" title="_blank">$1</a>', $text);
+        '<a href="$1" title="$1" target="_blank">$1</a>', $text);
 }
 
 function make_users_clickable($text) {
@@ -159,6 +159,7 @@ $sql = "SELECT num, date, username, grp, avatar, msg FROM digests LIMIT "
     . strval(($page - 1) * postsPP) . "," . postsPP;
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
+    $start_cnt = ($page - 1) * postsPP + 1;
     while ($row = $result->fetch_assoc()) {
         $t_username = $row["username"];
         echo $post_append1 .
@@ -166,7 +167,7 @@ if ($result->num_rows > 0) {
              $post_append2 .
              filter_date($row["date"]) .
              $post_append3 .
-             "<ins>" . filter_num($row["num"]) . "</ins>" .
+             "<ins>" . filter_num($start_cnt++) . "</ins>" .
              $post_append4 .
              filter_avatars($row["avatar"], $t_username) . "<br><br>" .
              filter_group($row["grp"], $t_username) .
