@@ -74,20 +74,18 @@ function filter_avatars($a_link, $a_name) {
     return '<img width="128px" height="128px" title="' . $a_name . '" src="' . $a_link . '"/>';
 }
 
-function filter_group($a_group, $a_name) {
-    if ($a_group === "0" || $a_name === "0") {
+function filter_group($a_name) {
+    if ($a_name === "0") {
         return "Группа: Неизвестные";
     }
-    if ($a_group === "1") {
-        if (in_array($a_name, $GLOBALS["admins"])) {
-            return "Группа: Администраторы";
-        }
-        if (in_array($a_name, $GLOBALS["moders"])) {
-            return "Группа: Модераторы";
-        }
-        if (in_array($a_name, $GLOBALS["coords"])) {
-            return "Группа: Координаторы";
-        }
+    if (in_array($a_name, $GLOBALS["admins"])) {
+        return "Группа: Администраторы";
+    }
+    if (in_array($a_name, $GLOBALS["moders"])) {
+        return "Группа: Модераторы";
+    }
+    if (in_array($a_name, $GLOBALS["coords"])) {
+        return "Группа: Координаторы";
     }
     return "Группа: Пользователи";
 }
@@ -112,7 +110,7 @@ function filter_username($a_name) {
 }
 
 function filter_num($a_num) {
-    return 'Сообщение №' . $a_num;
+    return '<ins>Сообщение №' . $a_num . '</ins>';
 }
 
 function filter_message($a_msg) {
@@ -155,7 +153,7 @@ pl_pager($page, $pg_count, $url, $pager_append1, $pager_append2);
 
 echo str_replace("%chat_id%", $chat_id, $header_thread);
 
-$sql = "SELECT date, username, grp, avatar, msg FROM digests LIMIT "
+$sql = "SELECT date, username, avatar, msg FROM digests LIMIT "
     . strval(($page - 1) * postsPP) . "," . postsPP;
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
@@ -167,10 +165,10 @@ if ($result->num_rows > 0) {
              $post_append2 .
              filter_date($row["date"]) .
              $post_append3 .
-             "<ins>" . filter_num($start_cnt++) . "</ins>" .
+             filter_num($start_cnt++) .
              $post_append4 .
              filter_avatars($row["avatar"], $t_username) . "<br><br>" .
-             filter_group($row["grp"], $t_username) .
+             filter_group($t_username) .
              $post_append5 .
              filter_message($row["msg"]) . $post_append6;
     }

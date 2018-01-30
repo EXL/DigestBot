@@ -201,11 +201,6 @@ function getUserAvatar(aUserName) {
     return UserAvs.get(aUserName);
 }
 
-function getGroup(aUserName) {
-    if (!aUserName) return "0";
-    return "1";
-}
-
 function getUserName(aName) {
     if (!aName) return "0";
     return aName;
@@ -254,7 +249,7 @@ function connectToDataBase(aSettings) {
         console.log("SQL: Connected to " + aSettings.host + "!");
         runSqlQuery(con, "DROP TABLE IF EXISTS digests;");
         runSqlQuery(con, "CREATE TABLE digests " +
-            "(date TEXT, username TEXT, grp TEXT, avatar TEXT, msg TEXT) " +
+            "(date TEXT, username TEXT, avatar TEXT, msg TEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         console.log("SQL: Table digests created.");
 
@@ -269,10 +264,9 @@ function connectToDataBase(aSettings) {
                 return;
             }
             process.stdout.write("Commit digest #" + (current+1) + "... ");
-            runSqlQuery(con, "INSERT INTO digests (date, username, grp, avatar, msg) VALUES ('" +
+            runSqlQuery(con, "INSERT INTO digests (date, username, avatar, msg) VALUES ('" +
                 escSqlString((arr[current][0]).toString()) + "', '" +
                 escSqlString(getUserName(arr[current][1].user)) + "', '" +
-                escSqlString(getGroup(arr[current][1].user)) + "', '" +
                 escSqlString(getUserAvatar(arr[current][1].user)) + "', '" +
                 escSqlString(arr[current][1].msg) + "');").then(function() {
                     process.stdout.write("done.\n");
