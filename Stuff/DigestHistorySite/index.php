@@ -111,7 +111,7 @@ function filter_username($a_name) {
 
 function filter_num($a_num) {
     return "<a href=\"//" . $GLOBALS["url"] . "?pg=" . strval($GLOBALS["page"]) . "#" . $a_num .
-    "\" id=\"" . $a_num . "\" title=\"Сообщение № " . strval($a_num) . "\">" .
+    "\" id=\"" . $a_num . "\" title=\"Сообщение №" . strval($a_num) . "\">" .
     "Сообщение №" . $a_num . "</a>";
 }
 
