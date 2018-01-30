@@ -155,7 +155,7 @@ pl_pager($page, $pg_count, $url, $pager_append1, $pager_append2);
 
 echo str_replace("%chat_id%", $chat_id, $header_thread);
 
-$sql = "SELECT num, date, username, grp, avatar, msg FROM digests LIMIT "
+$sql = "SELECT date, username, grp, avatar, msg FROM digests LIMIT "
     . strval(($page - 1) * postsPP) . "," . postsPP;
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {

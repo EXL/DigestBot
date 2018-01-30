@@ -254,7 +254,7 @@ function connectToDataBase(aSettings) {
         console.log("SQL: Connected to " + aSettings.host + "!");
         runSqlQuery(con, "DROP TABLE IF EXISTS digests;");
         runSqlQuery(con, "CREATE TABLE digests " +
-            "(num TEXT, date TEXT, username TEXT, grp TEXT, avatar TEXT, msg TEXT) " +
+            "(date TEXT, username TEXT, grp TEXT, avatar TEXT, msg TEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         console.log("SQL: Table digests created.");
 
@@ -269,8 +269,7 @@ function connectToDataBase(aSettings) {
                 return;
             }
             process.stdout.write("Commit digest #" + (current+1) + "... ");
-            runSqlQuery(con, "INSERT INTO digests (num, date, username, grp, avatar, msg) VALUES ('" +
-                escSqlString((current+1).toString()) + "', '" +
+            runSqlQuery(con, "INSERT INTO digests (date, username, grp, avatar, msg) VALUES ('" +
                 escSqlString((arr[current][0]).toString()) + "', '" +
                 escSqlString(getUserName(arr[current][1].user)) + "', '" +
                 escSqlString(getGroup(arr[current][1].user)) + "', '" +
