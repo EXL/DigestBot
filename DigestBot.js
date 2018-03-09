@@ -31,6 +31,7 @@ var FileSystem = require('fs');
 var Http = require('http');
 var Request = require('request');
 var Exec = require('child_process').exec;
+var ParseXMLString = require('xml2js').parseString;
 
 // Globals
 var token = getTokenAccess();
@@ -88,6 +89,7 @@ var bankLocalCurrency = ['RUB', 'UAH', 'BYN'];
 var bankCBR = 0;
 var bankNBU = 1;
 var bankNBRB = 2;
+var useXML = 1;
 
 var globalUSD = [0.0, 0.0];
 var globalCurrencyList = {
@@ -1040,9 +1042,11 @@ function createReportCurrencyHeader(aCatchPhrase)
 function addZerosToRate(aRate, aSuff, aZero)
 {
     var str = aRate.toString();
-    var start = str.length;
-    for (var i = start; i < aSuff; ++i) {
-        str += aZero;
+    if (str !== 'NaN' && str !== 'Error' && str !== 'undefined') {
+        var start = str.length;
+        for (var i = start; i < aSuff; ++i) {
+            str += aZero;
+        }
     }
     return str;
 }
@@ -1103,10 +1107,27 @@ function replaceCommasByDots(aString)
     return aString.replace(',', '.');
 }
 
-function getCurrentValue(aCurrency, aString)
+function getCurrentValue(aCurrency, aString, bankID)
 {
-    var nominal = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 1, aString)));
-    var value = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 3, aString)));
+    var nominal = 0.0;
+    var value = 0.0;
+
+    if (!useXML) {
+        nominal = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 1, aString)));
+        value = parseFloat(replaceCommasByDots(getStringBelow(aString.indexOf(aCurrency), 3, aString)));
+    } else {
+       try {
+           ParseXMLString(aString, function(err, result) {
+               if (err) {
+                   setErrorValues(bankID);
+               }
+               nominal = parseFloat(replaceCommasByDots(getXmlValuteValue(getXmlRoot(result, bankID), aCurrency, 0, bankID)));
+               value = parseFloat(replaceCommasByDots(getXmlValuteValue(getXmlRoot(result, bankID), aCurrency, 1, bankID)));
+           });
+       } catch(err) {
+            setErrorValues(bankID);
+       }
+    }
 
     return (value / nominal).toFixed(4);
 }
@@ -1114,23 +1135,75 @@ function getCurrentValue(aCurrency, aString)
 function shittyParseCurrencyXML(aAllXml, bankID)
 {
     if (isEmpty(aAllXml)) {
-        globalCurrencyList.USD = 'Error';
-        globalCurrencyList.EUR = 'Error';
-        globalCurrencyList.KZT = 'Error';
-        if(bankID !== bankNBRB ) { globalCurrencyList.BYN = 'Error'; }
-        if(bankID !== bankNBU  ) { globalCurrencyList.UAH = 'Error'; }
-        if(bankID !== bankCBR  ) { globalCurrencyList.RUB = 'Error'; }
-        globalCurrencyList.GBP = 'Error';
+        setErrorValues(bankID);
+    } else {
+        globalCurrencyList.USD = getCurrentValue('USD', aAllXml, bankID);
+        globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml, bankID);
+        globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml, bankID);
+        if(bankID !== bankNBRB ) { globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml, bankID); }
+        if(bankID !== bankNBU  ) { globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml, bankID); }
+        if(bankID !== bankCBR  ) { globalCurrencyList.RUB = getCurrentValue('RUB', aAllXml, bankID); }
+        globalCurrencyList.GBP = getCurrentValue('GBP', aAllXml, bankID);
+        globalUSD[bankID] = getCurrentValue('USD', aAllXml, bankID);
     }
+}
 
-    globalCurrencyList.USD = getCurrentValue('USD', aAllXml);
-    globalCurrencyList.EUR = getCurrentValue('EUR', aAllXml);
-    globalCurrencyList.KZT = getCurrentValue('KZT', aAllXml);
-    if(bankID !== bankNBRB ) { globalCurrencyList.BYN = getCurrentValue('BYN', aAllXml); }
-    if(bankID !== bankNBU  ) { globalCurrencyList.UAH = getCurrentValue('UAH', aAllXml); }
-    if(bankID !== bankCBR  ) { globalCurrencyList.RUB = getCurrentValue('RUB', aAllXml); }
-    globalCurrencyList.GBP = getCurrentValue('GBP', aAllXml);
-    globalUSD[bankID] = getCurrentValue('USD', aAllXml);
+function setErrorValues(bankID)
+{
+    globalCurrencyList.USD = 'Error';
+    globalCurrencyList.EUR = 'Error';
+    globalCurrencyList.KZT = 'Error';
+    if(bankID !== bankNBRB ) { globalCurrencyList.BYN = 'Error'; }
+    if(bankID !== bankNBU  ) { globalCurrencyList.UAH = 'Error'; }
+    if(bankID !== bankCBR  ) { globalCurrencyList.RUB = 'Error'; }
+    globalCurrencyList.GBP = 'Error';
+}
+
+function getXmlRoot(aXmlObject, bankID)
+{
+    switch (bankID) {
+    default:
+    case bankCBR:
+        return aXmlObject.ValCurs.Valute;
+    case bankNBU:
+        return aXmlObject.chapter.item;
+    case bankNBRB:
+        return aXmlObject.DailyExRates.Currency;
+    }
+}
+
+function getXmlCharCode(aXmlObject, bankID, i)
+{
+    switch (bankID) {
+    default:
+    case bankCBR:
+    case bankNBRB:
+        return aXmlObject[i].CharCode[0];
+    case bankNBU:
+        return aXmlObject[i].char3[0];
+    }
+}
+
+function getXmlCharValue(aXmlObject, bankID, i, aValue)
+{
+    switch (bankID) {
+    default:
+    case bankCBR:
+        return (aValue) ? aXmlObject[i].Value[0] : aXmlObject[i].Nominal[0];
+    case bankNBRB:
+        return (aValue) ? aXmlObject[i].Rate[0] : aXmlObject[i].Scale[0];
+    case bankNBU:
+        return (aValue) ? aXmlObject[i].rate[0] : aXmlObject[i].size[0];
+    }
+}
+
+function getXmlValuteValue(aXmlObject, aCode, aValue, bankID)
+{
+    for (var i = 0; i < aXmlObject.length; ++i) {
+        if (getXmlCharCode(aXmlObject, bankID, i) === aCode) {
+            return getXmlCharValue(aXmlObject, bankID, i, aValue);
+        }
+    }
 }
 
 function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId, aUserName, aMsgId, aEditText)
