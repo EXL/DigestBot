@@ -1215,15 +1215,10 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
         xmlContent = '';
     }
 
-    // Use official CBR?
+    // Patch for switching official CBR <=> mirror CBR through '/eval useMirrorCBR=0;' command
     if (bankID === bankCBR) {
-        if (useMirrorCBR) {
-            httpOptions[bankID].host = 'www.cbr-xml-daily.ru';
-            httpOptions[bankID].path = '/daily.xml';
-        } else {
-            httpOptions[bankID].host = 'www.cbr.ru';
-            httpOptions[bankID].path = '/scripts/XML_daily.asp?';
-        }
+        httpOptions[bankID].host = (useMirrorCBR) ? 'www.cbr-xml-daily.ru' : 'www.cbr.ru';
+        httpOptions[bankID].path = (useMirrorCBR) ? '/daily.xml' : '/scripts/XML_daily.asp?';
     }
 
     var request = Http.request((!aMetall) ? httpOptions[bankID] : httpMetallOptions, function(aRes) {
