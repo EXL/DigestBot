@@ -36,6 +36,7 @@ var ParseXMLString = require('xml2js').parseString;
 // Globals
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
+var useMirrorCBR = 1;
 var httpOptions = [
     {
         host: 'www.cbr-xml-daily.ru',
@@ -1211,6 +1212,17 @@ function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChat
     // Clear xmlContent
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
+    }
+
+    // Use official CBR?
+    if (bankID === bankCBR) {
+        if (useMirrorCBR) {
+            httpOptions[bankID].host = 'www.cbr-xml-daily.ru';
+            httpOptions[bankID].path = '/daily.xml';
+        } else {
+            httpOptions[bankID].host = 'www.cbr.ru';
+            httpOptions[bankID].path = '/scripts/XML_daily.asp?';
+        }
     }
 
     var request = Http.request((!aMetall) ? httpOptions[bankID] : httpMetallOptions, function(aRes) {
