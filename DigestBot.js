@@ -241,7 +241,7 @@ bot.on('text', function(msg)
     }
 
     // DIGEST TAG
-    if (messageText.indexOf('#digest') >= 0) {
+    if (messageText.indexOf('#digest') >= 0 || messageText.indexOf('#news') >= 0) {
         if (messageText.length < 400) {
             globalCountOfMessagesWithDigest++;
             var normalMessage = normalizeMessage(messageText);
@@ -920,8 +920,9 @@ function normalizeMessage(aMessage)
     var normalMessage = '';
 
     if (!isEmpty(aMessage)) {
-        // Delete #digest tag from message
+        // Delete #digest and #news tags from message
         normalMessage = aMessage.replace('#digest', '');
+        normalMessage = normalMessage.replace('#news', '');
 
         // Delete %username% variable
         if (!(isBlank(normalMessage))) {
