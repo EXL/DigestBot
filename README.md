@@ -29,7 +29,7 @@ git clone https://github.com/EXL/DigestBot DigestBotDeploy
 
 ```sh
 cd ~/Deploy/DigestBotDeploy/
-npm install
+npm install # or npm ci
 ```
 
 * Write your token in "BOT_TOKEN_ACCESS.json" file.
