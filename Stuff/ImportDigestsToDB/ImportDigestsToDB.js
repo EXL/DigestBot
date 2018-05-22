@@ -286,7 +286,7 @@ function connectToDataBase(aSettings) {
             "(date TEXT, username TEXT, msg TEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         runSqlQuery(con, "CREATE TABLE digests_users " +
-            "(username TEXT, avatar TEXT) " +
+            "(username TEXT, avatar MEDIUMTEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
         console.log("SQL: Digests tables are created.");
 
