@@ -11,6 +11,7 @@ include_once 'config.php';
 include_once 'templates.php';
 
 const postsPP = 20;
+const paginPP = 5;
 
 date_default_timezone_set("Europe/Moscow");
 $date = date_create();
@@ -48,7 +49,27 @@ if (!$page) {
 
 function pl_pager($curr, $all, $url, $p1, $p2) {
     echo $p1;
-    for ($i = 0; $i < $all; ++$i) {
+
+    $all++;
+    $start = $curr - (floor(paginPP / 2) + 1);
+    if ($start < 0) {
+        $start = 0;
+    }
+    $end = $curr + floor(paginPP / 2);
+    if ($end > $all) {
+        $end = $all;
+    }
+
+    if ($start > 0) {
+        echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=1\" title=\"Page 1\">" .
+            "«" . "</a></span> ";
+    }
+    if ($curr > 1) {
+        echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=" . strval($curr-1) .
+            "\" title=\"Page " . strval($curr-1) . "\">" .
+            "<" . "</a></span> ";
+    }
+    for ($i = $start; $i < $end; ++$i) {
         if ($i == $curr-1) {
             echo '<span class="pagecurrent">';
         } else {
@@ -58,12 +79,17 @@ function pl_pager($curr, $all, $url, $p1, $p2) {
             "\" title=\"Page " . strval($i+1) . "\">" .
             strval($i+1) . "</a></span> ";
     }
-    if ($all == $curr-1) {
-        echo '<span class="pagecurrent">';
-    } else {
-        echo '<span class="pagelink">';
+    if ($curr < $all) {
+        echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=" . strval($curr+1) .
+            "\" title=\"Page " . strval($curr+1) . "\">" .
+            ">" . "</a></span> ";
     }
-    echo "<a href=\"//" . $url ."\"/>" . strval($all+1) . "</a></span>";
+    if ($end < $all) {
+        echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=" . strval($all) .
+            "\" title=\"Page " . strval($all) . "\">" .
+            "»" . "</a></span> ";
+    }
+
     echo $p2;
 }
 
