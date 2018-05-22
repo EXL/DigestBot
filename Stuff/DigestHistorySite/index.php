@@ -145,6 +145,16 @@ function filter_date($a_date) {
     return date_format($GLOBALS["date"], 'Дата: d-M-Y | Время: H:i:s');
 }
 
+function get_base64_image($a_username) {
+    global $conn, $url;
+    $a_sql = "SELECT avatar FROM digests_users WHERE username ='" . $a_username . "'";
+    $a_result = $conn->query($a_sql);
+    if($row = $a_result->fetch_assoc()) {
+        return $row['avatar'];
+    }
+    return "//" . $url . "/img/t_logo.png";
+}
+
 echo $css;
 echo $header_append1 . "<a title='Новости чата MotoFan.Ru, последняя страница' href=\"//" .
     $url ."\"/>" . $header_append2 . "</a>" . $header_append3 .
@@ -155,7 +165,7 @@ pl_pager($page, $pg_count, $url, $pager_append1, $pager_append2);
 
 echo str_replace("%chat_id%", $chat_id, $header_thread);
 
-$sql = "SELECT date, username, avatar, msg FROM digests LIMIT "
+$sql = "SELECT date, username, msg FROM digests LIMIT "
     . strval(($page - 1) * postsPP) . "," . postsPP;
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
@@ -169,7 +179,7 @@ if ($result->num_rows > 0) {
              $post_append3 .
              filter_num($start_cnt++) .
              $post_append4 .
-             filter_avatars($row["avatar"], $t_username) . "<br><br>" .
+             filter_avatars(get_base64_image($t_username), $t_username) . "<br><br>" .
              filter_group($t_username) .
              $post_append5 .
              filter_message($row["msg"]) . $post_append6;
