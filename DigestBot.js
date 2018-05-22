@@ -31,6 +31,10 @@ process.chdir(__dirname);
 //  2. https://github.com/yagop/node-telegram-bot-api/issues/484
 process.env["NTBA_FIX_319"] = 1;
 
+// Fix
+//  In the future, content-type of files you send will default to "application/octet-stream"
+process.env["NTBA_FIX_350"] = 1;
+
 // Requires
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
@@ -205,7 +209,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
         text = catchPhrases.buttons[8] + cooldwn + catchPhrases.buttons[9];
     }
 
-    bot.answerCallbackQuery( { callback_query_id: callbackQuery.id, text: text, show_alert: false } );
+    bot.answerCallbackQuery( callbackQuery.id, { text: text, show_alert: false } );
 });
 
 bot.on('new_chat_members', function(msg)
