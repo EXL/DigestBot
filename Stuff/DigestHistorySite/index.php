@@ -48,6 +48,8 @@ if (!$page) {
 // echo "Debug: " . $count . " " . $page . " " . $url . " " . $pg_count . " " . "<br>";
 
 function pl_pager($curr, $all, $url, $p1, $p2) {
+    if ($all < 1)
+        return;
     echo $p1;
 
     $all++;
@@ -60,14 +62,15 @@ function pl_pager($curr, $all, $url, $p1, $p2) {
         $end = $all;
     }
 
+    echo '<span class="pagelink" id="page-jump-1">' . strval($all) . " страниц:" . '</span>&nbsp;';
     if ($start > 0) {
         echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=1\" title=\"Page 1\">" .
-            "«" . "</a></span> ";
+            "«" . "</a></span>&nbsp;";
     }
     if ($curr > 1) {
         echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=" . strval($curr-1) .
             "\" title=\"Page " . strval($curr-1) . "\">" .
-            "<" . "</a></span> ";
+            "<" . "</a></span>&nbsp;";
     }
     for ($i = $start; $i < $end; ++$i) {
         if ($i == $curr-1) {
@@ -77,17 +80,17 @@ function pl_pager($curr, $all, $url, $p1, $p2) {
         }
         echo "<a href=\"//" . $url . "?pg=" . strval($i+1) .
             "\" title=\"Page " . strval($i+1) . "\">" .
-            strval($i+1) . "</a></span> ";
+            strval($i+1) . "</a></span>&nbsp;";
     }
     if ($curr < $all) {
         echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=" . strval($curr+1) .
             "\" title=\"Page " . strval($curr+1) . "\">" .
-            ">" . "</a></span> ";
+            ">" . "</a></span>&nbsp;";
     }
     if ($end < $all) {
         echo '<span class="pagelink">' . "<a href=\"//" . $url . "?pg=" . strval($all) .
             "\" title=\"Page " . strval($all) . "\">" .
-            "»" . "</a></span> ";
+            "»" . "</a></span>&nbsp;";
     }
 
     echo $p2;
