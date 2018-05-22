@@ -9,6 +9,9 @@ const Zlib = require("zlib");
 const Tar = require("tar-stream");
 const MySQL = require("mysql");
 const Http = require("http");
+const ImageUrlToBase64 = require("imageurl-base64");
+
+const TgLogo = require("./TelegramLogo.js");
 
 const DigestFile = "DigestBotStackLog.json";
 const ConfigDB = getJSONFile("DataBaseConfig.json");
@@ -154,8 +157,14 @@ function walkToProfilePages(aName) {
                 str += chunk;
             });
             response.on("end", function() {
-                UserAvs.set(aName, cutImageLink(str));
-                resolve(response);
+                ImageUrlToBase64(cutImageLink(str), function (err, data) {
+                    if (err || !data) {
+                        UserAvs.set(aName, TgLogo.tgLogoBase64);
+                    } else {
+                        UserAvs.set(aName, data.dataUri);
+                    }
+                    resolve(response);
+                });
             });
         }).end();
     });
@@ -233,6 +242,30 @@ function escSqlString(str) {
     }) : "undefined";
 }
 
+function commitDigestsToDataBase(aCon) {
+    var s_arr = Array.from(MapDB);
+    var s_times = s_arr.length;
+    var s_current = 0;
+    (function nextLapDb() {
+        if (s_current >= s_times) {
+            console.log("SQL: " + s_current + " digests are stored to the DB.");
+            aCon.end();
+            // 10. Exit from script
+            toExit();
+            return;
+        }
+        process.stdout.write("Commit digest #" + (s_current+1) + "... ");
+        runSqlQuery(aCon, "INSERT INTO digests (date, username, msg) VALUES ('" +
+            escSqlString((s_arr[s_current][0]).toString()) + "', '" +
+            escSqlString(getUserName(s_arr[s_current][1].user.toString())) + "', '" +
+            escSqlString(s_arr[s_current][1].msg) + "');").then(function() {
+            process.stdout.write("done.\n");
+            ++s_current;
+            nextLapDb();
+        });
+    })();
+}
+
 function connectToDataBase(aSettings) {
     var con = MySQL.createConnection({
         host: aSettings.host,
@@ -248,30 +281,32 @@ function connectToDataBase(aSettings) {
         }
         console.log("SQL: Connected to " + aSettings.host + "!");
         runSqlQuery(con, "DROP TABLE IF EXISTS digests;");
+        runSqlQuery(con, "DROP TABLE IF EXISTS digests_users;");
         runSqlQuery(con, "CREATE TABLE digests " +
-            "(date TEXT, username TEXT, avatar TEXT, msg TEXT) " +
+            "(date TEXT, username TEXT, msg TEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
-        console.log("SQL: Table digests created.");
+        runSqlQuery(con, "CREATE TABLE digests_users " +
+            "(username TEXT, avatar TEXT) " +
+            "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+        console.log("SQL: Digests tables are created.");
 
-        var arr = Array.from(MapDB);
+        var arr = Array.from(UserAvs);
         var times = arr.length;
         var current = 0;
-        (function nextLapDb() {
+        (function firstLapDb() {
             if (current >= times) {
-                console.log("SQL: " + current + " digests are stored to the DB.");
-                con.end();
-                toExit();
+                console.log("SQL: " + current + " users and avatars are stored to the DB.");
+                // 9. Push Digests to DataBase
+                commitDigestsToDataBase(con);
                 return;
             }
-            process.stdout.write("Commit digest #" + (current+1) + "... ");
-            runSqlQuery(con, "INSERT INTO digests (date, username, avatar, msg) VALUES ('" +
-                escSqlString((arr[current][0]).toString()) + "', '" +
-                escSqlString(getUserName(arr[current][1].user)) + "', '" +
-                escSqlString(getUserAvatar(arr[current][1].user)) + "', '" +
-                escSqlString(arr[current][1].msg) + "');").then(function() {
-                    process.stdout.write("done.\n");
-                    ++current;
-                    nextLapDb();
+            process.stdout.write("Commit user #" + (current+1) + "(" + arr[current][0] + ")... ");
+            runSqlQuery(con, "INSERT INTO digests_users (username, avatar) VALUES('" +
+                escSqlString(getUserName(arr[current][0])) + "', '" +
+                escSqlString(arr[current][1]) + "');").then(function() {
+                process.stdout.write("done.\n");
+                ++current;
+                firstLapDb();
             });
         })();
     });
