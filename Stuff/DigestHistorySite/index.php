@@ -10,7 +10,7 @@
 include_once 'config.php';
 include_once 'templates.php';
 
-const postsPP = 50;
+const postsPP = 20;
 
 date_default_timezone_set("Europe/Moscow");
 $date = date_create();
