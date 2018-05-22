@@ -25,6 +25,12 @@
 // Set current dir as working dir for script
 process.chdir(__dirname);
 
+// Fix "Automatic enabling of cancellation of promises is deprecated" error.
+// See:
+//  1. https://github.com/yagop/node-telegram-bot-api/issues/319
+//  2. https://github.com/yagop/node-telegram-bot-api/issues/484
+process.env["NTBA_FIX_319"] = 1;
+
 // Requires
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
