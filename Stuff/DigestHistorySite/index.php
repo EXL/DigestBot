@@ -48,8 +48,10 @@ if (!$page) {
 // echo "Debug: " . $count . " " . $page . " " . $url . " " . $pg_count . " " . "<br>";
 
 function pl_pager($curr, $all, $url, $p1, $p2) {
-    if ($all < 1)
+    if ($all < 1) {
+        echo '<br>';
         return;
+    }
     echo $p1;
 
     $all++;
