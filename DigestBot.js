@@ -248,7 +248,7 @@ bot.on('text', function(msg)
 
     // console.log(msg);
 
-    if (msg.forward_date) { // Skip All Forward Messages
+    if (msg.forward_date) { // Skip All Forwarded Messages
         return;
     }
 
@@ -265,7 +265,9 @@ bot.on('text', function(msg)
                     's_username': messageUserName
                 };
 
-                globalStackListDigestMessages.push(messageInfoStruct);
+                if (!isDuplicateMessage(messageInfoStruct)) {
+                    globalStackListDigestMessages.push(messageInfoStruct);
+                }
 
                 // Send message by bot.
                 sendMessageByBot(messageChatId,
@@ -1045,6 +1047,18 @@ function writeJSONFileToFileSystem(aFileName, aMessageChatId, aAdmin, aUserName,
 function addYourStringToString(aYourString, aString)
 {
     return aYourString + aString;
+}
+
+function isDuplicateMessage(aMessage)
+{
+    for (var i = 0; i < globalStackListDigestMessages.length; ++i) {
+        if (aMessage.s_message === globalStackListDigestMessages[i].s_message &&
+            aMessage.s_username === globalStackListDigestMessages[i].s_username &&
+            aMessage.s_date === globalStackListDigestMessages[i].s_date) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // ----- CURRENCY SECTION
