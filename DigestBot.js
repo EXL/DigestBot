@@ -35,6 +35,17 @@ process.env["NTBA_FIX_319"] = 1;
 //  In the future, content-type of files you send will default to "application/octet-stream"
 process.env["NTBA_FIX_350"] = 1;
 
+// Fix
+// Error: certificate has expired
+//    at Error (native)
+//    at TLSSocket.<anonymous> (_tls_wrap.js:1092:38)
+//    at emitNone (events.js:86:13)
+//    at TLSSocket.emit (events.js:185:7)
+//    at TLSSocket._finishInit (_tls_wrap.js:609:8)
+//    at TLSWrap.ssl.onhandshakedone (_tls_wrap.js:439:38)
+// Uncomment => Launch => Stop => Comment => Relaunch
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 // Requires
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
