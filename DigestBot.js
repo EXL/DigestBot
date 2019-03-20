@@ -136,6 +136,62 @@ var globalRatesKeyboard = {
 };
 // ----- END CURRENCY SECTION
 
+// ----- MOTOFAN CRAWLER SECTION
+var globalMotoFanJsonApiLink = 'http://forum.motofan.ru/lastpost_json.php';
+var globalMotoFanIdTelegramGroup = -1001045117849; // 87336977 for debug
+var globalMotoFanRefreshRate = 60 * 1000; // 1 minute
+var globalMotoFanLatestPostTime = 0;
+
+function checkNewPostsOnMotoFan()
+{
+    Http.get(globalMotoFanJsonApiLink, function(res) {
+        var body = '';
+
+        res.on('data', function(chunk) {
+            body += chunk;
+        });
+
+        res.on('end', function() {
+            try {
+                processMotoFanJson(JSON.parse(body));
+            } catch(err) {
+                console.log('MotoFan Crawler got an exception: ', err);
+            }
+        });
+    }).on('error', function(e) {
+        console.log('MotoFan Crawler got an error: ', e);
+    });
+}
+
+function processMotoFanJson(aJson)
+{
+    var newMessages = [];
+    if (globalMotoFanLatestPostTime === 0) {
+        globalMotoFanLatestPostTime = aJson[0].timestamp;
+    }
+    for (var i = aJson.length - 1; i >= 0; --i) {
+        if (aJson[i].timestamp > globalMotoFanLatestPostTime) {
+            if (aJson[i].author !== 'palach') { // HACK: Drop automatic congratulations
+                newMessages.push(aJson[i]);
+            }
+            globalMotoFanLatestPostTime = aJson[i].timestamp;
+        }
+    }
+    if (newMessages.length > 0) {
+        c=0,t=newMessages.length;
+        (n=()=>{c>=t||(c++,sendMessageByBot(
+            globalMotoFanIdTelegramGroup, getFormattedMessage(newMessages, c - 1), null, null, null, true).then(()=>{n()}))})();
+    }
+}
+
+function getFormattedMessage(aNewMessages, aIndex)
+{
+    return '<i>' + catchPhrases.others[1] + '</i>\n\n<b>' + aNewMessages[aIndex].author + '</b>' + catchPhrases.others[2] +
+           aNewMessages[aIndex].text + '\n\n' + catchPhrases.others[3] + '<a href="' + aNewMessages[aIndex].post_link + '">' +
+           aNewMessages[aIndex].title + '</a>.';
+}
+// ----- END MOTOFAN CRAWLER SECTION
+
 // Bot Functions
 bot.getMe().then(function(me)
 {
@@ -143,6 +199,11 @@ bot.getMe().then(function(me)
     console.log('My id is %s.', me.id);
     console.log('And my username is @%s.', me.username);
     globalBotUserName = me.username;
+
+    // MotoFan Posts crawler initialization
+    var timerId = setInterval(function() {
+        checkNewPostsOnMotoFan();
+    }, globalMotoFanRefreshRate);
 });
 
 bot.on('inline_query', function(msg)
@@ -868,11 +929,14 @@ function sendNoDigestMessages(aChatId, aUserName, aMsgId)
                          getRandomInt(0, catchPhrases.digestCommandNoMessages.length - 1)], aUserName, aMsgId);
 }
 
-function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey)
+function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey, aHtml)
 {
     if (aChatId && aMessage) {
         // Replace '%username%' by userName.
-        var readyMessage = aMessage.replace('%username%', '@' + aUserName);
+        var readyMessage = aMessage;
+        if (aUserName) {
+            readyMessage = readyMessage.replace('%username%', '@' + aUserName);
+        }
 
         // Return Promise
         return new Promise(function(resolve) {
@@ -881,7 +945,7 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey)
                     disable_notification: true,
                     reply_to_message_id: aMsgId,
                     reply_markup: (aKey) ? aKey : null,
-                    parse_mode: (aKey) ? 'HTML' : null
+                    parse_mode: (aKey || aHtml) ? 'HTML' : null
                 }).delay(1000).then(function(response) { // 1 sec delay
                     resolve(response);
                 })
