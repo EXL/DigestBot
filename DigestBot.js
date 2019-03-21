@@ -178,9 +178,20 @@ function processMotoFanJson(aJson)
         }
     }
     if (newMessages.length > 0) {
-        c=0,t=newMessages.length;
-        (n=()=>{c>=t||(c++,sendMessageByBot(
-            globalMotoFanIdTelegramGroup, getFormattedMessage(newMessages, c - 1), null, null, null, true).then(()=>{n()}))})();
+        var count = newMessages.length;
+        var current = 0;
+
+        (function sendNextMessage() {
+            if (current >= count) {
+                return;
+            }
+            ++current;
+            sendMessageByBot(globalMotoFanIdTelegramGroup,
+                             getFormattedMessage(newMessages, current - 1),
+                             null, null, null, true).then(function() {
+                sendNextMessage();
+            });
+        })();
     }
 }
 
