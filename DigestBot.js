@@ -186,9 +186,14 @@ function processMotoFanJson(aJson)
 
 function getFormattedMessage(aNewMessages, aIndex)
 {
-    return '<i>' + catchPhrases.others[1] + '</i>\n\n<b>' + aNewMessages[aIndex].author + '</b>' + catchPhrases.others[2] +
-           aNewMessages[aIndex].text + '\n\n' + catchPhrases.others[3] + '<a href="' + aNewMessages[aIndex].post_link + '">' +
-           aNewMessages[aIndex].title + '</a>.';
+    return catchPhrases.others[1] + '\n\n<b>' + aNewMessages[aIndex].author + '</b>' + catchPhrases.others[2] + '<i>' +
+           removeBbCodes(aNewMessages[aIndex].text) + '</i>\n\n' + catchPhrases.others[3] +
+           '<a href="' + aNewMessages[aIndex].post_link + '">' + aNewMessages[aIndex].title + '</a>';
+}
+
+function removeBbCodes(aMessage)
+{
+    return aMessage.replace(/\[(\w+)[^w]*?](.*?)\[\/\1]/g, '$2');
 }
 // ----- END MOTOFAN CRAWLER SECTION
 
