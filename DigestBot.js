@@ -139,7 +139,7 @@ var globalRatesKeyboard = {
 // ----- MOTOFAN CRAWLER SECTION
 var globalMotoFanJsonApiLink = 'http://forum.motofan.ru/lastpost_json.php';
 var globalMotoFanIdTelegramGroup = -1001045117849; // 87336977 for debug
-var globalMotoFanRefreshRate = 60 * 1000; // 1 minute
+var globalMotoFanRefreshRate = 600 * 1000; // 10 minutes
 var globalMotoFanLatestPostTime = 0;
 
 function checkNewPostsOnMotoFan()
