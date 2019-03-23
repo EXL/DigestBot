@@ -204,7 +204,7 @@ function getFormattedMessage(aNewMessages, aIndex)
 
 function removeBbCodes(aMessage)
 {
-    return aMessage.replace(/\[(\w+)[^w]*?](.*?)\[\/\1]/g, '$2');
+    return aMessage.replace(/\[(\w+)[^w]*?](.*?)\[\/\1]/g, ' $2 ').replace(/ +(?= )/g,'').trim();
 }
 // ----- END MOTOFAN CRAWLER SECTION
 
