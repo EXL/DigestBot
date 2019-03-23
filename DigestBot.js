@@ -141,6 +141,8 @@ var globalMotoFanJsonApiLink = 'http://forum.motofan.ru/lastpost_json.php';
 var globalMotoFanIdTelegramGroup = -1001045117849; // 87336977 for debug
 var globalMotoFanRefreshRate = 600 * 1000; // 10 minutes
 var globalMotoFanLatestPostTime = 0;
+var globalMotoFanLatestPostText = '';
+var globalMotoFanLatestPostAuthor = '';
 
 function checkNewPostsOnMotoFan()
 {
@@ -168,13 +170,20 @@ function processMotoFanJson(aJson)
     var newMessages = [];
     if (globalMotoFanLatestPostTime === 0) {
         globalMotoFanLatestPostTime = aJson[0].timestamp;
+        globalMotoFanLatestPostAuthor = aJson[0].author;
+        globalMotoFanLatestPostText = aJson[0].text;
     }
     for (var i = aJson.length - 1; i >= 0; --i) {
         if (aJson[i].timestamp > globalMotoFanLatestPostTime) {
-            if (aJson[i].author !== 'palach') { // HACK: Drop automatic congratulations
-                newMessages.push(aJson[i]);
+            if (aJson[i].author !== 'palach') { // HACK: Drop automatic congratulation messages
+                if (aJson[i].author !== globalMotoFanLatestPostAuthor && // HACK: Drop "added later" messages
+                    aJson[i].text !== globalMotoFanLatestPostText) {
+                    newMessages.push(aJson[i]);
+                }
             }
             globalMotoFanLatestPostTime = aJson[i].timestamp;
+            globalMotoFanLatestPostAuthor = aJson[i].author;
+            globalMotoFanLatestPostText = aJson[i].text;
         }
     }
     if (newMessages.length > 0) {
