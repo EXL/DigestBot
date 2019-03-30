@@ -6,8 +6,8 @@ After=multi-user.target
 #Requires=After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/node /root/digestbot/DigestBot/DigestBot.js
-WorkingDirectory=/root/digestbot/DigestBot/
+ExecStart=/usr/bin/node /srv/digestbot/DigestBot/DigestBot.js
+WorkingDirectory=/srv/digestbot/DigestBot/
 SyslogIdentifier=DigestBot
 # Restart service after 10 seconds if node service crashes
 Restart=always
