@@ -143,6 +143,7 @@ var globalMotoFanRefreshRate = 1200 * 1000; // 20 minutes
 var globalMotoFanLatestPostTime = 0;
 var globalMotoFanLatestPostText = '';
 var globalMotoFanLatestPostAuthor = '';
+var globalMotoFanLatestThreadLink = '';
 
 function checkNewPostsOnMotoFan()
 {
@@ -172,18 +173,21 @@ function processMotoFanJson(aJson)
         globalMotoFanLatestPostTime = aJson[0].timestamp;
         globalMotoFanLatestPostAuthor = aJson[0].author;
         globalMotoFanLatestPostText = aJson[0].text;
+        globalMotoFanLatestThreadLink = aJson[0].topic_link;
     }
     for (var i = aJson.length - 1; i >= 0; --i) {
         if (aJson[i].timestamp > globalMotoFanLatestPostTime) {
             if (aJson[i].author !== 'palach') { // HACK: Drop automatic congratulation messages
-                if (aJson[i].author !== globalMotoFanLatestPostAuthor && // HACK: Drop "added later" messages
-                    aJson[i].text !== globalMotoFanLatestPostText) {
+                if (aJson[i].author !== globalMotoFanLatestPostAuthor || // HACK: Drop "added later" messages
+                    aJson[i].text !== globalMotoFanLatestPostText ||
+                    aJson[i].topic_link !== globalMotoFanLatestThreadLink) {
                     newMessages.push(aJson[i]);
                 }
             }
             globalMotoFanLatestPostTime = aJson[i].timestamp;
             globalMotoFanLatestPostAuthor = aJson[i].author;
             globalMotoFanLatestPostText = aJson[i].text;
+            globalMotoFanLatestThreadLink = aJson[i].topic_link;
         }
     }
     if (newMessages.length > 0) {
