@@ -210,9 +210,10 @@ function processMotoFanJson(aJson)
 
 function getFormattedMessage(aNewMessages, aIndex)
 {
-    return catchPhrases.others[1] + '\n\n<b>' + aNewMessages[aIndex].author + '</b>' + catchPhrases.others[2] + '<i>' +
-           removeBbCodes(aNewMessages[aIndex].text) + '</i>\n\n' + catchPhrases.others[3] +
-           '<a href="' + aNewMessages[aIndex].post_link + '">' + aNewMessages[aIndex].title + '</a>';
+    return catchPhrases.others[1] + '\n\n<b>' + aNewMessages[aIndex].author + '</b>' + catchPhrases.others[2] +
+           '(' + aNewMessages[aIndex].time + '):\n<i>' + removeBbCodes(aNewMessages[aIndex].text) +
+           '</i>\n\n' + catchPhrases.others[3] + '<a href="' + aNewMessages[aIndex].post_link + '">' +
+           aNewMessages[aIndex].title + '</a>';
 }
 
 function removeBbCodes(aMessage)
