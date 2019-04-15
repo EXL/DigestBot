@@ -221,7 +221,7 @@ if ($result->num_rows > 0) {
 
 pl_pager($page, $pg_count, $url, $pager_append1, $pager_append2);
 
-echo $footer;
+echo str_replace("%year_c%", date("Y"), $footer);
 echo $main_append2;
 
 $conn->close();

@@ -82,7 +82,7 @@ $header_thread = '<div class="maintitle" style="padding:4px">
 
 $footer = '<div class="copyright" align="center">
     <div>Создано при помощи <a href="http://t.me/Digest_bot" style="text-decoration:none" target="_blank" title="@Digest_bot в Telegram">@Digest_bot</a></div>
-         © <a href="http://exlmoto.ru" style="text-decoration:none" target="_blank" title="EXL\'s Developer Blog">EXL</a>, 2017.
+         © <a href="http://exlmoto.ru" style="text-decoration:none" target="_blank" title="EXL\'s Developer Blog">EXL</a>, 2017-%year_c%.
          Telegram: <a href="http://t.me/exlmoto" style="text-decoration:none" target="_blank" title="@exlmoto в Telegram">@exlmoto</a>
 </div>';
 
