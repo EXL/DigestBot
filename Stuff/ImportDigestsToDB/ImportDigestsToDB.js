@@ -284,10 +284,10 @@ function connectToDataBase(aSettings) {
         runSqlQuery(con, "DROP TABLE IF EXISTS digests_users;");
         runSqlQuery(con, "CREATE TABLE digests " +
             "(date TEXT, username TEXT, msg TEXT) " +
-            "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+            "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = MYISAM;");
         runSqlQuery(con, "CREATE TABLE digests_users " +
             "(username TEXT, avatar MEDIUMTEXT) " +
-            "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+            "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = MYISAM;");
         console.log("SQL: Digests tables are created.");
 
         var arr = Array.from(UserAvs);
