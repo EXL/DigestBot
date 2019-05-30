@@ -8,7 +8,7 @@ const Fs = require("fs");
 const Zlib = require("zlib");
 const Tar = require("tar-stream");
 const MySQL = require("mysql");
-const Http = require("http");
+const Https = require("https");
 const ImageUrlToBase64 = require("imageurl-base64");
 
 const TgLogo = require("./TelegramLogo.js");
@@ -148,7 +148,7 @@ function walkToProfilePages(aName) {
         // setTimeout(() => {
         //     resolve();
         // }, 2000); // Delay 2 sec...
-        Http.request({
+        Https.request({
             host: "t.me",
             path: "/" + aName
         }, function(response) {
