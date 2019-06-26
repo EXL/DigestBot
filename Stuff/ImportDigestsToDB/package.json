@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "mysql": "~2.15.0",
-    "tar-stream": "~1.5.5",
-    "imageurl-base64": "~1.0.0"
+    "tar-stream": "~1.5.5"
   }
 }

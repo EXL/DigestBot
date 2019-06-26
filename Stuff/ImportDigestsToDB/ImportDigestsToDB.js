@@ -9,7 +9,7 @@ const Zlib = require("zlib");
 const Tar = require("tar-stream");
 const MySQL = require("mysql");
 const Https = require("https");
-const ImageUrlToBase64 = require("imageurl-base64");
+// const ImageUrlToBase64 = require("imageurl-base64");
 
 const TgLogo = require("./TelegramLogo.js");
 
@@ -157,6 +157,9 @@ function walkToProfilePages(aName) {
                 str += chunk;
             });
             response.on("end", function() {
+                UserAvs.set(aName, "https://lab.exlmoto.ru/proxy/" + cutImageLink(str));
+                resolve(response);
+                /*
                 ImageUrlToBase64(cutImageLink(str), function (err, data) {
                     if (err || !data) {
                         UserAvs.set(aName, TgLogo.tgLogoBase64);
@@ -165,6 +168,7 @@ function walkToProfilePages(aName) {
                     }
                     resolve(response);
                 });
+                */
             });
         }).end();
     });
@@ -173,7 +177,7 @@ function walkToProfilePages(aName) {
 function cutImageLink(aPage) {
     var part1 = aPage.slice(aPage.indexOf('<meta property="og:image"'),
         aPage.indexOf('<meta property="og:site_name"'));
-    return part1.slice(part1.indexOf('http'), part1.indexOf('">'));
+    return part1.slice(part1.indexOf('://'), part1.indexOf('">')).substr(3);
 }
 
 function showMap(aMap) {
@@ -286,7 +290,7 @@ function connectToDataBase(aSettings) {
             "(date TEXT, username TEXT, msg TEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = MYISAM;");
         runSqlQuery(con, "CREATE TABLE digests_users " +
-            "(username TEXT, avatar MEDIUMTEXT) " +
+            "(username TEXT, avatar TEXT) " +
             "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = MYISAM;");
         console.log("SQL: Digests tables are created.");
 
