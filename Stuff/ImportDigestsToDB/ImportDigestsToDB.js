@@ -219,6 +219,42 @@ function getUserName(aName) {
     return aName;
 }
 
+function getMessage(aMessage) {
+    if (!aMessage) return "null";
+    var s_msg = linkifyMessage(aMessage);
+    return userifyMessage(s_msg);
+}
+
+function userifyMessage(aMessage) {
+    var pattern = /\B@[a-z0-9_-]+/gi;
+    var matches = aMessage.match(pattern);
+    if (matches) {
+        matches.forEach(function (match) {
+            aMessage = aMessage.replace(match,
+                '<a href="https://t.me/' + match + '" title="' + match + '" target="_blank">' + match + '</a>');
+        });
+        return aMessage.split('https://t.me/@').join('https://t.me/');
+    } else {
+        return aMessage;
+    }
+}
+
+// https://stackoverflow.com/a/49634926
+function linkifyMessage(inputText) {
+    var replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+    replacedText = inputText.replace(replacePattern1, '<a href="$1" title="$1" target="_blank">$1</a>');
+
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" title="$2" target="_blank">$2</a>');
+
+    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1" title="$1">$1</a>');
+
+    return replacedText;
+}
+
 // https://stackoverflow.com/a/7760578
 function escSqlString(str) {
     return (str) ? str.replace(/[\0\x08\x09\x1a\n\r"'\\%]/g, function(char) {
@@ -262,7 +298,7 @@ function commitDigestsToDataBase(aCon) {
         runSqlQuery(aCon, "INSERT INTO digests (date, username, msg) VALUES ('" +
             escSqlString((s_arr[s_current][0]).toString()) + "', '" +
             escSqlString(getUserName(s_arr[s_current][1].user.toString())) + "', '" +
-            escSqlString(s_arr[s_current][1].msg) + "');").then(function() {
+            escSqlString(getMessage(s_arr[s_current][1].msg)) + "');").then(function() {
             process.stdout.write("done.\n");
             ++s_current;
             nextLapDb();
