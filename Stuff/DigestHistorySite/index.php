@@ -140,6 +140,23 @@ function filter_username($a_name) {
     return '<a href="https://t.me/' . $a_name . '" title="@' . $a_name . '" target="_blank">' . $a_name . '</a>';
 }
 
+function filter_username_non_links($a_name) {
+    $name_f = substr($a_name, 1);
+    if ($a_name === "0") {
+        return "Гость";
+    }
+    if (in_array($name_f, $GLOBALS["admins"])) {
+        return '<span style="color:red">' . $a_name . '</span>';
+    }
+    if (in_array($name_f, $GLOBALS["moders"])) {
+        return '<span style="color:blue">' . $a_name . '</span>';
+    }
+    if (in_array($name_f, $GLOBALS["coords"])) {
+        return '<span style="color:purple">' . $a_name . '</span>';
+    }
+    return $a_name;
+}
+
 function filter_num($a_num) {
     return "<a href=\"//" . $GLOBALS["url"] . "?pg=" . strval($GLOBALS["page"]) . "#" . $a_num .
     "\" id=\"" . $a_num . "\" title=\"Сообщение №" . strval($a_num) . "\">" .
@@ -147,7 +164,9 @@ function filter_num($a_num) {
 }
 
 function filter_message($a_msg) {
-    $a_msg = make_links_clickable($a_msg);
+    // Move this to JavaScript Import script.
+    // $a_msg = make_links_clickable($a_msg);
+    // And this one for colorizing nicknames:
     $a_msg = make_users_clickable($a_msg);
     return $a_msg;
 }
@@ -159,7 +178,7 @@ function make_links_clickable($text) {
 }
 
 function make_users_clickable($text) {
-    return preg_replace_callback('/(\B\@\w+\b)/',
+    return preg_replace_callback('/>(\B\@\w+\b)</',
         function ($matches) {
             return replace_at_to_link_aux($matches[0]);
         },
@@ -168,7 +187,8 @@ function make_users_clickable($text) {
 
 function replace_at_to_link_aux($username) {
     $username = substr($username, 1);
-    return filter_username($username);
+    $username = substr($username, 0, strlen($username) - 1);
+    return '>' . filter_username_non_links($username) . '<';
 }
 
 function filter_date($a_date) {
