@@ -25,7 +25,7 @@ cd ~/Deploy/
 git clone https://github.com/EXL/DigestBot DigestBotDeploy
 ```
 
-* Install "node-telegram-bot-api" and "request" modules into deploy directory;
+* Install "node-telegram-bot-api", "request" and others modules into deploy directory;
 
 ```sh
 cd ~/Deploy/DigestBotDeploy/
