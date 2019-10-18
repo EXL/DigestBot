@@ -137,7 +137,7 @@ var globalRatesKeyboard = {
 // ----- END CURRENCY SECTION
 
 // ----- MOTOFAN CRAWLER SECTION
-var globalMotoFanJsonApiLink = 'http://forum.motofan.ru/lastpost_json.php';
+var globalMotoFanJsonApiLink = 'https://forum.motofan.ru/lastpost_json.php';
 var globalMotoFanIdTelegramGroup = -1001045117849; // 87336977 for debug
 var globalMotoFanRefreshRate = 1200 * 1000; // 20 minutes
 var globalMotoFanLatestPostTime = 0;
@@ -757,7 +757,7 @@ function addNewMarkers(string, regex, n, replace)
 
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
 {
-    Exec('curl http://ipecho.net/plain', function(err, stdout, stderr) {
+    Exec('curl https://ipecho.net/plain', function(err, stdout, stderr) {
         if (err) {
             sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
             return;
