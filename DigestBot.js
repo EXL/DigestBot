@@ -50,6 +50,7 @@ process.env["NTBA_FIX_350"] = 1;
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
+var Https = require('https');
 var Request = require('request');
 var Exec = require('child_process').exec;
 var ParseXMLString = require('xml2js').parseString;
@@ -147,7 +148,7 @@ var globalMotoFanLatestPostAuthor = '';
 
 function checkNewPostsOnMotoFan()
 {
-    Http.get(globalMotoFanJsonApiLink, function(res) {
+    Https.get(globalMotoFanJsonApiLink, function(res) {
         var body = '';
 
         res.on('data', function(chunk) {
