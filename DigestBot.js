@@ -793,9 +793,9 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc, aMs
             } else {
                 bot.sendPhoto(aChatId, aFileName, { caption: aDesc, reply_to_message_id: aMsgId });
             }
-        }).on('error', function(aError) {
-            console.log(aError);
         });
+    }).on('error', function(aError) {
+        console.log('Some error on downloadImageAndSendToChat: ' + aError);
     });
 }
 
