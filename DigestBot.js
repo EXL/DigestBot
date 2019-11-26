@@ -158,7 +158,7 @@ function checkNewPostsOnMotoFan()
         res.on('end', function() {
             try {
                 processMotoFanJson(JSON.parse(body));
-            } catch (err) {
+            } catch(err) {
                 console.log('MotoFan Crawler got an exception: ', err);
             }
         });
@@ -355,257 +355,253 @@ bot.on('text', function(msg)
         return;
     }
 
-    try {
-        // DIGEST TAG
-        if (messageText.indexOf('#digest') >= 0 || messageText.indexOf('#news') >= 0) {
-            if (messageText.length < 400) {
-                globalCountOfMessagesWithDigest++;
-                var normalMessage = normalizeMessage(messageText);
-                if (!(isBlank(normalMessage))) {
-                    var messageInfoStruct = {
-                        's_chatID': messageChatId,
-                        's_date': messageDate,
-                        's_message': normalMessage,
-                        's_username': messageUserName
-                    };
+    // DIGEST TAG
+    if (messageText.indexOf('#digest') >= 0 || messageText.indexOf('#news') >= 0) {
+        if (messageText.length < 400) {
+            globalCountOfMessagesWithDigest++;
+            var normalMessage = normalizeMessage(messageText);
+            if (!(isBlank(normalMessage))) {
+                var messageInfoStruct = {
+                    's_chatID': messageChatId,
+                    's_date': messageDate,
+                    's_message': normalMessage,
+                    's_username': messageUserName
+                };
 
-                    if (!isDuplicateMessage(messageInfoStruct)) {
-                        globalStackListDigestMessages.push(messageInfoStruct);
-                    }
-
-                    // Send message by bot.
-                    sendMessageByBot(messageChatId,
-                                     catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)],
-                                     messageUserName, messsageId);
-
-                    // Save Stack to File
-                    writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
+                if (!isDuplicateMessage(messageInfoStruct)) {
+                    globalStackListDigestMessages.push(messageInfoStruct);
                 }
-            } else {
+
+                // Send message by bot.
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[5],
+                                 catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)],
                                  messageUserName, messsageId);
+
+                // Save Stack to File
+                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
             }
+        } else {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[5],
+                             messageUserName, messsageId);
+        }
+    }
+
+    // DIGEST COMMAND
+    else if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
+        var bGoodCommand = true;
+        var messageDelay = getMessageDelay(7);
+
+        // Digest delay.
+        // 45 sec for debug.
+        // 43 200 for 12-hours.
+        // 86 400 for 24-hours.
+        // 172 800 for 48-hours.
+        // 604 800 for a week.
+        var mainDelay = 604800 + 43200;
+        var dayDelay = messageDate - messageDelay;
+
+        var bSendDigest = false;
+
+        if (globalStackListDigestMessages.length > 0) {
+            // Delete all obsolete digest messages from globalStackListDigestMessages
+            bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
         }
 
-        // DIGEST COMMAND
-        else if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
-            var bGoodCommand = true;
-            var messageDelay = getMessageDelay(7);
-
-            // Digest delay.
-            // 45 sec for debug.
-            // 43 200 for 12-hours.
-            // 86 400 for 24-hours.
-            // 172 800 for 48-hours.
-            // 604 800 for a week.
-            var mainDelay = 604800 + 43200;
-            var dayDelay = messageDate - messageDelay;
-
-            var bSendDigest = false;
-
-            if (globalStackListDigestMessages.length > 0) {
-                // Delete all obsolete digest messages from globalStackListDigestMessages
-                bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
-            }
-
-            // Generate Bot Answer
-            if (bSendDigest) {
-                // Count of digest messages from one chat.
-                var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId, dayDelay);
-                // Check countOfDigestMessagesByChat.
-                if (countOfDigestMessagesByChat > 0) {
-                    sendMessageByBot(messageChatId,
-                                     generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, digestsPerPage, 1),
-                                     messageUserName, messsageId, {
-                                         inline_keyboard: generateDigestKeyboard(getDigestPages(globalStackListDigestMessages.length,
-                                                                                                messageChatId, dayDelay, digestsPerPage).length) } );
-                } else {
-                    sendNoDigestMessages(messageChatId, messageUserName, messsageId);
-                }
+        // Generate Bot Answer
+        if (bSendDigest) {
+            // Count of digest messages from one chat.
+            var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId, dayDelay);
+            // Check countOfDigestMessagesByChat.
+            if (countOfDigestMessagesByChat > 0) {
+                sendMessageByBot(messageChatId,
+                                 generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, digestsPerPage, 1),
+                                 messageUserName, messsageId, {
+                                     inline_keyboard: generateDigestKeyboard(getDigestPages(globalStackListDigestMessages.length,
+                                                                                            messageChatId, dayDelay, digestsPerPage).length) } );
             } else {
                 sendNoDigestMessages(messageChatId, messageUserName, messsageId);
             }
+        } else {
+            sendNoDigestMessages(messageChatId, messageUserName, messsageId);
         }
-
-        // RATES COMMAND
-        else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
-            updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
-        }
-
-        // CHARTS COMMAND
-        else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
-            sendMessageByBot(messageChatId,
-                             catchPhrases.buttons[5] + '<code>' + generateChartsHelpString() + '</code>',
-                             messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
-        }
-
-        // COFFEE COMMAND
-        else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
-            sendSticker(messageChatId, globalCofeeSticker, messsageId);
-        }
-
-        // GAME COMMAND
-        else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
-            downloadImageAndSendToChat(gameStatURL, 'game.png', messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
-        }
-
-        // HELP COMMAND
-        else if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
-            sendMessageByBot(messageChatId, generateHelpString(messageUserName), messageUserName, messsageId);
-        }
-
-        // START COMMAND
-        else if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
-            sendMessageByBot(messageChatId, catchPhrases.startCommand[0], messageUserName, messsageId);
-        }
-
-        // ----- ADMINISTRATION COMMANDS
-        // HELLO COMMAND
-        else if (messageText === '/hello' || messageText === '/hi') {
-            if (getAdminRights(messageUserName)) {
-                sendMessageByBot(messageChatId,
-                                 catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)],
-                                 messageUserName, messsageId);
-            }
-        }
-
-        // SEND COMMAND
-        else if (messageText.indexOf('/send') === 0) {
-            if (getAdminRights(messageUserName)) {
-                messageText = messageText.trim();
-                var splitSendList = messageText.split(' ');
-                if (splitSendList.length > 2) {
-                    var targetChatID = splitSendList[1];
-                    sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID), messageUserName, null);
-                } else {
-                    sendMessageByBot(messageChatId,
-                                     catchPhrases.debugCommandMessages[8], messageUserName, messsageId);
-                }
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // EVAL COMMAND
-        else if (messageText.indexOf('/eval') === 0) {
-            if (getAdminRights(messageUserName)) {
-                eval(messageText.replace('/eval', '').trim());
-            }
-        }
-
-        // STICKER COMMAND
-        else if (messageText.indexOf('/sticker') === 0) {
-            if (getAdminRights(messageUserName)) {
-                messageText = messageText.trim();
-                var splitCommandListSticker = messageText.split(' ');
-                if (splitCommandListSticker.length === 3) {
-                    sendSticker(splitCommandListSticker[1], splitCommandListSticker[2], null);
-                }
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // CLEARSTACK COMMAND
-        else if (messageText === '/stackClear' || messageText === '/clearStack') {
-            if (getAdminRights(messageUserName)) {
-                globalStackListDigestMessages = [ ];
-                sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[1], messageUserName, messsageId);
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // COUNT COMMAND
-        else if (messageText === '/count') {
-            if (getAdminRights(messageUserName)) {
-                sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest, messageUserName, messsageId);
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // DELETE COMMAND
-        else if (messageText.indexOf('/delete') === 0) {
-            if (getAdminRights(messageUserName)) {
-                var stackLength = globalStackListDigestMessages.length;
-                if (stackLength > 0) {
-                    var chunksMsg = messageText.split(' ');
-                    if (chunksMsg.length === 2) {
-                        var delArg = parseInt(chunksMsg[1]);
-                        if (delArg <= stackLength) {
-                            globalStackListDigestMessages.splice(delArg - 1, 1);
-                            sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.', messageUserName, messsageId);
-                        } else {
-                            sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.', messageUserName, messsageId);
-                        }
-                    }
-                } else {
-                    sendMessageByBot(messageChatId,
-                                     catchPhrases.debugCommandMessages[2], messageUserName, messsageId);
-                }
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // VIEWSTACK COMMAND
-        else if (messageText === '/stackView' || messageText === '/viewStack') {
-            if (getAdminRights(messageUserName)) {
-                var stack = '\n';
-                var sizeOfStack = globalStackListDigestMessages.length;
-                if (sizeOfStack > 0) {
-                    for (var j = 0; j < sizeOfStack; ++j) {
-                        stack += j + 1 + ' ';
-                        stack += globalStackListDigestMessages[j].s_chatID + ' ';
-                        stack += globalStackListDigestMessages[j].s_username + ' ';
-                        stack += globalStackListDigestMessages[j].s_date + ' ';
-                        stack += globalStackListDigestMessages[j].s_message + '\n';
-                    }
-                    sendChunksMessagesByBot(messageChatId,
-                                            catchPhrases.debugCommandMessages[3] + stack, 3500, messageUserName, messsageId);
-                } else {
-                    sendMessageByBot(messageChatId,
-                                     catchPhrases.debugCommandMessages[2], messageUserName, messsageId);
-                }
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // SAVESTACK COMMAND
-        else if (messageText === '/stackSave' || messageText === '/saveStack') {
-            if (getAdminRights(messageUserName)) {
-                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true, messageUserName, messsageId);
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // RESTORESTACK COMMAND
-        else if (messageText === '/stackRestore' || messageText === '/restoreStack') {
-            if (getAdminRights(messageUserName)) {
-                readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-
-        // HOSTIP COMMAND
-        else if (messageText === '/hostip') {
-            if (getAdminRights(messageUserName)) {
-                sendHostIpToChat(messageChatId, messageUserName, messsageId);
-            } else {
-                sendNoAccessMessage(messageChatId, messageUserName, messsageId);
-            }
-        }
-        // ----- END ADMINISTRATION COMMANDS
-    } catch (err) {
-        console.log('DigestBot got an exception: ', err);
     }
+
+    // RATES COMMAND
+    else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
+        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
+    }
+
+    // CHARTS COMMAND
+    else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
+        sendMessageByBot(messageChatId,
+                         catchPhrases.buttons[5] + '<code>' + generateChartsHelpString() + '</code>',
+                         messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
+    }
+
+    // COFFEE COMMAND
+    else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
+        sendSticker(messageChatId, globalCofeeSticker, messsageId);
+    }
+
+    // GAME COMMAND
+    else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
+        downloadImageAndSendToChat(gameStatURL, 'game.png', messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
+    }
+
+    // HELP COMMAND
+    else if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
+        sendMessageByBot(messageChatId, generateHelpString(messageUserName), messageUserName, messsageId);
+    }
+
+    // START COMMAND
+    else if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
+        sendMessageByBot(messageChatId, catchPhrases.startCommand[0], messageUserName, messsageId);
+    }
+
+    // ----- ADMINISTRATION COMMANDS
+    // HELLO COMMAND
+    else if (messageText === '/hello' || messageText === '/hi') {
+        if (getAdminRights(messageUserName)) {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)],
+                             messageUserName, messsageId);
+        }
+    }
+
+    // SEND COMMAND
+    else if (messageText.indexOf('/send') === 0) {
+        if (getAdminRights(messageUserName)) {
+            messageText = messageText.trim();
+            var splitSendList = messageText.split(' ');
+            if (splitSendList.length > 2) {
+                var targetChatID = splitSendList[1];
+                sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID), messageUserName, null);
+            } else {
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.debugCommandMessages[8], messageUserName, messsageId);
+            }
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // EVAL COMMAND
+    else if (messageText.indexOf('/eval') === 0) {
+        if (getAdminRights(messageUserName)) {
+            eval(messageText.replace('/eval', '').trim());
+        }
+    }
+
+    // STICKER COMMAND
+    else if (messageText.indexOf('/sticker') === 0) {
+        if (getAdminRights(messageUserName)) {
+            messageText = messageText.trim();
+            var splitCommandListSticker = messageText.split(' ');
+            if (splitCommandListSticker.length === 3) {
+                sendSticker(splitCommandListSticker[1], splitCommandListSticker[2], null);
+            }
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // CLEARSTACK COMMAND
+    else if (messageText === '/stackClear' || messageText === '/clearStack') {
+        if (getAdminRights(messageUserName)) {
+            globalStackListDigestMessages = [ ];
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[1], messageUserName, messsageId);
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // COUNT COMMAND
+    else if (messageText === '/count') {
+        if (getAdminRights(messageUserName)) {
+            sendMessageByBot(messageChatId,
+                             catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest, messageUserName, messsageId);
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // DELETE COMMAND
+    else if (messageText.indexOf('/delete') === 0) {
+        if (getAdminRights(messageUserName)) {
+            var stackLength = globalStackListDigestMessages.length;
+            if (stackLength > 0) {
+                var chunksMsg = messageText.split(' ');
+                if (chunksMsg.length === 2) {
+                    var delArg = parseInt(chunksMsg[1]);
+                    if (delArg <= stackLength) {
+                        globalStackListDigestMessages.splice(delArg - 1, 1);
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.', messageUserName, messsageId);
+                    } else {
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.', messageUserName, messsageId);
+                    }
+                }
+            } else {
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.debugCommandMessages[2], messageUserName, messsageId);
+            }
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // VIEWSTACK COMMAND
+    else if (messageText === '/stackView' || messageText === '/viewStack') {
+        if (getAdminRights(messageUserName)) {
+            var stack = '\n';
+            var sizeOfStack = globalStackListDigestMessages.length;
+            if (sizeOfStack > 0) {
+                for (var j = 0; j < sizeOfStack; ++j) {
+                    stack += j + 1 + ' ';
+                    stack += globalStackListDigestMessages[j].s_chatID + ' ';
+                    stack += globalStackListDigestMessages[j].s_username + ' ';
+                    stack += globalStackListDigestMessages[j].s_date + ' ';
+                    stack += globalStackListDigestMessages[j].s_message + '\n';
+                }
+                sendChunksMessagesByBot(messageChatId,
+                                        catchPhrases.debugCommandMessages[3] + stack, 3500, messageUserName, messsageId);
+            } else {
+                sendMessageByBot(messageChatId,
+                                 catchPhrases.debugCommandMessages[2], messageUserName, messsageId);
+            }
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // SAVESTACK COMMAND
+    else if (messageText === '/stackSave' || messageText === '/saveStack') {
+        if (getAdminRights(messageUserName)) {
+            writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true, messageUserName, messsageId);
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // RESTORESTACK COMMAND
+    else if (messageText === '/stackRestore' || messageText === '/restoreStack') {
+        if (getAdminRights(messageUserName)) {
+            readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+
+    // HOSTIP COMMAND
+    else if (messageText === '/hostip') {
+        if (getAdminRights(messageUserName)) {
+            sendHostIpToChat(messageChatId, messageUserName, messsageId);
+        } else {
+            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+        }
+    }
+    // ----- END ADMINISTRATION COMMANDS
 });
 
 // Subs Functions
@@ -797,6 +793,8 @@ function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc, aMs
             } else {
                 bot.sendPhoto(aChatId, aFileName, { caption: aDesc, reply_to_message_id: aMsgId });
             }
+        }).on('error', function(aError) {
+            console.log(aError);
         });
     });
 }
@@ -1262,7 +1260,7 @@ function getCurrentValue(aCurrency, aString, bankID)
                nominal = parseFloat(replaceCommasByDots(getXmlValuteValue(getXmlRoot(result, bankID), aCurrency, 0, bankID)));
                value = parseFloat(replaceCommasByDots(getXmlValuteValue(getXmlRoot(result, bankID), aCurrency, 1, bankID)));
            });
-       } catch (err) {
+       } catch(err) {
             setErrorValues(bankID);
        }
     }
