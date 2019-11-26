@@ -51,7 +51,9 @@ var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
 var Https = require('https');
-var Request = require('request');
+// Error: certificate has expired workaround for request
+// See: https://stackoverflow.com/a/50494028
+var Request = require('request').defaults({ rejectUnauthorized: false });
 var Exec = require('child_process').exec;
 var ParseXMLString = require('xml2js').parseString;
 
