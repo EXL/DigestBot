@@ -44,7 +44,7 @@ process.env["NTBA_FIX_350"] = 1;
 //    at TLSSocket._finishInit (_tls_wrap.js:609:8)
 //    at TLSWrap.ssl.onhandshakedone (_tls_wrap.js:439:38)
 // Uncomment => Launch => Stop => Comment => Relaunch
-// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 // Requires
 var TelegramBot = require('node-telegram-bot-api');
