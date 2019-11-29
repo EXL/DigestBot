@@ -319,22 +319,30 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
 
 bot.on('new_chat_members', function(msg)
 {
-    sendMessageByBot(msg.chat.id,
-                     catchPhrases.newMember[getRandomInt(0, catchPhrases.newMember.length - 1)]
-                        .replace('%username%',
-                                 (msg.new_chat_member.last_name) ? msg.new_chat_member.first_name + ' ' +
-                                     msg.new_chat_member.last_name : msg.new_chat_member.first_name),
-                     msg.new_chat_member.username, msg.message_id);
+    var usernames;
+    if (msg.new_chat_members.length == 0) {
+        usernames = getUsername(msg.new_chat_members[0]);
+    } else {
+        var users = [];
+        msg.new_chat_members.forEach(function(iUser) {
+            users.push(getUsername(iUser));
+        })
+        usernames = users.join(', ');
+    }
+    var isBotHere = usernames.indexOf(globalBotUserName) !== -1;
+    var answer = (isBotHere) ? catchPhrases.others[4] :
+        catchPhrases.newMember[getRandomInt(0, catchPhrases.newMember.length - 1)]
+            .replace('%username%', usernames);
+    sendMessageByBot(msg.chat.id, answer);
 });
 
 bot.on('left_chat_member', function(msg)
 {
-    sendMessageByBot(msg.chat.id,
-                     catchPhrases.leftMember[getRandomInt(0, catchPhrases.leftMember.length - 1)]
-                        .replace('%username%',
-                                 (msg.left_chat_member.last_name) ? msg.left_chat_member.first_name + ' ' +
-                                     msg.left_chat_member.last_name : msg.left_chat_member.first_name),
-                     msg.left_chat_member.username, msg.message_id);
+    if (msg.left_chat_member.username !== globalBotUserName) {
+        sendMessageByBot(msg.chat.id,
+            catchPhrases.leftMember[getRandomInt(0, catchPhrases.leftMember.length - 1)]
+                .replace('%username%', getUsername(msg.left_chat_member.username));
+    }
 });
 
 bot.on('new_chat_photo', function(msg)
@@ -607,6 +615,13 @@ bot.on('text', function(msg)
 });
 
 // Subs Functions
+function getUsername(aUser)
+{
+    return (aUser.username) ? '@' + aUser.username :
+        (aUser.last_name) ? aUser.first_name + ' ' + aUser.last_name :
+            aUser.first_name;
+}
+
 function generateInlineChartsResult(aKey)
 {
     return {
