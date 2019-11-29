@@ -1,102 +1,102 @@
 {
     "mmvb": {
         "desc": "MMVB (MOEX) Index.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/mmvb.jpg",
-        "url": "http://api.z-lab.me/charts/mmvb.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/mmvb.jpg",
+        "url": "https://api.z-lab.me/charts/mmvb.png"
     },
     "usd_rub": {
         "desc": "USD/RUB from Forex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/forex.jpg",
-        "url": "http://api.z-lab.me/charts/usd_rub_forex.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/forex.jpg",
+        "url": "https://api.z-lab.me/charts/usd_rub_forex.png"
     },
     "usd_uah": {
         "desc": "USD/UAH from Nasdaq, NYSE.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/usd_uah.jpg",
-        "url": "http://api.z-lab.me/charts/usd_uah.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/usd_uah.jpg",
+        "url": "https://api.z-lab.me/charts/usd_uah.png"
     },
     "eur_rub": {
         "desc": "EUR/RUB from Forex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/eur_rub.jpg",
-        "url": "http://api.z-lab.me/charts/rub_eur_forex.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/eur_rub.jpg",
+        "url": "https://api.z-lab.me/charts/rub_eur_forex.png"
     },
     "eur_usd": {
         "desc": "EUR/UAH from Forex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/eur_usd.jpg",
-        "url": "http://api.z-lab.me/charts/eur_usd_forex.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/eur_usd.jpg",
+        "url": "https://api.z-lab.me/charts/eur_usd_forex.png"
     },
     "gold": {
         "desc": "Gold from Nasdaq.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/gold.jpg",
-        "url": "http://api.z-lab.me/charts/gold.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/gold.jpg",
+        "url": "https://api.z-lab.me/charts/gold.png"
     },
     "palladium": {
         "desc": "Palladium from Nasdaq.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/palladium.jpg",
-        "url": "http://api.z-lab.me/charts/palladium.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/palladium.jpg",
+        "url": "https://api.z-lab.me/charts/palladium.png"
     },
     "platinum": {
         "desc": "Platinum from Nasdaq.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/platinum.jpg",
-        "url": "http://api.z-lab.me/charts/platinum.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/platinum.jpg",
+        "url": "https://api.z-lab.me/charts/platinum.png"
     },
     "rhodium": {
         "desc": "Rhodium from Nasdaq.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/rhodium.jpg",
-        "url": "http://api.z-lab.me/charts/rhodium.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/rhodium.jpg",
+        "url": "https://api.z-lab.me/charts/rhodium.png"
     },
     "silver": {
         "desc": "Silver from Nasdaq.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/silver.jpg",
-        "url": "http://api.z-lab.me/charts/silver.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/silver.jpg",
+        "url": "https://api.z-lab.me/charts/silver.png"
     },
     "rts": {
         "desc": "RTS Index from MMVB (MOEX).",
-        "thumb": "http://lab.exlmoto.ru/thumbs/rts.jpg",
-        "url": "http://api.z-lab.me/charts/rts.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/rts.jpg",
+        "url": "https://api.z-lab.me/charts/rts.png"
     },
     "btc_usd": {
         "desc": "BTC/USD from WorldCoinIndex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/btc_usd.jpg",
-        "url": "http://api.z-lab.me/charts/btc_usd.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/btc_usd.jpg",
+        "url": "https://api.z-lab.me/charts/btc_usd.png"
     },
     "bcc_usd": {
         "desc": "BCC/USD from WorldCoinIndex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/bcc_usd.jpg",
-        "url": "http://api.z-lab.me/charts/bcc_usd.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/bcc_usd.jpg",
+        "url": "https://api.z-lab.me/charts/bcc_usd.png"
     },
     "dsh_usd": {
         "desc": "DSH/USD from WorldCoinIndex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/dsh_usd.jpg",
-        "url": "http://api.z-lab.me/charts/dsh_usd.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/dsh_usd.jpg",
+        "url": "https://api.z-lab.me/charts/dsh_usd.png"
     },
     "ltc_usd": {
         "desc": "LTC/USD from WorldCoinIndex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/ltc_usd.jpg",
-        "url": "http://api.z-lab.me/charts/ltc_usd.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/ltc_usd.jpg",
+        "url": "https://api.z-lab.me/charts/ltc_usd.png"
     },
     "eth_usd": {
         "desc": "ETH/USD from WorldCoinIndex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/eth_usd.jpg",
-        "url": "http://api.z-lab.me/charts/eth_usd.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/eth_usd.jpg",
+        "url": "https://api.z-lab.me/charts/eth_usd.png"
     },
     "iota_usd": {
         "desc": "IOTA/USD from WorldCoinIndex.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/iota_usd.jpg",
-        "url": "http://api.z-lab.me/charts/iota_usd.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/iota_usd.jpg",
+        "url": "https://api.z-lab.me/charts/iota_usd.png"
     },
     "usd_rub_n": {
         "desc": "USD/RUB from Nasdaq, NYSE.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/usd_rub.jpg",
-        "url": "http://api.z-lab.me/charts/usd_rub.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/usd_rub.jpg",
+        "url": "https://api.z-lab.me/charts/usd_rub.png"
     },
     "brent": {
         "desc": "Brent from Nasdaq, NYSE.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/brent.jpg",
-        "url": "http://api.z-lab.me/charts/brent.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/brent.jpg",
+        "url": "https://api.z-lab.me/charts/brent.png"
     },
     "wti": {
         "desc": "WTI from Nasdaq, NYSE.",
-        "thumb": "http://lab.exlmoto.ru/thumbs/wti.jpg",
-        "url": "http://api.z-lab.me/charts/wti.png"
+        "thumb": "https://lab.exlmoto.ru/thumbs/wti.jpg",
+        "url": "https://api.z-lab.me/charts/wti.png"
     }
 }
