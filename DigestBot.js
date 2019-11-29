@@ -341,7 +341,7 @@ bot.on('left_chat_member', function(msg)
     if (msg.left_chat_member.username !== globalBotUserName) {
         sendMessageByBot(msg.chat.id,
             catchPhrases.leftMember[getRandomInt(0, catchPhrases.leftMember.length - 1)]
-                .replace('%username%', getUsername(msg.left_chat_member.username)));
+                .replace('%username%', getUsername(msg.left_chat_member)));
     }
 });
 
