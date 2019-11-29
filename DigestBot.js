@@ -332,7 +332,7 @@ bot.on('new_chat_members', function(msg)
     var isBotHere = usernames.indexOf(globalBotUserName) !== -1;
     var answer = (isBotHere) ? catchPhrases.others[4] :
         catchPhrases.newMember[getRandomInt(0, catchPhrases.newMember.length - 1)]
-            .replace('%username%', usernames);
+            .replace('%usernames%', usernames);
     sendMessageByBot(msg.chat.id, answer);
 });
 
