@@ -97,11 +97,13 @@ var globalStackListDigestMessages = [ ];
 
 var coolDownSec = 5;
 var digestsPerPage = 10;
+var digestMessageLength = 400;
 var countOfNewMarkers = 3;
 var globalCallbackQueriesStack = [ ];
 
 var globalCofeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
 var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
+var ipStatURL = 'https://ipecho.net/plain';
 
 var globalJsonStackName = 'DigestBotStackLog.json';
 readSavedStackFromFileSystem(globalJsonStackName, 0, true);
@@ -234,7 +236,7 @@ bot.getMe().then(function(me)
     globalBotUserName = me.username;
 
     // MotoFan Posts crawler initialization.
-    var timerId = setInterval(function() {
+    setInterval(function() {
         checkNewPostsOnMotoFan();
     }, globalMotoFanRefreshRate);
 });
@@ -245,15 +247,19 @@ bot.on('inline_query', function(msg)
     var q_query = msg.query;
     var results = [];
     var ind = 0;
-    for (k in globalExchangeList) {
-        if (k.toLowerCase().indexOf(q_query) >= 0) {
-            results.push(generateInlineChartsResult(k));
-            ind++;
+    for (var keyFirst in globalExchangeList) {
+        if (globalExchangeList.hasOwnProperty(keyFirst)) {
+            if (keyFirst.toLowerCase().indexOf(q_query) >= 0) {
+                results.push(generateInlineChartsResult(keyFirst));
+                ind++;
+            }
         }
     }
     if (!ind) {
-        for (k in globalExchangeList) {
-            results.push(generateInlineChartsResult(k));
+        for (var keySecond in globalExchangeList) {
+            if (globalExchangeList.hasOwnProperty(keySecond)) {
+                results.push(generateInlineChartsResult(keySecond));
+            }
         }
     }
     bot.answerInlineQuery(q_id, results);
@@ -320,13 +326,13 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
 bot.on('new_chat_members', function(msg)
 {
     var usernames;
-    if (msg.new_chat_members.length == 0) {
+    if (msg.new_chat_members.length === 1) {
         usernames = getUsername(msg.new_chat_members[0]);
     } else {
         var users = [];
         msg.new_chat_members.forEach(function(iUser) {
             users.push(getUsername(iUser));
-        })
+        });
         usernames = users.join(', ');
     }
     var isBotHere = usernames.indexOf(globalBotUserName) !== -1;
@@ -367,10 +373,10 @@ bot.on('text', function(msg)
 
     // DIGEST TAG.
     if (messageText.indexOf('#digest') >= 0 || messageText.indexOf('#news') >= 0) {
-        if (messageText.length < 400) {
+        if (messageText.length < digestMessageLength) {
             globalCountOfMessagesWithDigest++;
             var normalMessage = normalizeMessage(messageText);
-            if (!(isBlank(normalMessage))) {
+            if (!isBlank(normalMessage)) {
                 var messageInfoStruct = {
                     's_chatID': messageChatId,
                     's_date': messageDate,
@@ -399,7 +405,6 @@ bot.on('text', function(msg)
 
     // DIGEST COMMAND.
     else if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
-        var bGoodCommand = true;
         var messageDelay = getMessageDelay(7);
 
         // Digest delay.
@@ -650,11 +655,11 @@ function deleteObsoleteCallbackQueries(aObsoleteDate)
             position++;
         }
     }
-    if (position == stackSize) {
+    if (position === stackSize) {
         globalCallbackQueriesStack = [ ];
         return;
     }
-    if (position == 0) {
+    if (position === 0) {
         return;
     }
     globalCallbackQueriesStack = globalCallbackQueriesStack.slice(position);
@@ -695,7 +700,7 @@ function generateDigestKeyboard(aPagesCount)
     for (var i = 0; i < aPagesCount; ++i) {
         ind++;
         row.push( { text: '' + (i+1), callback_data: 'digest.' + (i+1) } );
-        if (ind == 7) {
+        if (ind === 7) {
             ind = 0;
             keyboard.push(row);
             row = [];
@@ -776,7 +781,7 @@ function addNewMarkers(string, regex, n, replace)
 
 function sendHostIpToChat(aMessageChatId, aUserName, aMsgId)
 {
-    Exec('curl https://ipecho.net/plain', function(err, stdout, stderr) {
+    Exec('curl ' + ipStatURL, function(err, stdout) {
         if (err) {
             sendMessageByBot(aMessageChatId, catchPhrases.debugCommandMessages[14], aUserName, aMsgId);
             return;
@@ -804,7 +809,7 @@ function generateChartsHelpString()
 
 function downloadImageAndSendToChat(aUri, aFileName, aChatId, aChart, aDesc, aMsgId)
 {
-    Request.head(aUri, function(aErr, aRes, aBody) {
+    Request.head(aUri, function() {
         Request(aUri).pipe(FileSystem.createWriteStream(aFileName)).on('close', function() {
             if (aChart) {
                 sendChartFileToChat(aChatId, aFileName, aDesc, aMsgId);
@@ -831,13 +836,15 @@ function generateChartsKeyboard()
     var keyboard = [];
     var row = [];
     var ind = 0;
-    for (k in globalExchangeList) {
-        ind++;
-        row.push( { text: k, callback_data: 'data.' + k.replace('_', '.')} );
-        if (ind == 4) {
-            ind = 0;
-            keyboard.push(row);
-            row = [];
+    for (var key in globalExchangeList) {
+        if (globalExchangeList.hasOwnProperty(key)) {
+            ind++;
+            row.push({text: key, callback_data: 'data.' + key.replace('_', '.')});
+            if (ind === 4) {
+                ind = 0;
+                keyboard.push(row);
+                row = [];
+            }
         }
     }
     keyboard.push(row);
@@ -1039,14 +1046,14 @@ function deleteObsoleteDigestMessages(aObsoleteDate)
 
     // All stack digest messages are obsolete.
     // Drop stack.
-    if (position == stackSize) {
+    if (position === stackSize) {
         globalStackListDigestMessages = [ ];
         return false;
     }
 
     // All stack digest messages are relevant.
     // Print them.
-    if (position == 0) {
+    if (position === 0) {
         return true;
     }
 
@@ -1067,22 +1074,22 @@ function normalizeMessage(aMessage)
         normalMessage = normalMessage.replace('#news', '');
 
         // Delete %username% template variable.
-        if (!(isBlank(normalMessage))) {
+        if (!isBlank(normalMessage)) {
             normalMessage = normalMessage.replace('%username%', '');
         }
 
         // Trim all trailing spaces.
-        if (!(isBlank(normalMessage))) {
+        if (!isBlank(normalMessage)) {
             normalMessage = normalMessage.trim();
         }
 
         // Replace multiple spaces with a single space.
-        if (!(isBlank(normalMessage))) {
+        if (!isBlank(normalMessage)) {
             normalMessage = normalMessage.replace(/  +/g, ' ');
         }
 
         // Replace multiple line breaks with a single line break.
-        if (!(isBlank(normalMessage))) {
+        if (!isBlank(normalMessage)) {
             normalMessage = normalMessage.replace(/\n{2,}/g, '\n');
         }
     }

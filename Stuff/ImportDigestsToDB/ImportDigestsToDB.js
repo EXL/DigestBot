@@ -11,7 +11,7 @@ const MySQL = require("mysql");
 const Https = require("https");
 // const ImageUrlToBase64 = require("imageurl-base64");
 
-const TgLogo = require("./TelegramLogo.js");
+// const TgLogo = require("./TelegramLogo.js");
 
 const DigestFile = "DigestBotStackLog.json";
 const ConfigDB = getJSONFile("DataBaseConfig.json");
@@ -209,10 +209,10 @@ function processJSONFile(aJson, aChatId) {
     });
 }
 
-function getUserAvatar(aUserName) {
-    if (!aUserName) return "0";
-    return UserAvs.get(aUserName);
-}
+// function getUserAvatar(aUserName) {
+//     if (!aUserName) return "0";
+//     return UserAvs.get(aUserName);
+// }
 
 function getUserName(aName) {
     if (!aName) return "0";
