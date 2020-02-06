@@ -20,6 +20,8 @@ const TmpDir = "/tmp/";
 var MapDB = new Map();
 var UserAvs = new Map();
 
+var handleMessage = 1;
+
 function main() {
     if (process.argv.length !== 4) {
         console.error("Usage.\n" +
@@ -221,8 +223,7 @@ function getUserName(aName) {
 
 function getMessage(aMessage) {
     if (!aMessage) return "null";
-    var s_msg = linkifyMessage(aMessage);
-    return userifyMessage(s_msg);
+    return (handleMessage === 1) ? userifyMessage(linkifyMessage(aMessage)) : aMessage;
 }
 
 function userifyMessage(aMessage) {
