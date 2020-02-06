@@ -24,12 +24,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Set UTF-8 charset for DB responses
+// Set UTF-8 charset for the database responses.
 if (!$conn->set_charset("utf8mb4")) {
     die("Set UTF-8 charset failed.");
 }
 
-// Get count of digests records in DB
+// Get count of digests records in the database.
 $sql = "SELECT COUNT(*) FROM digests";
 $result_c = $conn->query($sql);
 if ($result_c->num_rows > 0) {
@@ -164,7 +164,7 @@ function filter_num($a_num) {
 }
 
 function filter_message($a_msg) {
-    // Move this to JavaScript Import script.
+    // TODO: Move this to JavaScript Import script.
     // $a_msg = make_links_clickable($a_msg);
     // And this one for colorizing nicknames:
     $a_msg = make_users_clickable($a_msg);

@@ -1,6 +1,6 @@
-// ImportDigestToDB.js
-// See README.md for Install and Usage instructions
-// EXL, 23-NOV-2017
+// ImportDigestsToDB.js
+// See README.md for Install and Usage instructions.
+// Written by EXL, 23-NOV-2017.
 
 process.chdir(__dirname);
 
@@ -29,7 +29,7 @@ function main() {
         process.exit(1);
     } else {
         console.log("++++= Started at: " + Date());
-        readFiles(process.argv[2], process.argv[3]); // 2 - backupDir, 3 - chatId or parameter
+        readFiles(process.argv[2], process.argv[3]); // 2 - backupDir, 3 - chatId or parameter.
     }
 }
 
@@ -68,11 +68,11 @@ function decompressTarBall(aFilename, aChatId) {
         });
         extract.on("finish", function() {
             process.stdout.write("Processing file " + aFilename + "... ");
-            // 1. Create JSON File
+            // 1. Create JSON File.
             Fs.writeFileSync(TmpDir + DigestFile, data);
-            // 2. Process JSON File
+            // 2. Process JSON File.
             processJSONFile(getJSONFile(TmpDir + DigestFile), aChatId);
-            // 3. Delete JSON File
+            // 3. Delete JSON File.
             Fs.unlinkSync(TmpDir + DigestFile);
             // 4. Done!
             resolve(stream);
@@ -94,17 +94,17 @@ function processArchiveFiles(aGzFiles, aBackupDir, aChatId) {
     (function nextLapPr() {
         if (current >= times) {
             if (parseInt(aChatId) === 0) {
-                // 5. Show All ChatId's
+                // 5. Show All ChatId's.
                 console.log("\n===== All ChatId's:");
                 showMap(MapDB);
                 toExit();
             } else if (aChatId.toString() === "users") {
-                // 6. Show All Users
+                // 6. Show All Users.
                 console.log("\n===== All Users:");
                 showMap(MapDB);
                 toExit();
             } else {
-                // 7. Get User Avatars
+                // 7. Get User Avatars.
                 getUserAvatars(MapDB);
             }
             return;
@@ -130,7 +130,7 @@ function getUserAvatars(aMap) {
     var current = 0;
     (function nextLapUa() {
         if (current >= times) {
-            // 8. Push All data to DataBase
+            // 8. Push All data to DataBase.
             connectToDataBase(ConfigDB);
             return;
         }
@@ -200,7 +200,7 @@ function processJSONFile(aJson, aChatId) {
                 "msg": aObject.s_message
             };
             //if (!MAP.get(aObject.s_date)) { // Fix strange bugs with broken symbols.
-            // 2.1. Generate Unique Messages by Date
+            // 2.1. Generate Unique Messages by Date.
             MapDB.set(aObject.s_date, struct);
             //}
         } else if (aChatId.toString() === "users") {
@@ -276,8 +276,7 @@ function escSqlString(str) {
             case "\"":
             case "'":
             case "\\":
-                return "\\"+char; // prepends a backslash to backslash, percent,
-                                  // and double/single quotes
+                return "\\"+char; // Prepends a backslash to backslash, percent and double/single quotes.
         }
     }) : "undefined";
 }
@@ -290,7 +289,7 @@ function commitDigestsToDataBase(aCon) {
         if (s_current >= s_times) {
             console.log("SQL: " + s_current + " digests are stored to the DB.");
             aCon.end();
-            // 10. Exit from script
+            // 10. Exit from script.
             toExit();
             return;
         }
@@ -336,7 +335,7 @@ function connectToDataBase(aSettings) {
         (function firstLapDb() {
             if (current >= times) {
                 console.log("SQL: " + current + " users and avatars are stored to the DB.");
-                // 9. Push Digests to DataBase
+                // 9. Push Digests to DataBase.
                 commitDigestsToDataBase(con);
                 return;
             }

@@ -1,7 +1,7 @@
 /************************************************************************************
 ** The MIT License (MIT)
 **
-** Copyright (c) 2015 Serg "EXL" Koles
+** Copyright (c) 2015-2020 EXL
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a copy
 ** of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 ** SOFTWARE.
 ************************************************************************************/
 
-// Set current dir as working dir for script
+// Set current catalog as working directory for script.
 process.chdir(__dirname);
 
 // Fix "Automatic enabling of cancellation of promises is deprecated" error.
@@ -31,11 +31,11 @@ process.chdir(__dirname);
 //  2. https://github.com/yagop/node-telegram-bot-api/issues/484
 process.env["NTBA_FIX_319"] = 1;
 
-// Fix
-//  In the future, content-type of files you send will default to "application/octet-stream"
+// Fix.
+//  In the future, content-type of files you send will default to "application/octet-stream".
 process.env["NTBA_FIX_350"] = 1;
 
-// Fix
+// Fix.
 // Error: certificate has expired
 //    at Error (native)
 //    at TLSSocket.<anonymous> (_tls_wrap.js:1092:38)
@@ -43,21 +43,21 @@ process.env["NTBA_FIX_350"] = 1;
 //    at TLSSocket.emit (events.js:185:7)
 //    at TLSSocket._finishInit (_tls_wrap.js:609:8)
 //    at TLSWrap.ssl.onhandshakedone (_tls_wrap.js:439:38)
-// Uncomment => Launch => Stop => Comment => Relaunch
+// Uncomment => Launch => Stop => Comment => Relaunch.
 // process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
-// Requires
+// Requires.
 var TelegramBot = require('node-telegram-bot-api');
 var FileSystem = require('fs');
 var Http = require('http');
 var Https = require('https');
-// Error: certificate has expired workaround for request
+// Error: certificate has expired workaround for request.
 // See: https://stackoverflow.com/a/50494028
 var Request = require('request').defaults({ rejectUnauthorized: false });
 var Exec = require('child_process').exec;
 var ParseXMLString = require('xml2js').parseString;
 
-// Globals
+// Globals.
 var token = getTokenAccess();
 var catchPhrases = getCatchPhrases();
 var useMirrorCBR = 1;
@@ -106,7 +106,7 @@ var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 var globalJsonStackName = 'DigestBotStackLog.json';
 readSavedStackFromFileSystem(globalJsonStackName, 0, true);
 
-// ----- CURRENCY SECTION
+// ----- CURRENCY SECTION.
 var globalExchangeList = getChartsList();
 
 var xmlContent = '';
@@ -137,12 +137,12 @@ var globalRatesKeyboard = {
             { text: catchPhrases.buttons[3], callback_data: 'met' }
         ] ]
 };
-// ----- END CURRENCY SECTION
+// ----- END CURRENCY SECTION.
 
-// ----- MOTOFAN CRAWLER SECTION
+// ----- MOTOFAN CRAWLER SECTION.
 var globalMotoFanJsonApiLink = 'https://forum.motofan.ru/lastpost_json.php';
-var globalMotoFanIdTelegramGroup = -1001045117849; // 87336977 for debug
-var globalMotoFanRefreshRate = 1200 * 1000; // 20 minutes
+var globalMotoFanIdTelegramGroup = -1001045117849; // 87336977 for debug.
+var globalMotoFanRefreshRate = 1200 * 1000; // 20 minutes.
 var globalMotoFanLatestPostTime = 0;
 var globalMotoFanLatestThreadId = 0;
 var globalMotoFanLatestPostText = '';
@@ -180,8 +180,8 @@ function processMotoFanJson(aJson)
     }
     for (var i = aJson.length - 1; i >= 0; --i) {
         if (aJson[i].timestamp > globalMotoFanLatestPostTime) {
-            if (aJson[i].author !== 'palach') { // HACK: Drop automatic congratulation messages
-                if (aJson[i].author !== globalMotoFanLatestPostAuthor || // HACK: Drop "added later" messages
+            if (aJson[i].author !== 'palach') { // HACK: Drop automatic congratulation messages.
+                if (aJson[i].author !== globalMotoFanLatestPostAuthor || // HACK: Drop "added later" messages.
                     aJson[i].text !== globalMotoFanLatestPostText ||
                     aJson[i].topic !== globalMotoFanLatestThreadId) {
                     newMessages.push(aJson[i]);
@@ -223,9 +223,9 @@ function removeBbCodes(aMessage)
 {
     return aMessage.replace(/\[(\w+)[^w]*?](.*?)\[\/\1]/g, ' $2 ').replace(/ +(?= )/g,'').trim();
 }
-// ----- END MOTOFAN CRAWLER SECTION
+// ----- END MOTOFAN CRAWLER SECTION.
 
-// Bot Functions
+// ----- TELEGRAM BOT FUNCTIONS SECTION.
 bot.getMe().then(function(me)
 {
     console.log('Hello! My name is %s!', me.first_name);
@@ -233,7 +233,7 @@ bot.getMe().then(function(me)
     console.log('And my username is @%s.', me.username);
     globalBotUserName = me.username;
 
-    // MotoFan Posts crawler initialization
+    // MotoFan Posts crawler initialization.
     var timerId = setInterval(function() {
         checkNewPostsOnMotoFan();
     }, globalMotoFanRefreshRate);
@@ -352,7 +352,7 @@ bot.on('new_chat_photo', function(msg)
 
 bot.on('text', function(msg)
 {
-    // Set main variables
+    // Set main variables.
     var messageChatId = msg.chat.id;
     var messageText = msg.text;
     var messageDate = msg.date;
@@ -361,11 +361,11 @@ bot.on('text', function(msg)
 
     // console.log(msg);
 
-    if (msg.forward_date) { // Skip All Forwarded Messages
+    if (msg.forward_date) { // Skip All Forwarded Messages.
         return;
     }
 
-    // DIGEST TAG
+    // DIGEST TAG.
     if (messageText.indexOf('#digest') >= 0 || messageText.indexOf('#news') >= 0) {
         if (messageText.length < 400) {
             globalCountOfMessagesWithDigest++;
@@ -387,7 +387,7 @@ bot.on('text', function(msg)
                                  catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)],
                                  messageUserName, messsageId);
 
-                // Save Stack to File
+                // Save Stack to File.
                 writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
             }
         } else {
@@ -397,7 +397,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // DIGEST COMMAND
+    // DIGEST COMMAND.
     else if (messageText === '/digest' || messageText === '/digest@'+globalBotUserName) {
         var bGoodCommand = true;
         var messageDelay = getMessageDelay(7);
@@ -414,11 +414,11 @@ bot.on('text', function(msg)
         var bSendDigest = false;
 
         if (globalStackListDigestMessages.length > 0) {
-            // Delete all obsolete digest messages from globalStackListDigestMessages
+            // Delete all obsolete digest messages from globalStackListDigestMessages.
             bSendDigest = deleteObsoleteDigestMessages(messageDate - mainDelay);
         }
 
-        // Generate Bot Answer
+        // Generate Bot Answer.
         if (bSendDigest) {
             // Count of digest messages from one chat.
             var countOfDigestMessagesByChat = getCountDigestMessagesOfChat(messageChatId, dayDelay);
@@ -437,40 +437,40 @@ bot.on('text', function(msg)
         }
     }
 
-    // RATES COMMAND
+    // RATES COMMAND.
     else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
         updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
     }
 
-    // CHARTS COMMAND
+    // CHARTS COMMAND.
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
         sendMessageByBot(messageChatId,
                          catchPhrases.buttons[5] + '<code>' + generateChartsHelpString() + '</code>',
                          messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
-    // COFFEE COMMAND
+    // COFFEE COMMAND.
     else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
         sendSticker(messageChatId, globalCofeeSticker, messsageId);
     }
 
-    // GAME COMMAND
+    // GAME COMMAND.
     else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
         downloadImageAndSendToChat(gameStatURL, 'game.png', messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
     }
 
-    // HELP COMMAND
+    // HELP COMMAND.
     else if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
         sendMessageByBot(messageChatId, generateHelpString(messageUserName), messageUserName, messsageId);
     }
 
-    // START COMMAND
+    // START COMMAND.
     else if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
         sendMessageByBot(messageChatId, catchPhrases.startCommand[0], messageUserName, messsageId);
     }
 
-    // ----- ADMINISTRATION COMMANDS
-    // HELLO COMMAND
+    // ----- ADMINISTRATION COMMANDS.
+    // HELLO COMMAND.
     else if (messageText === '/hello' || messageText === '/hi') {
         if (getAdminRights(messageUserName)) {
             sendMessageByBot(messageChatId,
@@ -479,7 +479,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // SEND COMMAND
+    // SEND COMMAND.
     else if (messageText.indexOf('/send') === 0) {
         if (getAdminRights(messageUserName)) {
             messageText = messageText.trim();
@@ -496,14 +496,14 @@ bot.on('text', function(msg)
         }
     }
 
-    // EVAL COMMAND
+    // EVAL COMMAND.
     else if (messageText.indexOf('/eval') === 0) {
         if (getAdminRights(messageUserName)) {
             eval(messageText.replace('/eval', '').trim());
         }
     }
 
-    // STICKER COMMAND
+    // STICKER COMMAND.
     else if (messageText.indexOf('/sticker') === 0) {
         if (getAdminRights(messageUserName)) {
             messageText = messageText.trim();
@@ -516,7 +516,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // CLEARSTACK COMMAND
+    // CLEARSTACK COMMAND.
     else if (messageText === '/stackClear' || messageText === '/clearStack') {
         if (getAdminRights(messageUserName)) {
             globalStackListDigestMessages = [ ];
@@ -527,7 +527,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // COUNT COMMAND
+    // COUNT COMMAND.
     else if (messageText === '/count') {
         if (getAdminRights(messageUserName)) {
             sendMessageByBot(messageChatId,
@@ -537,7 +537,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // DELETE COMMAND
+    // DELETE COMMAND.
     else if (messageText.indexOf('/delete') === 0) {
         if (getAdminRights(messageUserName)) {
             var stackLength = globalStackListDigestMessages.length;
@@ -561,7 +561,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // VIEWSTACK COMMAND
+    // VIEWSTACK COMMAND.
     else if (messageText === '/stackView' || messageText === '/viewStack') {
         if (getAdminRights(messageUserName)) {
             var stack = '\n';
@@ -585,7 +585,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // SAVESTACK COMMAND
+    // SAVESTACK COMMAND.
     else if (messageText === '/stackSave' || messageText === '/saveStack') {
         if (getAdminRights(messageUserName)) {
             writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true, messageUserName, messsageId);
@@ -594,7 +594,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // RESTORESTACK COMMAND
+    // RESTORESTACK COMMAND.
     else if (messageText === '/stackRestore' || messageText === '/restoreStack') {
         if (getAdminRights(messageUserName)) {
             readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
@@ -603,7 +603,7 @@ bot.on('text', function(msg)
         }
     }
 
-    // HOSTIP COMMAND
+    // HOSTIP COMMAND.
     else if (messageText === '/hostip') {
         if (getAdminRights(messageUserName)) {
             sendHostIpToChat(messageChatId, messageUserName, messsageId);
@@ -611,10 +611,11 @@ bot.on('text', function(msg)
             sendNoAccessMessage(messageChatId, messageUserName, messsageId);
         }
     }
-    // ----- END ADMINISTRATION COMMANDS
+    // ----- END ADMINISTRATION COMMANDS.
 });
+// ----- END TELEGRAM BOT FUNCTIONS SECTION.
 
-// Subs Functions
+// ----- SUBS FUNCTIONS SECTION.
 function getUsername(aUser)
 {
     return (aUser.username) ? '@' + aUser.username :
@@ -744,11 +745,11 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
         botAnswer += page[pageNum][i];
     }
 
-    // Trim strings
+    // Trim strings.
     botAnswer = botAnswer.trim();
     botAnswer = trimAndRemoveAtInEachString(botAnswer);
 
-    // Capitalize first letter of each string
+    // Capitalize first letter of each string.
     botAnswer = capitalizeFirstLetterOfEachString(botAnswer);
 
     // Replace all line breaks by line break, digestMarker, newMarker and space.
@@ -759,7 +760,7 @@ function generateDigestAnswer(stackSize, messageChatId, dayDelay, aCountOnPage, 
             countOfNewMarkers, catchPhrases.digestMarker + ' ' + catchPhrases.newMarker);
     }
 
-    // Add digest header
+    // Add digest header.
     botAnswer = getDigestReportHeader(aPage) + botAnswer;
     return botAnswer;
 }
@@ -795,7 +796,7 @@ function generateChartsHelpString()
         helpChartsAnswer += catchPhrases.chartHelp[i] + '\n';
     }
 
-    // Delete last line break
+    // Delete last line break.
     helpChartsAnswer.trim();
 
     return '\n\n' + helpChartsAnswer;
@@ -866,7 +867,7 @@ function sendChartToChat(aChatId, aExchangeId, aUserName, aMsgId)
 
 function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize, aUserName, aMsgId)
 {
-    var times = parseInt(aMesssage.length / aChunkSize) + 1; // +1 for last chunk
+    var times = parseInt(aMesssage.length / aChunkSize) + 1; // +1 for last chunk.
     var current = 0;
     var chunkOffset = 0;
 
@@ -895,7 +896,7 @@ function generateHelpString(aUserName)
         }
     }
 
-    // Delete last line break
+    // Delete last line break.
     botAnswer.trim();
 
     return botAnswer;
@@ -922,7 +923,7 @@ function trimAndRemoveAtInEachString(aString)
     return aString.split('\n').map(function(aLine) {
         aLine = aLine.trim();
 
-        // Remove username URI only
+        // Remove username URI only.
         aLine = removeUsernameUri(aLine);
 
         return aLine;
@@ -990,7 +991,7 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey, aHtml)
             readyMessage = readyMessage.replace('%username%', '@' + aUserName);
         }
 
-        // Return Promise
+        // Return Promise.
         return new Promise(function(resolve) {
             return bot.sendMessage(aChatId, readyMessage, {
                     disable_web_page_preview: true,
@@ -998,10 +999,10 @@ function sendMessageByBot(aChatId, aMessage, aUserName, aMsgId, aKey, aHtml)
                     reply_to_message_id: aMsgId,
                     reply_markup: (aKey) ? aKey : null,
                     parse_mode: (aKey || aHtml) ? 'HTML' : null
-                }).delay(1000).then(function(response) { // 1 sec delay
+                }).delay(1000).then(function(response) { // 1 sec delay.
                     resolve(response);
                 })
-            // TODO: Make error handling
+            // TODO: Make error handling.
         });
     }
 }
@@ -1052,7 +1053,7 @@ function deleteObsoleteDigestMessages(aObsoleteDate)
     // Replace current digest stack by sliced.
     globalStackListDigestMessages = globalStackListDigestMessages.slice(position);
 
-    // Return true if stack not empty
+    // Return true if stack not empty.
     return stackSize > 0;
 }
 
@@ -1061,26 +1062,26 @@ function normalizeMessage(aMessage)
     var normalMessage = '';
 
     if (!isEmpty(aMessage)) {
-        // Delete #digest and #news tags from message
+        // Delete #digest and #news tags from message.
         normalMessage = aMessage.replace('#digest', '');
         normalMessage = normalMessage.replace('#news', '');
 
-        // Delete %username% variable
+        // Delete %username% template variable.
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.replace('%username%', '');
         }
 
-        // Ttrim all trailing spaces
+        // Trim all trailing spaces.
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.trim();
         }
 
-        // Replace multiple spaces with a single space
+        // Replace multiple spaces with a single space.
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.replace(/  +/g, ' ');
         }
 
-        // Replace multiple line breaks with a single line break
+        // Replace multiple line breaks with a single line break.
         if (!(isBlank(normalMessage))) {
             normalMessage = normalMessage.replace(/\n{2,}/g, '\n');
         }
@@ -1187,8 +1188,9 @@ function isDuplicateMessage(aMessage)
     }
     return false;
 }
+// ----- END SUBS FUNCTIONS SECTION.
 
-// ----- CURRENCY SECTION
+// ----- CURRENCY SECTION.
 function createReportCurrencyHeader(aCatchPhrase)
 {
     return aCatchPhrase + '\n' + catchPhrases.roubleCommand[0] + '\n';
@@ -1363,12 +1365,12 @@ function getXmlValuteValue(aXmlObject, aCode, aValue, bankID)
 
 function updateGlobalCurrencyList(bankID, aMetall, lastForeignValue, messageChatId, aUserName, aMsgId, aEditText)
 {
-    // Clear xmlContent
+    // Clear xmlContent.
     if (!isEmpty(xmlContent)) {
         xmlContent = '';
     }
 
-    // Patch for switching official CBR <=> mirror CBR through '/eval useMirrorCBR=0;' command
+    // Patch for switching official CBR <=> mirror CBR through '/eval useMirrorCBR=0;' command.
     if (bankID === bankCBR) {
         httpOptions[bankID].host = (useMirrorCBR) ? 'www.cbr-xml-daily.ru' : 'www.cbr.ru';
         httpOptions[bankID].path = (useMirrorCBR) ? '/daily.xml' : '/scripts/XML_daily.asp?';
@@ -1423,7 +1425,7 @@ function shittyParseMetallXML(aAllXml)
         'Pd': 0.0
     };
 
-    // 9  - Date, 10 - Gold, 11 - Silver, 12 - Platinum, 13 - Palladium
+    // 9  - Date, 10 - Gold, 11 - Silver, 12 - Platinum, 13 - Palladium.
     metallList.Date = getCurrentMetallValue(9, aAllXml, true);
     metallList.Au = getCurrentMetallValue(10, aAllXml, false);
     metallList.Ag = getCurrentMetallValue(11, aAllXml, false);
@@ -1450,7 +1452,7 @@ function generateBotMetallAnswer(aCurrencyList)
 
 function getCurrentMetallValue(aNum, aString, aDate)
 {
-    // 'table class=\"data\"' - is a marker
+    // 'table class=\"data\"' - is a marker.
     var marker = 'table class=\"data\"';
     if (!aDate) {
         var value = parseFloat(deleteAllSpaces(replaceCommasByDots(getStringBelow(aString.indexOf(marker), aNum, aString))));
