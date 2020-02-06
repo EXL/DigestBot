@@ -101,7 +101,7 @@ var digestMessageLength = 400;
 var countOfNewMarkers = 3;
 var globalCallbackQueriesStack = [ ];
 
-var globalCofeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
+var globalCoffeeSticker = 'CAADAgADzAEAAhGoNAVFRRJu94qe3gI';
 var gameStatURL = 'https://api.z-lab.me/img/lgsl/servers_stats.png';
 var ipStatURL = 'https://ipecho.net/plain';
 
@@ -129,7 +129,7 @@ var globalCurrencyList = {
     'GBP': 0.0
 };
 
-initilizeCurrencyListAndGetUsdValue();
+initializeCurrencyListAndGetUsdValue();
 
 var globalRatesKeyboard = {
     inline_keyboard: [ [
@@ -271,8 +271,8 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
     var msg = callbackQuery.message;
     var text = '';
 
-    var cooldwn = coolDownStep(callbackQuery.from.id, msg.chat.id);
-    if (cooldwn <= 0) {
+    var cooldown = coolDownStep(callbackQuery.from.id, msg.chat.id);
+    if (cooldown <= 0) {
         var action = callbackQuery.data;
         if (action === 'rub') {
             text += catchPhrases.buttons[4] + catchPhrases.buttons[0];
@@ -317,7 +317,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery)
                                 });
         }
     } else {
-        text = catchPhrases.buttons[8] + cooldwn + catchPhrases.buttons[9];
+        text = catchPhrases.buttons[8] + cooldown + catchPhrases.buttons[9];
     }
 
     bot.answerCallbackQuery( callbackQuery.id, { text: text, show_alert: false } );
@@ -362,7 +362,7 @@ bot.on('text', function(msg)
     var messageChatId = msg.chat.id;
     var messageText = msg.text;
     var messageDate = msg.date;
-    var messsageId = msg.message_id;
+    var messageId = msg.message_id;
     var messageUserName = msg.from.username;
 
     // console.log(msg);
@@ -391,15 +391,15 @@ bot.on('text', function(msg)
                 // Send message by bot.
                 sendMessageByBot(messageChatId,
                                  catchPhrases.digestTag[getRandomInt(0, catchPhrases.digestTag.length - 1)],
-                                 messageUserName, messsageId);
+                                 messageUserName, messageId);
 
                 // Save Stack to File.
-                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
+                writeJSONFileToFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messageId);
             }
         } else {
             sendMessageByBot(messageChatId,
                              catchPhrases.debugCommandMessages[5],
-                             messageUserName, messsageId);
+                             messageUserName, messageId);
         }
     }
 
@@ -431,47 +431,47 @@ bot.on('text', function(msg)
             if (countOfDigestMessagesByChat > 0) {
                 sendMessageByBot(messageChatId,
                                  generateDigestAnswer(globalStackListDigestMessages.length, messageChatId, dayDelay, digestsPerPage, 1),
-                                 messageUserName, messsageId, {
+                                 messageUserName, messageId, {
                                      inline_keyboard: generateDigestKeyboard(getDigestPages(globalStackListDigestMessages.length,
                                                                                             messageChatId, dayDelay, digestsPerPage).length) } );
             } else {
-                sendNoDigestMessages(messageChatId, messageUserName, messsageId);
+                sendNoDigestMessages(messageChatId, messageUserName, messageId);
             }
         } else {
-            sendNoDigestMessages(messageChatId, messageUserName, messsageId);
+            sendNoDigestMessages(messageChatId, messageUserName, messageId);
         }
     }
 
     // RATES COMMAND.
     else if (messageText === '/rates' || messageText === '/rates@'+globalBotUserName) {
-        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messsageId);
+        updateGlobalCurrencyList(bankCBR, false, globalUSD[bankCBR], messageChatId, messageUserName, messageId);
     }
 
     // CHARTS COMMAND.
     else if (messageText === '/charts' || messageText === '/charts@'+globalBotUserName) {
         sendMessageByBot(messageChatId,
                          catchPhrases.buttons[5] + '<code>' + generateChartsHelpString() + '</code>',
-                         messageUserName, messsageId, { inline_keyboard: generateChartsKeyboard() });
+                         messageUserName, messageId, { inline_keyboard: generateChartsKeyboard() });
     }
 
     // COFFEE COMMAND.
     else if (messageText === '/coffee' || messageText === '/coffee@'+globalBotUserName) {
-        sendSticker(messageChatId, globalCofeeSticker, messsageId);
+        sendSticker(messageChatId, globalCoffeeSticker, messageId);
     }
 
     // GAME COMMAND.
     else if (messageText === '/game' || messageText === '/game@'+globalBotUserName) {
-        downloadImageAndSendToChat(gameStatURL, 'game.png', messageChatId, false, catchPhrases.debugCommandMessages[12], messsageId);
+        downloadImageAndSendToChat(gameStatURL, 'game.png', messageChatId, false, catchPhrases.debugCommandMessages[12], messageId);
     }
 
     // HELP COMMAND.
     else if (messageText === '/help' || messageText === '/help@'+globalBotUserName) {
-        sendMessageByBot(messageChatId, generateHelpString(messageUserName), messageUserName, messsageId);
+        sendMessageByBot(messageChatId, generateHelpString(messageUserName), messageUserName, messageId);
     }
 
     // START COMMAND.
     else if (messageText === '/start' || messageText === '/start@'+globalBotUserName) {
-        sendMessageByBot(messageChatId, catchPhrases.startCommand[0], messageUserName, messsageId);
+        sendMessageByBot(messageChatId, catchPhrases.startCommand[0], messageUserName, messageId);
     }
 
     // ----- ADMINISTRATION COMMANDS.
@@ -480,7 +480,7 @@ bot.on('text', function(msg)
         if (getAdminRights(messageUserName)) {
             sendMessageByBot(messageChatId,
                              catchPhrases.helloCommand[getRandomInt(0, catchPhrases.helloCommand.length - 1)],
-                             messageUserName, messsageId);
+                             messageUserName, messageId);
         }
     }
 
@@ -494,10 +494,10 @@ bot.on('text', function(msg)
                 sendMessageByBot(targetChatID, getSendMessage(messageText, '/send ' + targetChatID), messageUserName, null);
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[8], messageUserName, messsageId);
+                                 catchPhrases.debugCommandMessages[8], messageUserName, messageId);
             }
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
@@ -517,7 +517,7 @@ bot.on('text', function(msg)
                 sendSticker(splitCommandListSticker[1], splitCommandListSticker[2], null);
             }
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
@@ -526,9 +526,9 @@ bot.on('text', function(msg)
         if (getAdminRights(messageUserName)) {
             globalStackListDigestMessages = [ ];
             sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[1], messageUserName, messsageId);
+                             catchPhrases.debugCommandMessages[1], messageUserName, messageId);
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
@@ -536,9 +536,9 @@ bot.on('text', function(msg)
     else if (messageText === '/count') {
         if (getAdminRights(messageUserName)) {
             sendMessageByBot(messageChatId,
-                             catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest, messageUserName, messsageId);
+                             catchPhrases.debugCommandMessages[4] + globalCountOfMessagesWithDigest, messageUserName, messageId);
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
@@ -552,17 +552,17 @@ bot.on('text', function(msg)
                     var delArg = parseInt(chunksMsg[1]);
                     if (delArg <= stackLength) {
                         globalStackListDigestMessages.splice(delArg - 1, 1);
-                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.', messageUserName, messsageId);
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[6] + ' ' + delArg + '.', messageUserName, messageId);
                     } else {
-                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.', messageUserName, messsageId);
+                        sendMessageByBot(messageChatId, catchPhrases.debugCommandMessages[7] + ' ' + delArg + '.', messageUserName, messageId);
                     }
                 }
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[2], messageUserName, messsageId);
+                                 catchPhrases.debugCommandMessages[2], messageUserName, messageId);
             }
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
@@ -580,40 +580,40 @@ bot.on('text', function(msg)
                     stack += globalStackListDigestMessages[j].s_message + '\n';
                 }
                 sendChunksMessagesByBot(messageChatId,
-                                        catchPhrases.debugCommandMessages[3] + stack, 3500, messageUserName, messsageId);
+                                        catchPhrases.debugCommandMessages[3] + stack, 3500, messageUserName, messageId);
             } else {
                 sendMessageByBot(messageChatId,
-                                 catchPhrases.debugCommandMessages[2], messageUserName, messsageId);
+                                 catchPhrases.debugCommandMessages[2], messageUserName, messageId);
             }
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
     // SAVESTACK COMMAND.
     else if (messageText === '/stackSave' || messageText === '/saveStack') {
         if (getAdminRights(messageUserName)) {
-            writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true, messageUserName, messsageId);
+            writeJSONFileToFileSystem(globalJsonStackName, messageChatId, true, messageUserName, messageId);
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
     // RESTORESTACK COMMAND.
     else if (messageText === '/stackRestore' || messageText === '/restoreStack') {
         if (getAdminRights(messageUserName)) {
-            readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messsageId);
+            readSavedStackFromFileSystem(globalJsonStackName, messageChatId, false, messageUserName, messageId);
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
 
     // HOSTIP COMMAND.
     else if (messageText === '/hostip') {
         if (getAdminRights(messageUserName)) {
-            sendHostIpToChat(messageChatId, messageUserName, messsageId);
+            sendHostIpToChat(messageChatId, messageUserName, messageId);
         } else {
-            sendNoAccessMessage(messageChatId, messageUserName, messsageId);
+            sendNoAccessMessage(messageChatId, messageUserName, messageId);
         }
     }
     // ----- END ADMINISTRATION COMMANDS.
@@ -872,9 +872,9 @@ function sendChartToChat(aChatId, aExchangeId, aUserName, aMsgId)
     }
 }
 
-function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize, aUserName, aMsgId)
+function sendChunksMessagesByBot(aChatId, aMessage, aChunkSize, aUserName, aMsgId)
 {
-    var times = parseInt(aMesssage.length / aChunkSize) + 1; // +1 for last chunk.
+    var times = parseInt(aMessage.length / aChunkSize) + 1; // +1 for last chunk.
     var current = 0;
     var chunkOffset = 0;
 
@@ -883,7 +883,7 @@ function sendChunksMessagesByBot(aChatId, aMesssage, aChunkSize, aUserName, aMsg
             return;
         }
         ++current;
-        sendMessageByBot(aChatId, aMesssage.substring(chunkOffset, chunkOffset + aChunkSize), aUserName, aMsgId).then(function() {
+        sendMessageByBot(aChatId, aMessage.substring(chunkOffset, chunkOffset + aChunkSize), aUserName, aMsgId).then(function() {
             chunkOffset += aChunkSize;
             nextLap();
         });
@@ -1506,7 +1506,7 @@ function sendCurrency(bankID, lastForeignValue, newForeignValue, messageChatId, 
     }
 }
 
-function initilizeCurrencyListAndGetUsdValue()
+function initializeCurrencyListAndGetUsdValue()
 {
     updateGlobalCurrencyList(bankCBR);
     updateGlobalCurrencyList(bankNBU);
