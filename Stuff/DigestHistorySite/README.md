@@ -5,6 +5,6 @@ Site for displaying the history of digests from database. The design and CSS of 
 
 ## Install
 
-* Edit config "config.php".
+* Edit config *config.php* file.
 
-Make sure that the database and PHP are working with UTF-8 (utf8mb4 for unicode smiles) charset.
+Make sure that the database and PHP are working with UTF-8 (utf8mb4 for unicode emoji) charset.

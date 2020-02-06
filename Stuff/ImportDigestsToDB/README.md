@@ -9,11 +9,11 @@ The utility for creating a database/table from digest backups. Messages are save
 
 * Create database or table with `utf8mb4` and `utf8mb4_unicode_ci` charsets.
 
-* Edit config "DataBaseConfig.json".
+* Edit config *DataBaseConfig.json* file.
 
 ## Usage
 
-1. Add digest post to DB:
+1. Add digest post to database:
 
 ```bash
 $ node ImportDigestToDB.js <backup-dir> <chat-id>
@@ -31,4 +31,4 @@ $ node ImportDigestToDB.js <backup-dir> 0
 $ node ImportDigestToDB.js <backup-dir> users
 ```
 
-Make sure that the database is working with UTF-8 (utf8mb4 for unicode smiles) charset.
+Make sure that the database is working with UTF-8 (utf8mb4 for unicode emoji) charset.

@@ -1,6 +1,6 @@
 {
   "name": "digestbot",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Telegram digest bot for group chats",
   "keywords": [
     "Telegram Bot",
