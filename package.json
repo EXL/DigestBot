@@ -31,9 +31,9 @@
     "npm": ">= 1.0.0"
   },
   "dependencies": {
-    "node-telegram-bot-api": "~0.30.0",
-    "request": "~2.87.0",
-    "xml2js": "~0.4.19"
+    "node-telegram-bot-api": "~0.50.0",
+    "request": "~2.88.2",
+    "xml2js": "~0.4.23"
   },
   "main": "DigestBot.js",
   "contributors": [
